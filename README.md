@@ -92,12 +92,13 @@ flowchart LR
     Learn --> Consult
 ```
 
-The course prototype concentrates on consultation through after-sales support. Customer acquisition, billing, supplier contracts, and profitability are modelled as business capabilities and future validation areas rather than fully implemented services.
+The course prototype concentrates on consultation through after-sales support and uses simulated campaigns to validate the acquisition loop. The Marketing & Growth Agent may analyse audiences, generate advertising assets, recommend channels and budget allocation, and report performance, but it may not purchase ads, increase budgets, or publish externally without operator approval. Billing, supplier contracts, and full profitability validation remain future work.
 
 ## AI agent organisation
 
 | Agent | Virtual company role | Responsibilities |
 | --- | --- | --- |
+| Marketing & Growth Agent | Customer acquisition specialist | Define audiences, plan paid advertising, create channel-specific assets, track leads and conversion, and recommend marketing improvements to the operator. |
 | Customer Service Agent | Front desk | Detect intent, collect missing information, answer routine questions, and route planning or complaint requests. |
 | Travel Manager Agent | Operations manager | Own the case, decompose work, coordinate specialists, combine results, and manage the service lifecycle. |
 | Fare Planning Agent | Transport specialist | Filter transport options, apply the selected travel mode, rank candidates, and explain trade-offs. |
@@ -106,12 +107,16 @@ The course prototype concentrates on consultation through after-sales support. C
 | Complaint Agent | Resolution specialist | Classify complaints, collect evidence, check policy, propose resolutions, and escalate high-risk cases. |
 | Reviewer/Guardrail | Quality and compliance | Check constraints, arithmetic, conflicts, evidence, policy, confidence, and authorisation. |
 
-The Travel Manager owns each case. Specialist agents cannot make unrestricted order changes. Every hand-off, tool call, material decision, and approval is recorded.
+The Travel Manager owns each travel-service case; the Marketing & Growth Agent owns acquisition campaigns. Specialist agents cannot make unrestricted order changes or spend advertising budget. Every hand-off, tool call, material decision, and approval is recorded.
 
 ## High-level architecture
 
 ```mermaid
 flowchart TB
+    Channels[Advertising and content channels] --> Growth[Marketing and Growth Agent]
+    Growth --> CampaignTools[Audience creative campaign attribution tools]
+    Growth --> Service
+    Growth --> Human
     Customer[Customer interface] --> API[Application API]
     Operator[OPC operator dashboard] --> API
     API --> Service[Customer Service Agent]
@@ -133,6 +138,8 @@ flowchart TB
     Complaint --> Human[Human approval queue]
 ```
 
+The Marketing & Growth Agent may autonomously plan and analyse campaigns only against simulated data. Real advertising, external messaging, or budget expenditure always enters the human approval queue.
+
 ### Proposed implementation stack
 
 - Python and FastAPI for the application service.
@@ -152,7 +159,7 @@ flowchart TB
 | Comfort | 35% | 20% | 5% |
 | Reliability/transfers | 15% | 15% | 15% |
 
-These are initial configurable weights. Hard constraints—such as budget ceiling, dates, latest arrival, baggage, accessibility, transfer limit, overnight travel, availability, and cancellation status—are applied before scoring.
+These are initial configurable weights. Hard constraints—such as budget ceiling, dates, latest arrival, baggage, accessibility, transfer limit, overnight travel, availability, and cancellation status—are applied before scoring. A hard constraint is an eligibility rule, not a weighted preference, and cannot be offset by a higher comfort, speed, or reliability score. For example, if the user's total budget is **$500**, every complete plan with an estimated total above **$500** must be excluded before scoring, ranking, or recommendation; the exclusion reason and calculation must be recorded.
 
 ```text
 score = price_score * Wp
@@ -177,13 +184,17 @@ The LLM extracts preferences and explains results. Deterministic code filters op
 8. The customer receives a recommended plan, alternatives, and explanations.
 9. Customer confirmation creates a simulated order and immutable plan version.
 
+**Alternative/error flows:** if information is incomplete, planning pauses and the customer is asked to clarify it. If no candidate satisfies every hard constraint, the system must not return a “closest” but invalid plan; it explains why no valid plan exists and asks the customer to explicitly relax a constraint. A timeout or stale data produces an error/degraded result, never an LLM-invented price or availability claim.
+
 ### 2. Change preference mode
 
 The customer can switch between Comfort, Value, and Budget. The system recalculates the plan and displays differences in price, duration, transfers, comfort, reliability, and affected activities.
 
 ### 3. Recover from disruption
 
-An event is matched to the active itinerary, affected items are identified, alternatives are generated, budget/conflict checks run again, and the customer chooses whether to accept a new version. The original plan remains available for audit and complaint investigation.
+TripMate AI is not a one-off plan delivered only before departure. During an active trip, the customer may call the AI at any time each day to recheck today's and upcoming route. The system retrieves timestamped transport, weather, strike, road/rail disruption, and venue status, matches new events to the active itinerary, identifies affected items, generates alternatives, reruns budget/conflict checks, and asks the customer whether to accept a new version. The original plan and the data snapshot used one month earlier remain available for comparison, audit, and complaint investigation.
+
+Rechecking may be initiated by the customer or by a simulated event, but the system never overwrites the active itinerary or performs a real rebooking without confirmation. If current data is unavailable, it reports “unable to verify” rather than presenting old information as live status.
 
 ### 4. Handle a complaint
 
@@ -208,6 +219,125 @@ stateDiagram-v2
 
 P1 safety issues and P2 cancellations or material financial disputes are prioritised for human attention. Human approval is mandatory for safety concerns, legal threats, uncertain policies, compensation above a threshold, low-confidence responsibility decisions, and repeated customer rejection.
 
+### 5. Acquire and market to customers
+
+1. The operator sets an objective, target audience, campaign ceiling, permitted channels, and prohibited claims.
+2. The Marketing & Growth Agent analyses simulated audience, channel-cost, and historical-conversion data.
+3. It creates ad copy, creative briefs, landing-page propositions, audience segments, and a proposed budget allocation.
+4. Reviewer checks factual support, brand rules, privacy, discriminatory targeting, disclaimers, and the budget ceiling.
+5. The operator approves, edits, or rejects the campaign; no real publication or spend occurs without approval.
+6. An approved simulated campaign produces source-tagged leads that Customer Service continues into consultation.
+7. The agent reports impressions, clicks, acquisition cost, qualified-lead rate, and conversion, then recommends pausing, continuing, or adjusting the campaign.
+
+### Example customer journey: Sydney to Melbourne with an $800 budget
+
+```mermaid
+sequenceDiagram
+    actor U as Customer
+    participant CS as Customer Service
+    participant TM as Travel Manager
+    participant A as Specialist Agents
+    participant T as Deterministic Tools
+    participant R as Reviewer
+    U->>CS: “Sydney to Melbourne, budget $800”
+    CS->>U: Collect dates, party size, preferences, and hard constraints
+    CS->>TM: Submit confirmed structured requirements
+    TM->>A: Find transport, accommodation, and activity options
+    A->>T: Check total budget, availability, and time conflicts
+    T-->>A: Exclude over-budget or conflicting plans
+    A->>R: Submit eligible plans, sources, and trade-offs
+    R-->>TM: Approve or request re-planning
+    TM-->>U: Return recommendation, alternatives, breakdown, and exclusions
+```
+
+The expected outcome is that AI first completes the requirements, the Travel Manager coordinates specialists to find options, and deterministic budget and schedule tools validate them. The final recommendation contains only plans at or below $800 with no schedule conflict. If none qualifies, the system explains why and changes no constraint without the customer's agreement.
+
+## Edge-case runtime scenarios
+
+### EC-01: Budget-boundary filtering
+
+**Scenario:** the user sets a total budget of $500. Candidate plan A totals $480, plan B totals $500, and plan C totals $501.
+
+**Runtime:** the budget tool first calculates each complete plan total, including transport, accommodation, activities, and applicable fees, and then applies FR-03. A and B may proceed to scoring. C must be excluded before scoring and record `budget_ceiling_exceeded`, the $500 ceiling, the $501 total, and the $1 excess. C cannot appear as a recommendation or alternative regardless of its time or comfort score.
+
+**Expected result:** every returned plan costs no more than $500. If all candidates exceed the ceiling, the system returns “no eligible plan,” states the lowest feasible total, and asks whether the user wants to change the budget or another constraint; it never relaxes one autonomously.
+
+### EC-02: Daily in-trip recheck and disruption re-planning
+
+**Scenario:** one month earlier, the confirmed plan recommended travelling by train. On the travel day, the customer calls the AI again to view the route. Current tool data reports a landslide or rail strike, making the original service cancelled, suspended, or unreliable.
+
+**Runtime:**
+
+1. Load the active itinerary, original hard constraints, remaining budget, and completed items.
+2. Re-query current rail operations, roads, flights, weather, and safety/disruption information, showing source and update time.
+3. Disruption Agent checks whether the original train plan remains valid; a cancelled or unreachable option becomes ineligible and is not scored.
+4. Search feasible alternatives, such as a flight, coach, delayed departure, or adjusted same-day activities.
+5. Deterministic tools recheck incremental cost, remaining total budget, arrival time, transfers, and activity conflicts; score only eligible alternatives.
+6. Show the recommendation, alternatives, differences from the old version, extra cost, affected items, and data timestamp.
+7. Create a new itinerary version only after customer confirmation and preserve the old version. If no safe and compliant alternative exists, state that clearly and escalate to human support.
+
+**Expected result:** the AI replans the best currently valid option instead of repeating the month-old train recommendation. The customer can repeat this flow every day or after any event during the trip.
+
+### Additional edge cases
+
+| ID | Edge case | Required runtime behaviour | Prohibited behaviour / acceptance result |
+| --- | --- | --- | --- |
+| EC-03 | **Contradictory requirements:** the user requests a $300 total budget, a five-star hotel, and same-day arrival, but no option satisfies all three. | Flag the likely contradiction before searching; after hard-constraint filtering, return no solution and explain which constraints cause it and the effect of relaxing each one. | Never silently downgrade the hotel, raise the budget, or change dates; alter requirements only after explicit confirmation. |
+| EC-04 | **No inventory or sold out:** the route exists, but transport or accommodation has no availability on the requested dates. | Return “no eligible inventory” and the last query time; optionally search nearby dates, stations/airports, or wait-list choices and label them clearly as suggestions. | Never present historical inventory, a wait list, or inferred availability as confirmed. |
+| EC-05 | **Price changes before confirmation:** a plan was $480 one month ago but is $530 on the travel-day recheck, above the $500 ceiling. | Mark the price snapshot as changed, recalculate the complete plan, and reapply FR-03; make the old over-budget option ineligible and search for alternatives. | Never reuse the old price to make the plan appear compliant or raise the budget without consent. |
+| EC-06 | **Live source failure or disagreement:** the rail API times out, or two sources disagree about service status. | Use bounded retries and a fallback source, exposing source, timestamp, and uncertainty; if status cannot be verified, stop automatic recommendation and offer human support. | Never let the LLM guess that the service is operating or hide a high-impact conflict behind simple majority voting. |
+| EC-07 | **Time zone, daylight-saving, or impossible transfer:** an interstate connection appears to allow 20 minutes but has already departed after conversion. | Store timezone-aware values, display local time, normalise for validation, and include walking, baggage collection, security, and minimum-transfer buffers. | Exclude every combination that conflicts after conversion or falls below the transfer buffer. |
+| EC-08 | **Baggage, accessibility, or special requirement not met:** the cheapest option excludes required baggage or the station lacks required accessible facilities. | Treat confirmed baggage and accessibility needs as hard constraints, retrieve supporting evidence, and filter before scoring. Ask for clarification or human verification when evidence is missing. | Never allow a low price or high score to offset an accessibility, health-related, or baggage hard constraint. |
+| EC-09 | **Trip partly completed:** the customer has checked in and completed a morning activity when afternoon transport is cancelled. | Lock completed and non-refundable items; replan only affected future items, validate against remaining budget and incremental cost, and show sunk versus new cost. | Never delete completed history, duplicate a booking, or treat the full original budget as unspent. |
+| EC-10 | **Duplicate event or repeated request:** the same strike alert arrives several times, or the customer repeatedly presses replan. | Deduplicate with event ID, itinerary version, and idempotency key; reuse results for the same inputs/data snapshot and create a candidate version only for new information. | Never create duplicate orders, approvals, costs, or an infinite re-planning loop. |
+| EC-11 | **Danger or emergency:** bushfire, flood, landslide, or medical/personal-safety risk affects the trip. | Prioritise official safety information and emergency contacts, suspend ordinary optimisation, make safety the highest-order hard constraint, and escalate to a human. | Never describe an AI recommendation as emergency, safety, medical, or official evacuation instruction, or recommend a risky route to save money. |
+
+These cases must enter the scenario test set. Every test should verify correct filtering, version preservation, timestamp/uncertainty display, prevention of unauthorised action, and human escalation when no safe answer exists.
+
+## Use case specifications
+
+| ID | Use case | Primary actors | Preconditions | Successful outcome | Key exceptions |
+| --- | --- | --- | --- | --- | --- |
+| UC-01 | Create and compare a travel plan | Traveller, Customer Service, Travel Manager | The user can confirm route, dates, and budget; simulated data is available | A recommendation and alternatives pass hard-constraint, budget, and conflict checks | Missing information, no eligible inventory, tool failure, or contradictory requirements |
+| UC-02 | Revise preferences and compare versions | Traveller, Travel Manager | A plan version exists | A new version shows price, time, and experience differences while preserving the old version | New preferences make the request infeasible or over budget |
+| UC-03 | Recheck an active trip and recover from disruption | Traveller, Disruption Agent, operator | An active simulated order exists; the customer requests a recheck or a relevant event arrives | Current data identifies affected items and revalidated alternatives are offered | Live data unavailable, no alternative, excessive extra cost, or safety risk |
+| UC-04 | Investigate and resolve a complaint | Traveller, Complaint Agent, operator | The complaint is linked to an order or the customer can provide required evidence | An evidence-based outcome is recorded and human approval is completed when needed | Unclear policy, legal/safety risk, or reopened complaint |
+| UC-05 | Plan and evaluate an acquisition campaign | Operator, Marketing & Growth Agent, Reviewer | Audience, channels, budget ceiling, and brand rules are set | An approved simulated campaign produces traceable leads and a performance report | Unsupported claims, non-compliant targeting, budget breach, or rejected approval |
+
+### UC-01 detailed main success scenario
+
+1. The traveller submits a route and budget in natural language.
+2. Customer Service extracts fields and confirms dates, party size, mode, baggage, arrival time, and other missing constraints.
+3. Travel Manager creates a case and delegates transport and itinerary research.
+4. Search tools return candidates with price, availability, timestamp, and source.
+5. The hard-constraint filter removes every ineligible combination first; with a $500 budget, every combination above $500 is excluded here.
+6. The scorer ranks only the remaining plans according to the selected mode.
+7. Budget and conflict tools recalculate totals and check connections, check-in, and activity times.
+8. Reviewer verifies constraints, evidence, and confidence; failure returns the case for re-planning.
+9. The system shows one recommendation, at least one eligible alternative, cost breakdown, trade-offs, and material exclusion reasons.
+10. Confirmation stores a simulated order, requirement snapshot, and immutable plan version.
+
+### UC-01 acceptance criteria
+
+- Given a $500 user budget, when a complete candidate plan totals $501, then it is excluded before scoring and records `budget_ceiling_exceeded`.
+- Given every candidate violates at least one hard constraint, when filtering completes, then no invalid plan is recommended and the result identifies constraints the user may choose to relax.
+- Given tool data shows a transport/activity time conflict, when Reviewer checks the plan, then the plan is rejected and re-planning begins.
+- Given a recommendation passes all checks, when displayed, then it includes total price, data timestamp, sources, alternatives, trade-offs, and exclusion reasons.
+
+## User stories
+
+| ID | User story | Acceptance focus |
+| --- | --- | --- |
+| US-01 | As a budget-conscious traveller, I want plans above my total budget excluded so that I never receive an unaffordable recommendation. | Exclude before scoring; show the budget calculation and reason. |
+| US-02 | As a time-constrained traveller, I want the system to complete missing details after one natural-language request so that I can form a valid request quickly. | Do not finalise planning before required fields are confirmed; allow correction. |
+| US-03 | As a traveller, I want to compare Comfort, Value, and Budget modes so that I understand the price/experience trade-off. | Produce comparable versions under the same hard constraints and show differences. |
+| US-04 | As a traveller affected by weather or cancellation, I want a replacement rechecked for budget and timing. | Change only affected items, preserve the old version, and rerun relevant checks. |
+| US-05 | As a complainant, I want the outcome to cite my order, evidence, and policy and allow human review. | Trace the case end to end and escalate high-risk cases automatically. |
+| US-06 | As the one-person operator, I want work sorted by risk and deadline so that I address the most important exceptions first. | Show priority, reason, age, suggested action, and approval history. |
+| US-07 | As the operator, I want an acquisition agent to produce compliant ads and channel recommendations for a defined audience so that marketing requires less manual effort. | Output audience, assets, channels, budget, and forecast; require approval before publication. |
+| US-08 | As the operator, I want to compare campaign acquisition cost and qualified-lead conversion so that I can pause or expand the right campaign. | Trace metric definitions; never let the agent autonomously increase real ad spend. |
+| US-09 | As a traveller already on a trip, I want to ask the AI to recheck my route each day and replan after a landslide, strike, or cancellation so that I do not rely on a month-old recommendation. | Use current timestamped data on every recheck; exclude invalid options; revalidate budget/time and require confirmation for the new version. |
+
 ## Real company challenges and responses
 
 | Challenge | Prototype response | Longer-term direction |
@@ -229,18 +359,20 @@ P1 safety issues and P2 cancellations or material financial disputes are priorit
 | --- | --- |
 | FR-01 | Collect and validate structured travel requirements from natural language. |
 | FR-02 | Support Comfort, Value, and Budget modes. |
-| FR-03 | Apply hard constraints before scoring options. |
+| FR-03 | Apply every hard constraint before scoring. The budget ceiling is evaluated against the estimated total plan cost: for a $500 budget, every plan above $500 must be excluded from scoring and recommendation, with its exclusion reason recorded. |
 | FR-04 | Generate transport, accommodation, activity, and budget plans. |
 | FR-05 | Explain recommendations, alternatives, trade-offs, and exclusions. |
 | FR-06 | Calculate cost and detect schedule conflicts deterministically. |
 | FR-07 | Support requirement revision and version comparison. |
-| FR-08 | Detect disruption impact and propose checked alternatives. |
+| FR-08 | Use current timestamped data to detect the impact of weather, landslides, strikes, delays, cancellations, or closures on an active itinerary and propose budget- and schedule-checked alternatives. |
 | FR-09 | Create, classify, investigate, escalate, and track complaints. |
 | FR-10 | Consult order evidence and company policy before resolution. |
 | FR-11 | Require human approval for configured high-risk actions. |
 | FR-12 | Record agent hand-offs, tool calls, decisions, confidence, and outcomes. |
 | FR-13 | Provide the operator with prioritised cases and an approval interface. |
 | FR-14 | Capture customer feedback and link it to the delivered service. |
+| FR-15 | Enable a Marketing & Growth Agent to plan paid campaigns, create compliant assets, track channels and leads, and require human approval for real publication or budget expenditure. |
+| FR-16 | Allow the customer to recheck the route daily or at any time during an active trip; preserve old versions, revalidate current status, and save a new active version only after customer confirmation. |
 
 ## Requirement classification
 
@@ -257,9 +389,11 @@ The Stage 1 report will maintain a versioned catalogue rather than treating ever
 ### Mandatory capabilities
 
 - Distinct business-role agents that collaborate, use tools, and react to results.
+- Marketing & Growth can plan simulated acquisition campaigns, create assets, track leads, and submit publication and spend for human approval.
 - Customer intake, three travel modes, plan generation, comparison, and explanation.
 - Deterministic budget, constraint, and schedule validation.
 - Disruption-driven re-planning and auditable itinerary versions.
+- Customer-initiated in-trip route rechecks, current-status validation, and incremental re-planning.
 - Customer complaint classification, investigation, resolution, and human escalation.
 - Operator approval, agent/tool tracing, and testable acceptance criteria.
 - Stage 1 model-to-Stage 2 implementation traceability.
@@ -357,6 +491,7 @@ Tutor feedback that changes the agreed requirements will be recorded as a baseli
 ### Included
 
 - Australian domestic short trips with a limited set of routes.
+- Simulated acquisition campaigns, advertising assets, channel performance, and lead-conversion data.
 - Simulated transport, accommodation, activity, order, refund, and policy data.
 - One traveller per request and one connected end-to-end demonstration.
 - Planning, comparison, re-planning, complaints, and human approval.
@@ -371,7 +506,7 @@ Tutor feedback that changes the agreed requirements will be recorded as a baseli
 
 ## Core data entities
 
-Customer, TravelRequest, TransportOption, AccommodationOption, Activity, ItineraryVersion, SimulatedOrder, DisruptionEvent, Complaint, CompanyPolicy, HumanApproval, CustomerFeedback, AgentExecutionLog, and CostRecord.
+Customer, Lead, AudienceSegment, MarketingCampaign, AdCreative, ChannelPerformance, TravelRequest, TransportOption, AccommodationOption, Activity, ItineraryVersion, SimulatedOrder, DisruptionEvent, Complaint, CompanyPolicy, HumanApproval, CustomerFeedback, AgentExecutionLog, and CostRecord.
 
 ## Evaluation plan
 
@@ -390,6 +525,14 @@ Customer, TravelRequest, TransportOption, AccommodationOption, Activity, Itinera
 - Estimated model/tool cost per completed case.
 - Percentage of cases escalated for the correct reason.
 
+### Acquisition and growth metrics
+
+- Impressions, click-through rate, and landing-page conversion by channel.
+- Simulated cost per lead and cost per qualified lead as CAC proxies.
+- Lead-to-consultation, valid-plan, and simulated-order conversion funnel.
+- Creative compliance pass rate, operator edit rate, and unsupported-claim count.
+- Zero real publications or advertising spend without human approval.
+
 ### Technical and safety metrics
 
 | Metric | Initial target |
@@ -400,6 +543,7 @@ Customer, TravelRequest, TransportOption, AccommodationOption, Activity, Itinera
 | Complaint routing accuracy | ≥ 90% |
 | High-risk escalation | 100% |
 | Unauthorised real/simulated refund execution | 0 |
+| Real advertising publication or spend without approval | 0 |
 | End-to-end task completion | ≥ 85% |
 
 Testing will include unit tests, agent/tool integration tests, end-to-end business scenarios, tool/API failures, contradictory requirements, unavailable inventory, prompt injection, policy bypass attempts, and a limited single-agent versus multi-agent comparison.
@@ -411,6 +555,7 @@ Testing will include unit tests, agent/tool integration tests, end-to-end busine
 - Interview potential travellers and identify the highest-cost planning/support problems.
 - Define personas, customer journey, service promise, failure policy, and OPC feasibility hypotheses.
 - Prioritise one connected scenario rather than attempting a full booking platform.
+- Establish the Marketing & Growth Agent's simulated acquisition workflow and validate audience, proposition, channel, and acquisition-cost assumptions.
 
 ### Phase 1 — Requirements and modelling
 
@@ -474,7 +619,7 @@ Testing will include unit tests, agent/tool integration tests, end-to-end busine
 
 | Workstream | Primary owner | Responsibilities |
 | --- | --- | --- |
-| Customer operations | Member A | Customer Service, Complaint Agent, customer/operator UI, complaint states, user testing. |
+| Customer and growth operations | Member A | Marketing & Growth, Customer Service, Complaint Agent, customer/operator UI, complaint states, and user testing. |
 | Planning and transport | Member B | Travel Manager, Fare Planning, scoring modes, transport/budget tools, orchestration. |
 | Itinerary and assurance | Member C | Itinerary/Disruption Agents, event data, Reviewer, tracing, evaluation, system tests. |
 
@@ -484,21 +629,23 @@ Before Stage 1 submission, the placeholders below must be replaced with actual n
 
 | Member | Requirements/models | Implementation/tests | Presentation/operations | Evidence links |
 | --- | --- | --- | --- | --- |
-| Member A — TBD | Customer and complaint requirements/models | Customer Service, Complaint, UI, user tests | Customer journey and complaint demo | Issues/commits/models — TBD |
+| Member A — TBD | Acquisition, customer, and complaint requirements/models | Marketing & Growth, Customer Service, Complaint, UI, user tests | Acquisition, customer journey, and complaint demo | Issues/commits/models — TBD |
 | Member B — TBD | Planning and orchestration requirements/models | Manager, Fare Planning, scoring/tools | Architecture and travel-mode demo | Issues/commits/models — TBD |
 | Member C — TBD | Itinerary, disruption, quality requirements/models | Itinerary, Disruption, Reviewer, evaluation | Testing, Agile evidence, disruption demo | Issues/commits/models — TBD |
 
 ## Demonstration story
 
-1. A customer requests a Sydney–Melbourne trip in Value mode.
-2. The system produces a checked itinerary and explains its evidence and trade-offs.
-3. The customer switches to Comfort mode and compares the new version.
-4. A simulated weather event cancels an outdoor activity.
-5. TripMate AI proposes a checked alternative and reports the cost difference.
-6. The customer complains that the replacement provides lower value.
-7. The Complaint Agent investigates the order, original evidence, trace, and policy.
-8. A proposed refund enters the operator approval queue.
-9. The operator decides, Customer Service explains the outcome, and feedback is recorded.
+1. Marketing & Growth creates a simulated ad for budget-conscious travellers; operator approval produces a traceable lead.
+2. The customer enters “Sydney to Melbourne, budget $800”; Customer Service collects dates, party size, and constraints.
+3. Agents find candidates, and deterministic tools exclude over-budget or conflicting plans.
+4. The system produces a checked itinerary and explains its evidence and trade-offs.
+5. The customer switches to Comfort mode and compares the new version.
+6. A simulated weather event cancels an outdoor activity.
+7. TripMate AI proposes a checked alternative and reports the cost difference.
+8. The customer complains that the replacement provides lower value.
+9. Complaint Agent investigates the order, original evidence, trace, and policy.
+10. A proposed refund enters the operator approval queue.
+11. The operator decides, Customer Service explains the outcome, and feedback is recorded.
 
 This story demonstrates user value, company operations, LLM perception, agent delegation, deterministic tools, adaptation, complaint handling, and human accountability.
 
