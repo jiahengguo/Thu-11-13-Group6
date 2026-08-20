@@ -32,7 +32,7 @@ The repository is organised around the requirements in the official course descr
 | External tool use | Agents use transport, weather, budget, conflict, order, and policy tools. | Structured tool contracts, integration tests, and execution logs. |
 | Adapt actions based on results | Tool failures, disruptions, customer revisions, and complaints trigger re-planning or escalation. | State machines, failure scenarios, plan versions, and complaint workflow. |
 | Model-based software engineering | Requirements, architecture, behaviours, implementation, tests, and acceptance evidence remain traceable. | Stage 1 report, UML/model set, traceability matrix, and Stage 2 prototype. |
-| Agile group development | Three members work through a shared backlog, short sprints, reviews, and retrospectives. | GitHub Issues/Projects, sprint records, commits, pull-request reviews, and contribution log. |
+| Agile group development | Four members work through a shared backlog, short sprints, reviews, and retrospectives. | GitHub Issues/Projects, sprint records, commits, pull-request reviews, and contribution log. |
 | Advanced technology | LLM orchestration is combined with tool calling, guardrails, structured outputs, tracing, and optional RAG. | Prototype implementation and technical evaluation. |
 
 ### Course deliverables
@@ -451,7 +451,7 @@ Assumptions will be assigned identifiers and revisited whenever a requirement or
 | Agent control | Manager-led orchestration with specialist tools/hand-offs. | Unrestricted group chat between all agents. | Clear ownership, predictable traces, simpler testing, and lower cost. |
 | Correctness | LLM plus deterministic domain services. | Let the LLM calculate and rank everything. | Arithmetic, constraints, and policies need reproducible results. |
 | Booking scope | Simulated transactions and human approval. | Connect to real payment/booking providers in the MVP. | Reduces legal, financial, security, and integration risk. |
-| Data scope | Small controlled Australian dataset. | Global real-time travel marketplace. | Supports meaningful evaluation within a three-person course project. |
+| Data scope | Small controlled Australian dataset. | Global real-time travel marketplace. | Supports meaningful evaluation within a four-person course project. |
 | Interface | Streamlit MVP with separate customer/operator views. | Full mobile and React platform immediately. | Preserves effort for agent behaviour, modelling, and evaluation. |
 | Human role | Risk-based human-in-the-loop. | Fully autonomous OPC. | A realistic company needs accountability for exceptions and high-impact decisions. |
 
@@ -575,23 +575,25 @@ Customer, Lead, AudienceSegment, MarketingCampaign, AdCreative, ChannelPerforman
 └── pyproject.toml
 ```
 
-## Three-person team plan
+## Four-person team plan
 
 | Workstream | Primary owner | Responsibilities |
 | --- | --- | --- |
-| Customer and growth operations | Member A | Marketing & Growth, Customer Service, Complaint Agent, customer/operator UI, complaint states, and user testing. |
-| Planning and transport | Member B | Travel Manager, Fare Planning, scoring modes, transport/budget tools, orchestration. |
-| Itinerary and assurance | Member C | Itinerary/Disruption Agents, event data, Reviewer, tracing, evaluation, system tests. |
+| Acquisition and growth operations | Member A | Marketing & Growth Agent, audiences and campaigns, advertising assets, lead attribution, growth data, and acquisition-flow tests. |
+| Customer service and complaints | Member B | Customer Service, Complaint Agent, customer/operator UI, complaint states, human escalation, and user testing. |
+| Planning and transport | Member C | Travel Manager, Fare Planning, scoring modes, transport/budget tools, and agent orchestration. |
+| Itinerary, disruption, and assurance | Member D | Itinerary/Disruption Agents, event data, Reviewer, tracing, edge cases, and system tests. |
 
-Architecture decisions, integration, business validation, report review, presentation, and demonstration are shared. Contributions should be evidenced through issues, commits, reviews, models, and test ownership.
+Architecture decisions, integration, business validation, report review, presentation, and demonstration are shared by all four members. Contributions should be evidenced through issues, commits, reviews, models, and test ownership.
 
 Before Stage 1 submission, the placeholders below must be replaced with actual names and verified contributions:
 
 | Member | Requirements/models | Implementation/tests | Presentation/operations | Evidence links |
 | --- | --- | --- | --- | --- |
-| Member A — TBD | Acquisition, customer, and complaint requirements/models | Marketing & Growth, Customer Service, Complaint, UI, user tests | Acquisition, customer journey, and complaint demo | Issues/commits/models — TBD |
-| Member B — TBD | Planning and orchestration requirements/models | Manager, Fare Planning, scoring/tools | Architecture and travel-mode demo | Issues/commits/models — TBD |
-| Member C — TBD | Itinerary, disruption, quality requirements/models | Itinerary, Disruption, Reviewer, evaluation | Testing, Agile evidence, disruption demo | Issues/commits/models — TBD |
+| Member A — TBD | Acquisition and campaign requirements/models | Marketing & Growth, campaigns, lead attribution, growth tests | Acquisition-flow and marketing demo | Issues/commits/models — TBD |
+| Member B — TBD | Customer-service and complaint requirements/models | Customer Service, Complaint, UI, human escalation, user tests | Customer-journey and complaint demo | Issues/commits/models — TBD |
+| Member C — TBD | Planning and orchestration requirements/models | Travel Manager, Fare Planning, scoring/budget tools | Architecture and travel-mode demo | Issues/commits/models — TBD |
+| Member D — TBD | Itinerary, disruption, and quality requirements/models | Itinerary, Disruption, Reviewer, tracing, system tests | Testing, Agile evidence, and disruption demo | Issues/commits/models — TBD |
 
 ## Demonstration story
 

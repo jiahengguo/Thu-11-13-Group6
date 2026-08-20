@@ -32,7 +32,7 @@ TripMate AI 要验证一个现实问题：
 | 使用外部工具 | Agent 调用交通、天气、预算、冲突、订单和政策工具。 | 结构化工具接口、集成测试和执行日志。 |
 | 根据结果调整行动 | 工具失败、天气变化、客户修改和投诉会触发重新规划或升级。 | 状态机、失败场景、方案版本和投诉流程。 |
 | 模型驱动的软件工程 | 需求、架构、行为、实现、测试和验收证据保持可追踪。 | Stage 1 报告、UML/模型集、追踪矩阵和 Stage 2 原型。 |
-| Agile 小组开发 | 三名成员通过共享 Backlog、短 Sprint、Review 和 Retrospective 协作。 | GitHub Issues/Projects、Sprint 记录、Commit、PR Review 和贡献日志。 |
+| Agile 小组开发 | 四名成员通过共享 Backlog、短 Sprint、Review 和 Retrospective 协作。 | GitHub Issues/Projects、Sprint 记录、Commit、PR Review 和贡献日志。 |
 | 先进技术 | 结合 LLM 编排、工具调用、Guardrail、结构化输出、Tracing 和可选 RAG。 | 原型实现和技术评估。 |
 
 ### 课程交付物
@@ -451,7 +451,7 @@ Stage 1 报告将维护带版本的需求目录，不把所有想法都当成已
 | Agent 控制 | Manager 主导编排，专业 Agent 作为工具或受控交接。 | 所有 Agent 自由群聊。 | 责任清楚、Trace 可预测、容易测试且成本更低。 |
 | 正确性 | LLM 配合确定性领域服务。 | 让 LLM 完成所有计算和排序。 | 金额、限制和政策需要可复现的结果。 |
 | 交易范围 | 模拟操作与人工审批。 | MVP 直接连接真实支付/订票。 | 降低法律、财务、安全和集成风险。 |
-| 数据范围 | 小型受控澳洲数据集。 | 全球实时旅行市场。 | 适合三人课程项目并支持有效评估。 |
+| 数据范围 | 小型受控澳洲数据集。 | 全球实时旅行市场。 | 适合四人课程项目并支持有效评估。 |
 | 界面 | Streamlit MVP，区分客户和经营者视图。 | 一开始开发完整移动端和 React 平台。 | 将精力集中在 Agent 行为、建模和评估。 |
 | 人类角色 | 按风险进行 Human-in-the-loop。 | 完全自主 OPC。 | 真实公司需要对异常和高影响决定负责。 |
 
@@ -575,23 +575,25 @@ Customer、Lead、AudienceSegment、MarketingCampaign、AdCreative、ChannelPerf
 └── pyproject.toml
 ```
 
-## 三人小组分工
+## 四人小组分工
 
 | 工作方向 | 主要负责人 | 工作内容 |
 | --- | --- | --- |
-| 客户与增长运营 | 成员 A | Marketing & Growth、Customer Service、Complaint Agent、客户/经营者界面、投诉状态和用户测试。 |
-| 规划与交通 | 成员 B | Travel Manager、Fare Planning、评分模式、交通/预算工具和 Agent 编排。 |
-| 行程与质量 | 成员 C | Itinerary/Disruption Agent、事件数据、Reviewer、Trace、评估和系统测试。 |
+| 获客与增长运营 | 成员 A | Marketing & Growth Agent、受众与 Campaign、广告素材、Lead 归因、增长数据和获客流程测试。 |
+| 客户服务与投诉 | 成员 B | Customer Service、Complaint Agent、客户/经营者界面、投诉状态、人工升级和用户测试。 |
+| 规划与交通 | 成员 C | Travel Manager、Fare Planning、评分模式、交通/预算工具和 Agent 编排。 |
+| 行程、异常与质量 | 成员 D | Itinerary/Disruption Agent、事件数据、Reviewer、Trace、边缘场景和系统测试。 |
 
-架构决定、系统集成、商业验证、报告审核、展示和演示由三人共同负责。通过 Issue、Commit、Review、模型和测试记录个人贡献。
+架构决定、系统集成、商业验证、报告审核、展示和演示由四人共同负责。通过 Issue、Commit、Review、模型和测试记录个人贡献。
 
 Stage 1 提交前，以下占位内容必须替换成真实姓名和经确认的贡献：
 
 | 成员 | 需求/模型 | 实现/测试 | Presentation/运营 | 证据链接 |
 | --- | --- | --- | --- | --- |
-| 成员 A — TBD | 获客、客户与投诉需求和模型 | Marketing & Growth、Customer Service、Complaint、界面、用户测试 | 获客、客户旅程与投诉演示 | Issue/Commit/模型 — TBD |
-| 成员 B — TBD | 规划与编排需求和模型 | Manager、Fare Planning、评分/工具 | 架构与旅行模式演示 | Issue/Commit/模型 — TBD |
-| 成员 C — TBD | 行程、异常和质量需求和模型 | Itinerary、Disruption、Reviewer、评估 | 测试、Agile 证据和异常演示 | Issue/Commit/模型 — TBD |
+| 成员 A — TBD | 获客与 Campaign 需求和模型 | Marketing & Growth、Campaign、Lead 归因、增长测试 | 获客流程与营销演示 | Issue/Commit/模型 — TBD |
+| 成员 B — TBD | 客户服务与投诉需求和模型 | Customer Service、Complaint、界面、人工升级、用户测试 | 客户旅程与投诉演示 | Issue/Commit/模型 — TBD |
+| 成员 C — TBD | 规划与编排需求和模型 | Travel Manager、Fare Planning、评分/预算工具 | 架构与旅行模式演示 | Issue/Commit/模型 — TBD |
+| 成员 D — TBD | 行程、异常和质量需求和模型 | Itinerary、Disruption、Reviewer、Trace、系统测试 | 测试、Agile 证据和异常演示 | Issue/Commit/模型 — TBD |
 
 ## 建议演示故事
 
