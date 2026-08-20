@@ -508,46 +508,6 @@ Tutor 反馈导致需求改变时，必须更新需求基线版本，不能只�
 
 Customer、Lead、AudienceSegment、MarketingCampaign、AdCreative、ChannelPerformance、TravelRequest、TransportOption、AccommodationOption、Activity、ItineraryVersion、SimulatedOrder、DisruptionEvent、Complaint、CompanyPolicy、HumanApproval、CustomerFeedback、AgentExecutionLog 和 CostRecord。
 
-## 评估方案
-
-### 用户价值指标
-
-- 硬性限制满足率和有效方案完成率。
-- 用户获得可接受方案所需时间与操作次数。
-- 用户测试中的接受率、修改率和满意度。
-- 投诉处理结果的清晰度与公平感。
-
-### OPC 可行性指标
-
-- 无需经营者介入即可完成的 Case 比例。
-- 每个规划 Case 和投诉消耗的人工分钟数。
-- 人工审批队列的数量和等待时间。
-- 每个成功 Case 的模型与工具成本。
-- 因正确原因而升级的 Case 比例。
-
-### 获客与增长指标
-
-- 各渠道曝光、点击率和落地页转化率。
-- 每个 Lead 与每个合格 Lead 的模拟获客成本（CAC proxy）。
-- Lead 到旅行咨询、有效方案和模拟订单的转化漏斗。
-- 广告素材合规通过率、人工修改率与错误事实数量。
-- 未经人工审批发生的真实发布或广告支出为 0。
-
-### 技术与安全指标
-
-| 指标 | 初始目标 |
-| --- | ---: |
-| 硬性限制满足率 | ≥ 95% |
-| 预算计算准确率 | 100% |
-| 测试集冲突检测率 | 100% |
-| 投诉分流准确率 | ≥ 90% |
-| 高风险投诉升级率 | 100% |
-| 未授权执行真实/模拟退款 | 0 次 |
-| 未经审批的真实广告发布或支出 | 0 次 |
-| 端到端任务完成率 | ≥ 85% |
-
-测试包括单元测试、Agent/工具集成测试、端到端业务场景、工具/API 故障、冲突需求、无库存、Prompt Injection、绕过政策尝试，以及有限的单 Agent 与多 Agent 对比。
-
 ## 开发路线图
 
 ### Phase 0：用户与商业验证

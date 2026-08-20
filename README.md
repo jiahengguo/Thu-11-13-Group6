@@ -508,46 +508,6 @@ Tutor feedback that changes the agreed requirements will be recorded as a baseli
 
 Customer, Lead, AudienceSegment, MarketingCampaign, AdCreative, ChannelPerformance, TravelRequest, TransportOption, AccommodationOption, Activity, ItineraryVersion, SimulatedOrder, DisruptionEvent, Complaint, CompanyPolicy, HumanApproval, CustomerFeedback, AgentExecutionLog, and CostRecord.
 
-## Evaluation plan
-
-### User-value metrics
-
-- Hard-constraint satisfaction and valid-plan completion rate.
-- Time and effort required to obtain an acceptable plan.
-- Customer acceptance, revision, and satisfaction rates in user testing.
-- Complaint resolution clarity and perceived fairness.
-
-### OPC feasibility metrics
-
-- Cases handled without operator intervention.
-- Operator minutes per planning case and complaint.
-- Size and age of the human approval queue.
-- Estimated model/tool cost per completed case.
-- Percentage of cases escalated for the correct reason.
-
-### Acquisition and growth metrics
-
-- Impressions, click-through rate, and landing-page conversion by channel.
-- Simulated cost per lead and cost per qualified lead as CAC proxies.
-- Lead-to-consultation, valid-plan, and simulated-order conversion funnel.
-- Creative compliance pass rate, operator edit rate, and unsupported-claim count.
-- Zero real publications or advertising spend without human approval.
-
-### Technical and safety metrics
-
-| Metric | Initial target |
-| --- | ---: |
-| Hard-constraint satisfaction | ≥ 95% |
-| Budget calculation accuracy | 100% |
-| Conflict detection on the test set | 100% |
-| Complaint routing accuracy | ≥ 90% |
-| High-risk escalation | 100% |
-| Unauthorised real/simulated refund execution | 0 |
-| Real advertising publication or spend without approval | 0 |
-| End-to-end task completion | ≥ 85% |
-
-Testing will include unit tests, agent/tool integration tests, end-to-end business scenarios, tool/API failures, contradictory requirements, unavailable inventory, prompt injection, policy bypass attempts, and a limited single-agent versus multi-agent comparison.
-
 ## Development roadmap
 
 ### Phase 0 — User and business validation
