@@ -8,6 +8,8 @@
 
 TripMate AI is currently in the **requirements, business validation, and architecture design stage** for ELEC5620. The repository does not yet contain a working prototype. This README describes the agreed product direction, MVP scope, operating model, planned architecture, evaluation approach, and future development.
 
+The project will be delivered in two stages: **Stage 1 on 24 September 2026** and **Stage 2 on 5 November 2026**. Stage 1 is the current priority; the detailed Stage 2 brief has not yet been released.
+
 Under the course's permitted application areas, TripMate AI is classified as a **Smart Personal Assistant** specialised in travel services. More specifically, it is a feasibility prototype for an **LLM-powered multi-agent One-Person Company (OPC)**, not merely a travel recommendation application.
 
 ## Vision
@@ -28,20 +30,27 @@ The repository is organised around the requirements in the official course descr
 | --- | --- | --- |
 | One-Person AI Company | One human operator supervises a virtual travel company staffed by specialised agents. | OPC operating model, operator dashboard, approval queue, and workload metrics. |
 | LLM-powered multi-agent system | Agents hold different company roles and collaborate through controlled delegation. | Agent definitions, orchestration traces, collaboration and sequence diagrams. |
-| Planning and decision-making | Travel Manager decomposes requests; specialists generate and revise checked proposals. | Activity/sequence models and end-to-end scenarios. |
+| Planning and decision-making | The Operations Agent routes requests; the Travel Planning Agent generates and revises checked proposals. | Activity/sequence models and end-to-end scenarios. |
 | External tool use | Agents use transport, weather, budget, conflict, order, and policy tools. | Structured tool contracts, integration tests, and execution logs. |
 | Adapt actions based on results | Tool failures, disruptions, customer revisions, and complaints trigger re-planning or escalation. | State machines, failure scenarios, plan versions, and complaint workflow. |
 | Model-based software engineering | Requirements, architecture, behaviours, implementation, tests, and acceptance evidence remain traceable. | Stage 1 report, UML/model set, traceability matrix, and Stage 2 prototype. |
 | Agile group development | Four members work through a shared backlog, short sprints, reviews, and retrospectives. | GitHub Issues/Projects, sprint records, commits, pull-request reviews, and contribution log. |
 | Advanced technology | LLM orchestration is combined with tool calling, guardrails, structured outputs, tracing, and optional RAG. | Prototype implementation and technical evaluation. |
 
-### Course deliverables
+### Delivery milestones
 
-- **Stage 1 — 30 marks:** formal requirements/architecture/modelling report (15 marks), plus presentation and interview (15 marks).
-- **Stage 2 — 20 marks:** architecture-aligned proof-of-concept implementation and stakeholder demonstration.
-- The Stage 1 document must clearly identify each member's contribution.
-- The Stage 2 source code must be submitted through Canvas before Monday of the final week; the demonstration takes place in the final week.
-- Exact internal team deadlines will be recorded in the Agile plan once the Canvas schedule is confirmed.
+The assessed work is organised into two submissions:
+
+| Stage | Due date | Intended outcome and evidence |
+| --- | --- | --- |
+| **Stage 1 — Requirements, architecture, and system modelling (30 marks)** | **24 September 2026** | Present the project to the tutors: explain the project description, target users, One-Person AI Company concept, agent roles, classified requirements, key use cases, proposed architecture, design rationale, and principal design/UML models. The supporting package follows the files in [`docs/`](docs/): a requirements and modelling report (15 marks), an up-to-8-minute video presentation (5 marks), and an individual interview (10 marks). Each member's contribution must be identified clearly. |
+| **Stage 2 — Prototype implementation and demonstration (20 marks)** | **5 November 2026** | Deliver an architecture-aligned proof-of-concept that implements the core agents, their collaboration and tool-use flow, and enough end-to-end behaviour for a stakeholder demonstration. The current interface direction is a small web application, most likely Streamlit, so the prototype is easy to build, run, and present. Detailed Stage 2 submission requirements and the final presentation format are still awaiting release. |
+
+For Stage 1, the team will prioritise a concise tutor-facing project narrative and readable design diagrams, backed by consistent requirements and models. The expected model set includes feature and use-case diagrams, class and complex-structure models, activity diagrams, interaction/sequence diagrams, state machines, and clear traceability to individual contributions.
+
+For Stage 2, the current plan is provisional until the official brief is published. The code should demonstrate how LLM-powered agents perceive requests, make decisions, collaborate, call tools, and revise actions based on results, while preserving evidence of the team's Agile development process.
+
+Source documents: [Project Description](docs/Project%20Description.pdf), [Stage 1 Marking Criteria](docs/ELEC5620_Project_Stage_1_Marking_Criteria.pdf), and [Project Requirement Example](docs/Project_Requirement_Example.pdf).
 
 ## Real user problems
 
@@ -64,6 +73,7 @@ Initial user groups include:
 - Time-constrained travellers who value a fast comparison of valid options.
 - Customers who need a clear recovery path when a plan changes.
 - A human travel-service operator who needs visibility, approval controls, and manageable workload.
+- Travel suppliers and large tourism businesses that can provide inventory at contracted or wholesale rates.
 
 ## Value proposition
 
@@ -78,67 +88,142 @@ The OPC hypothesis is considered feasible only if the system can demonstrate tha
 - Model/API cost and human handling time remain proportionate to the value delivered.
 - Customers have a clear route to correction, complaint, and human review.
 
+## Revenue model and membership
+
+TripMate AI must test whether the company can earn revenue rather than only demonstrate agent functionality. The proposed model combines three complementary revenue streams:
+
+1. **Supplier margin:** the Supplier Partnership Agent works with large travel providers to source transport, accommodation, and activity inventory at contracted or wholesale rates. TripMate AI presents a customer price and earns the disclosed difference or commission. The prototype uses simulated supplier agreements and prices; it does not execute real contracts or bookings.
+2. **Paid membership:** subscribers pay a recurring fee for an ad-free experience, no free-tier limit on simultaneous trips or itinerary length, route visualisation on a map, and other advanced planning features.
+3. **Advertising:** free members may see clearly labelled advertisements. Advertising must not change hard-constraint filtering or secretly distort recommendation rankings.
+
+| Entitlement | Free member | Paid member |
+| --- | --- | --- |
+| Simultaneous planned/active trips | Up to **2** | No free-tier concurrency limit |
+| Maximum itinerary duration | Up to **5 days per trip** | No free-tier duration limit |
+| Advertising | Clearly labelled ads may appear | Ad-free |
+| Core planning and re-planning | Included | Included |
+| Route map and premium planning features | Not included | Included |
+
+Limits are enforced by deterministic entitlement checks before a new trip or itinerary extension is created. Existing data must not be deleted when a limit is reached; the system instead explains the restriction and offers the customer the option to finish an active trip, shorten the request, or upgrade.
+
 ## Company operating model
 
 ```mermaid
 flowchart LR
-    Acquire[Customer acquisition] --> Consult[Consultation]
-    Consult --> Plan[Plan and quote]
-    Plan --> Confirm[Customer confirmation]
-    Confirm --> Support[In-trip support]
-    Support --> Recover[Disruption recovery]
-    Recover --> AfterSales[After-sales and complaints]
-    AfterSales --> Learn[Quality review and improvement]
-    Learn --> Consult
+    subgraph Supply[ToB supply side]
+        Providers[Large tourism providers] --> Partner[Supplier Partnership Agent]
+        Partner --> Offers[Contracted inventory rates and terms]
+    end
+
+    subgraph Service[Customer and service flow]
+        Channels[Marketing channels] --> Ops[Operations Agent]
+        Customer[Customer] --> Ops
+        Ops --> Access{Membership allows request?}
+        Access -->|No| Limit[Explain limit or offer upgrade]
+        Limit --> Ops
+        Access -->|Yes| Planner[Travel Planning Agent]
+        Offers --> Planner
+        Planner --> Check[Guardrails: constraints budget schedule price margin]
+        Check --> Quote[Plan and transparent quote]
+        Quote --> Confirm{Customer confirms?}
+        Confirm -->|Revise| Planner
+        Confirm -->|Yes| Active[Active simulated trip]
+        Active --> Issue{Disruption or complaint?}
+        Issue -->|Yes| Exception[Customer Exception Agent]
+        Exception -->|Re-plan| Planner
+        Exception -->|High risk or compensation| Approval[Human approval when required]
+        Approval --> Active
+        Issue -->|No| Complete[Trip completed]
+        Complete --> Learn[Feedback and performance review]
+        Learn --> Ops
+    end
+
+    Active --> Revenue[Record supplier margin membership and ad revenue]
+    Revenue --> Learn
 ```
 
-The course prototype concentrates on consultation through after-sales support and uses simulated campaigns to validate the acquisition loop. The Marketing & Growth Agent may analyse audiences, generate advertising assets, recommend channels and budget allocation, and report performance, but it may not purchase ads, increase budgets, or publish externally without operator approval. Billing, supplier contracts, and full profitability validation remain future work.
+The course prototype covers acquisition through after-sales support and adds a simulated commercial loop: supplier inventory is sourced at a base rate, packaged into eligible travel plans, and offered at a customer price with the margin recorded. The Operations Agent can analyse audiences, generate advertising assets, run the customer front desk, and report campaign performance, but real publication and spending still require operator approval. Membership billing, supplier contracts, bookings, and payments remain simulated.
 
 ## AI agent organisation
 
 | Agent | Virtual company role | Responsibilities |
 | --- | --- | --- |
-| Marketing & Growth Agent | Customer acquisition specialist | Define audiences, plan paid advertising, create channel-specific assets, track leads and conversion, and recommend marketing improvements to the operator. |
-| Customer Service Agent | Front desk | Detect intent, collect missing information, answer routine questions, and route planning or complaint requests. |
-| Travel Manager Agent | Operations manager | Own the case, decompose work, coordinate specialists, combine results, and manage the service lifecycle. |
-| Fare Planning Agent | Transport specialist | Filter transport options, apply the selected travel mode, rank candidates, and explain trade-offs. |
-| Itinerary Agent | Travel consultant | Coordinate accommodation, activities, transport times, customer preferences, and budget. |
-| Disruption Agent | Recovery specialist | Identify affected items and propose alternatives after weather changes, delays, cancellations, or closures. |
-| Complaint Agent | Resolution specialist | Classify complaints, collect evidence, check policy, propose resolutions, and escalate high-risk cases. |
+| Operations Agent | Acquisition, marketing, and customer front desk | Define audiences and campaigns, create approved marketing content, track leads, greet customers, identify intent, collect missing information, answer routine questions, check membership entitlements, and route work to the correct agent. |
+| Travel Planning Agent | End-to-end travel planner | Search and combine transport, accommodation, and activities; apply travel modes and hard constraints; build, rank, explain, and revise complete itineraries. |
+| Customer Exception Agent | Disruption and complaint resolution | Monitor or receive travel disruptions, identify affected itinerary items, generate recovery options, investigate complaints against evidence and policy, and escalate high-risk or low-confidence cases. |
+| Supplier Partnership Agent | B2B sourcing and commercial partnerships | Connect with large tourism providers, ingest simulated contracted inventory and terms, compare supplier rates, track availability and reliability, and calculate the company's margin without hiding customer-facing prices. |
 | Reviewer/Guardrail | Quality and compliance | Check constraints, arithmetic, conflicts, evidence, policy, confidence, and authorisation. |
 
-The Travel Manager owns each travel-service case; the Marketing & Growth Agent owns acquisition campaigns. Specialist agents cannot make unrestricted order changes or spend advertising budget. Every hand-off, tool call, material decision, and approval is recorded.
+The Operations Agent owns the customer relationship and routes each case. The Travel Planning Agent owns valid itinerary construction, the Customer Exception Agent owns disruption and complaint cases, and the Supplier Partnership Agent owns supplier inventory and margin evidence. Reviewer/Guardrail is a cross-cutting control rather than a customer-facing department. No agent may sign a real supplier contract, publish advertising, spend budget, change an order, or issue compensation outside its approval boundary. Every hand-off, tool call, commercial calculation, material decision, and approval is recorded.
 
 ## High-level architecture
 
 ```mermaid
 flowchart TB
-    Channels[Advertising and content channels] --> Growth[Marketing and Growth Agent]
-    Growth --> CampaignTools[Audience creative campaign attribution tools]
-    Growth --> Service
-    Growth --> Human
-    Customer[Customer interface] --> API[Application API]
-    Operator[OPC operator dashboard] --> API
-    API --> Service[Customer Service Agent]
-    Service --> Manager[Travel Manager Agent]
-    Service --> Complaint[Complaint Agent]
-    Manager --> Fare[Fare Planning Agent]
-    Manager --> Itinerary[Itinerary Agent]
-    Manager --> Disruption[Disruption Agent]
-    Fare --> TransportTools[Transport search and scoring]
-    Itinerary --> PlanTools[Accommodation activity budget conflict]
-    Disruption --> EventTools[Weather and disruption events]
-    Complaint --> SupportTools[Orders policies complaint records]
-    Fare --> Review[Reviewer and guardrails]
-    Itinerary --> Review
-    Disruption --> Review
-    Complaint --> Review
-    API --> Data[(Customers plans orders complaints)]
-    Manager --> Trace[(Agent and audit traces)]
-    Complaint --> Human[Human approval queue]
+    subgraph Interfaces[Interfaces]
+        Channels[Advertising and content channels]
+        Customer[Customer web app]
+        Operator[OPC operator dashboard]
+        Providers[Large tourism providers]
+        API[Application API]
+    end
+
+    subgraph Core[Four core business agents]
+        Ops[Operations Agent]
+        Planner[Travel Planning Agent]
+        Exception[Customer Exception Agent]
+        Supplier[Supplier Partnership Agent]
+    end
+
+    subgraph Services[Deterministic tools and controls]
+        Campaign[Campaign lead and attribution tools]
+        Entitlement[Membership advertising and premium rules]
+        Map[Paid-member route map]
+        Inventory[Supplier inventory terms price and margin tools]
+        PlanTools[Transport accommodation activity budget and conflict tools]
+        ExceptionTools[Weather disruption order policy and complaint tools]
+        Guardrail[Reviewer and guardrails]
+        Approval[Human approval queue]
+    end
+
+    subgraph Records[Persistent evidence]
+        Data[(Customers memberships suppliers plans orders and exceptions)]
+        Trace[(Agent commercial decision and audit traces)]
+    end
+
+    Channels --> Ops
+    Customer --> API
+    Operator --> API
+    API --> Ops
+    Providers --> Supplier
+    Ops --> Campaign
+    Ops --> Entitlement
+    Entitlement --> Map
+    Ops --> Planner
+    Ops --> Exception
+    Supplier --> Inventory --> Planner
+    Planner --> PlanTools
+    Planner --> Map
+    Exception --> ExceptionTools
+    Planner --> Guardrail
+    Exception --> Guardrail
+    Supplier --> Guardrail
+    Ops --> Guardrail
+    Ops --> Approval
+    Exception --> Approval
+    Supplier --> Approval
+    Ops --> Data
+    Planner --> Data
+    Exception --> Data
+    Supplier --> Data
+    Ops --> Trace
+    Planner --> Trace
+    Exception --> Trace
+    Supplier --> Trace
+    Guardrail --> Trace
 ```
 
-The Marketing & Growth Agent may autonomously plan and analyse campaigns only against simulated data. Real advertising, external messaging, or budget expenditure always enters the human approval queue.
+The Operations Agent may autonomously plan and analyse campaigns only against simulated data. The Supplier Partnership Agent also uses simulated supplier catalogues, rates, and agreements. Real advertising, external messaging, supplier commitments, or budget expenditure always enters the human approval queue.
 
 ### Proposed implementation stack
 
@@ -175,14 +260,13 @@ The LLM extracts preferences and explains results. Deterministic code filters op
 ### 1. Plan and compare
 
 1. The customer provides route, dates, budget, travel mode, preferences, and hard constraints.
-2. Customer Service validates the request and asks for missing information.
-3. Travel Manager creates a structured case and delegates research.
-4. Fare Planning filters and ranks transport options.
-5. Itinerary Agent adds accommodation and activities.
-6. Budget and schedule tools validate the plan.
-7. Reviewer checks evidence, policy, constraints, and confidence.
-8. The customer receives a recommended plan, alternatives, and explanations.
-9. Customer confirmation creates a simulated order and immutable plan version.
+2. Operations Agent validates the request, membership entitlement, and missing information.
+3. Travel Planning Agent creates the structured case and obtains eligible supplier inventory.
+4. Travel Planning Agent combines and ranks transport, accommodation, and activities as complete itineraries.
+5. Budget, schedule, entitlement, and margin tools validate the plan.
+6. Reviewer checks evidence, policy, constraints, price transparency, and confidence.
+7. The customer receives a recommended plan, alternatives, and explanations.
+8. Customer confirmation creates a simulated order and immutable plan version.
 
 **Alternative/error flows:** if information is incomplete, planning pauses and the customer is asked to clarify it. If no candidate satisfies every hard constraint, the system must not return a “closest” but invalid plan; it explains why no valid plan exists and asks the customer to explicitly relax a constraint. A timeout or stale data produces an error/degraded result, never an LLM-invented price or availability claim.
 
@@ -196,9 +280,9 @@ TripMate AI is not a one-off plan delivered only before departure. During an act
 
 Rechecking may be initiated by the customer or by a simulated event, but the system never overwrites the active itinerary or performs a real rebooking without confirmation. If current data is unavailable, it reports “unable to verify” rather than presenting old information as live status.
 
-### 4. Handle a complaint
+### 4. Handle disruptions and complaints
 
-The Complaint Agent links the complaint to an order, conversation, quote, data snapshot, and execution trace. It classifies the category and severity, checks company policy, proposes a resolution, and requests human approval when required.
+The Customer Exception Agent handles both operational disruptions and customer complaints so that the recovery decision and its later investigation share the same evidence. It links the case to the order, conversation, quote, supplier terms, data snapshot, itinerary versions, and execution trace; classifies severity; proposes recovery or resolution; and requests human approval when required.
 
 ```mermaid
 stateDiagram-v2
@@ -219,38 +303,52 @@ stateDiagram-v2
 
 P1 safety issues and P2 cancellations or material financial disputes are prioritised for human attention. Human approval is mandatory for safety concerns, legal threats, uncertain policies, compensation above a threshold, low-confidence responsibility decisions, and repeated customer rejection.
 
-### 5. Acquire and market to customers
+### 5. Acquire, market to, and serve customers
 
 1. The operator sets an objective, target audience, campaign ceiling, permitted channels, and prohibited claims.
-2. The Marketing & Growth Agent analyses simulated audience, channel-cost, and historical-conversion data.
+2. The Operations Agent analyses simulated audience, channel-cost, and historical-conversion data.
 3. It creates ad copy, creative briefs, landing-page propositions, audience segments, and a proposed budget allocation.
 4. Reviewer checks factual support, brand rules, privacy, discriminatory targeting, disclaimers, and the budget ceiling.
 5. The operator approves, edits, or rejects the campaign; no real publication or spend occurs without approval.
-6. An approved simulated campaign produces source-tagged leads that Customer Service continues into consultation.
+6. An approved simulated campaign produces source-tagged leads that the same Operations Agent continues into front-desk consultation.
 7. The agent reports impressions, clicks, acquisition cost, qualified-lead rate, and conversion, then recommends pausing, continuing, or adjusting the campaign.
+
+### 6. Source supplier inventory and calculate margin
+
+1. The operator defines permitted supplier types, destinations, contract rules, minimum evidence, and margin boundaries.
+2. Supplier Partnership Agent imports simulated rates, availability, cancellation terms, commission rules, and service-quality data from large tourism providers.
+3. It normalises offers so that Travel Planning Agent can compare equivalent resources.
+4. Margin tools calculate supplier cost, customer price, commission or markup, applicable fees, and expected gross margin.
+5. Reviewer checks price transparency, stale inventory, prohibited terms, and margins outside the approved range.
+6. A real contract, supplier commitment, or price-rule change would require operator approval; the course prototype records only a simulated agreement.
+
+### 7. Apply membership entitlements
+
+Before creating or extending a plan, Operations Agent checks the customer's membership. A free member may hold at most two simultaneous planned or active trips, and each trip may span at most five days. Free members may see labelled advertisements, but ads cannot override constraints or recommendation scores. Paid members are not subject to the free-tier trip-count and duration limits, receive an ad-free experience, and can use route maps and other premium planning features.
 
 ### Example customer journey: Sydney to Melbourne with an $800 budget
 
 ```mermaid
 sequenceDiagram
     actor U as Customer
-    participant CS as Customer Service
-    participant TM as Travel Manager
-    participant A as Specialist Agents
+    participant O as Operations Agent
+    participant P as Travel Planning Agent
+    participant S as Supplier Partnership Agent
     participant T as Deterministic Tools
     participant R as Reviewer
-    U->>CS: “Sydney to Melbourne, budget $800”
-    CS->>U: Collect dates, party size, preferences, and hard constraints
-    CS->>TM: Submit confirmed structured requirements
-    TM->>A: Find transport, accommodation, and activity options
-    A->>T: Check total budget, availability, and time conflicts
-    T-->>A: Exclude over-budget or conflicting plans
-    A->>R: Submit eligible plans, sources, and trade-offs
-    R-->>TM: Approve or request re-planning
-    TM-->>U: Return recommendation, alternatives, breakdown, and exclusions
+    U->>O: “Sydney to Melbourne, budget $800”
+    O->>U: Confirm membership, dates, preferences, and constraints
+    O->>P: Submit confirmed structured requirements
+    P->>S: Request eligible contracted inventory
+    S-->>P: Return rates, terms, sources, and availability
+    P->>T: Check total budget, margin, and schedule conflicts
+    T-->>P: Exclude ineligible or conflicting plans
+    P->>R: Submit eligible plans, prices, sources, and trade-offs
+    R-->>P: Approve or request re-planning
+    P-->>U: Return recommendation, alternatives, costs, and exclusions
 ```
 
-The expected outcome is that AI first completes the requirements, the Travel Manager coordinates specialists to find options, and deterministic budget and schedule tools validate them. The final recommendation contains only plans at or below $800 with no schedule conflict. If none qualifies, the system explains why and changes no constraint without the customer's agreement.
+The expected outcome is that Operations Agent completes intake and entitlement checks, Travel Planning Agent builds options from supplier resources, and deterministic budget, schedule, and margin tools validate them. The final recommendation contains only plans at or below $800 with no schedule conflict and with transparent pricing. If none qualifies, the system explains why and changes no constraint without the customer's agreement.
 
 ## Edge-case runtime scenarios
 
@@ -270,7 +368,7 @@ The expected outcome is that AI first completes the requirements, the Travel Man
 
 1. Load the active itinerary, original hard constraints, remaining budget, and completed items.
 2. Re-query current rail operations, roads, flights, weather, and safety/disruption information, showing source and update time.
-3. Disruption Agent checks whether the original train plan remains valid; a cancelled or unreachable option becomes ineligible and is not scored.
+3. Customer Exception Agent checks whether the original train plan remains valid; a cancelled or unreachable option becomes ineligible and is not scored.
 4. Search feasible alternatives, such as a flight, coach, delayed departure, or adjusted same-day activities.
 5. Deterministic tools recheck incremental cost, remaining total budget, arrival time, transfers, and activity conflicts; score only eligible alternatives.
 6. Show the recommendation, alternatives, differences from the old version, extra cost, affected items, and data timestamp.
@@ -291,6 +389,9 @@ The expected outcome is that AI first completes the requirements, the Travel Man
 | EC-09 | **Trip partly completed:** the customer has checked in and completed a morning activity when afternoon transport is cancelled. | Lock completed and non-refundable items; replan only affected future items, validate against remaining budget and incremental cost, and show sunk versus new cost. | Never delete completed history, duplicate a booking, or treat the full original budget as unspent. |
 | EC-10 | **Duplicate event or repeated request:** the same strike alert arrives several times, or the customer repeatedly presses replan. | Deduplicate with event ID, itinerary version, and idempotency key; reuse results for the same inputs/data snapshot and create a candidate version only for new information. | Never create duplicate orders, approvals, costs, or an infinite re-planning loop. |
 | EC-11 | **Danger or emergency:** bushfire, flood, landslide, or medical/personal-safety risk affects the trip. | Prioritise official safety information and emergency contacts, suspend ordinary optimisation, make safety the highest-order hard constraint, and escalate to a human. | Never describe an AI recommendation as emergency, safety, medical, or official evacuation instruction, or recommend a risky route to save money. |
+| EC-12 | **Free-member limit reached:** a free member with two planned/active trips requests a third trip or extends one beyond five days. | Reject only the new creation/extension, preserve existing trips, explain the exact limit, and offer completion, shortening, or upgrade options. | Never delete an existing trip, silently shorten it, or let the LLM bypass entitlement rules. |
+| EC-13 | **Subscription expires or changes:** a paid membership expires while several long itineraries exist. | Preserve existing itinerary data, remove future paid-only actions according to a stated grace policy, suppress no historical evidence, and ask the user to renew or reduce future requests. | Never erase maps or itinerary history, charge automatically in the prototype, or downgrade data without notice. |
+| EC-14 | **Supplier price or term mismatch:** the customer quote uses a stale wholesale rate or the supplier cancellation term changed. | Re-fetch or invalidate the offer, recalculate customer price and margin, show the change, and require reconfirmation or approval where applicable. | Never conceal a negative/excessive margin, reuse invalid terms, or present an unavailable supplier offer as bookable. |
 
 These cases must enter the scenario test set. Every test should verify correct filtering, version preservation, timestamp/uncertainty display, prevention of unauthorised action, and human escalation when no safe answer exists.
 
@@ -298,22 +399,24 @@ These cases must enter the scenario test set. Every test should verify correct f
 
 | ID | Use case | Primary actors | Preconditions | Successful outcome | Key exceptions |
 | --- | --- | --- | --- | --- | --- |
-| UC-01 | Create and compare a travel plan | Traveller, Customer Service, Travel Manager | The user can confirm route, dates, and budget; simulated data is available | A recommendation and alternatives pass hard-constraint, budget, and conflict checks | Missing information, no eligible inventory, tool failure, or contradictory requirements |
-| UC-02 | Revise preferences and compare versions | Traveller, Travel Manager | A plan version exists | A new version shows price, time, and experience differences while preserving the old version | New preferences make the request infeasible or over budget |
-| UC-03 | Recheck an active trip and recover from disruption | Traveller, Disruption Agent, operator | An active simulated order exists; the customer requests a recheck or a relevant event arrives | Current data identifies affected items and revalidated alternatives are offered | Live data unavailable, no alternative, excessive extra cost, or safety risk |
-| UC-04 | Investigate and resolve a complaint | Traveller, Complaint Agent, operator | The complaint is linked to an order or the customer can provide required evidence | An evidence-based outcome is recorded and human approval is completed when needed | Unclear policy, legal/safety risk, or reopened complaint |
-| UC-05 | Plan and evaluate an acquisition campaign | Operator, Marketing & Growth Agent, Reviewer | Audience, channels, budget ceiling, and brand rules are set | An approved simulated campaign produces traceable leads and a performance report | Unsupported claims, non-compliant targeting, budget breach, or rejected approval |
+| UC-01 | Create and compare a travel plan | Traveller, Operations Agent, Travel Planning Agent | The user can confirm route, dates, and budget; simulated data is available; membership allows the request | A recommendation and alternatives pass entitlement, hard-constraint, budget, margin, and conflict checks | Missing information, membership limit, no eligible inventory, tool failure, or contradictory requirements |
+| UC-02 | Revise preferences and compare versions | Traveller, Travel Planning Agent | A plan version exists | A new version shows price, time, and experience differences while preserving the old version | New preferences make the request infeasible, over budget, or outside membership limits |
+| UC-03 | Recheck an active trip and recover from disruption | Traveller, Customer Exception Agent, operator | An active simulated order exists; the customer requests a recheck or a relevant event arrives | Current data identifies affected items and revalidated alternatives are offered | Live data unavailable, no alternative, excessive extra cost, or safety risk |
+| UC-04 | Investigate and resolve a complaint | Traveller, Customer Exception Agent, operator | The complaint is linked to an order or the customer can provide required evidence | An evidence-based outcome is recorded and human approval is completed when needed | Unclear policy, legal/safety risk, or reopened complaint |
+| UC-05 | Plan and evaluate an acquisition campaign | Operator, Operations Agent, Reviewer | Audience, channels, budget ceiling, and brand rules are set | An approved simulated campaign produces traceable leads and a performance report | Unsupported claims, non-compliant targeting, budget breach, or rejected approval |
+| UC-06 | Source travel inventory and validate margin | Operator, Supplier Partnership Agent, Travel Planning Agent | Simulated supplier catalogues and commercial rules are available | Comparable inventory includes source cost, customer price, terms, and expected margin | Stale inventory, incompatible terms, excessive margin, or approval required |
+| UC-07 | Enforce membership and premium access | Traveller, Operations Agent | The user has a free or paid membership record | Limits, ads, map access, and premium features match the membership | Third active trip, free trip over five days, expired subscription, or entitlement-service failure |
 
 ### UC-01 detailed main success scenario
 
 1. The traveller submits a route and budget in natural language.
-2. Customer Service extracts fields and confirms dates, party size, mode, baggage, arrival time, and other missing constraints.
-3. Travel Manager creates a case and delegates transport and itinerary research.
+2. Operations Agent extracts fields, checks membership, and confirms dates, party size, mode, baggage, arrival time, and other missing constraints.
+3. Travel Planning Agent creates a case and requests transport, accommodation, and activity inventory from Supplier Partnership Agent and other permitted sources.
 4. Search tools return candidates with price, availability, timestamp, and source.
 5. The hard-constraint filter removes every ineligible combination first; with a $500 budget, every combination above $500 is excluded here.
 6. The scorer ranks only the remaining plans according to the selected mode.
 7. Budget and conflict tools recalculate totals and check connections, check-in, and activity times.
-8. Reviewer verifies constraints, evidence, and confidence; failure returns the case for re-planning.
+8. Reviewer verifies constraints, evidence, supplier terms, price transparency, margin, and confidence; failure returns the case for re-planning.
 9. The system shows one recommendation, at least one eligible alternative, cost breakdown, trade-offs, and material exclusion reasons.
 10. Confirmation stores a simulated order, requirement snapshot, and immutable plan version.
 
@@ -337,6 +440,10 @@ These cases must enter the scenario test set. Every test should verify correct f
 | US-07 | As the operator, I want an acquisition agent to produce compliant ads and channel recommendations for a defined audience so that marketing requires less manual effort. | Output audience, assets, channels, budget, and forecast; require approval before publication. |
 | US-08 | As the operator, I want to compare campaign acquisition cost and qualified-lead conversion so that I can pause or expand the right campaign. | Trace metric definitions; never let the agent autonomously increase real ad spend. |
 | US-09 | As a traveller already on a trip, I want to ask the AI to recheck my route each day and replan after a landslide, strike, or cancellation so that I do not rely on a month-old recommendation. | Use current timestamped data on every recheck; exclude invalid options; revalidate budget/time and require confirmation for the new version. |
+| US-10 | As a free member, I want clear limits and labelled advertising so that I understand what I receive without paying. | Allow at most two simultaneous trips and five days per trip; never disguise ads as recommendations. |
+| US-11 | As a paid member, I want unrestricted trip count and duration, no ads, and route maps so that complex planning is more convenient. | Remove free-tier caps, suppress ads, and enable map/premium entitlements while the subscription is active. |
+| US-12 | As the operator, I want supplier cost, customer price, and margin recorded so that I can assess whether the company can be profitable. | Trace every simulated commercial offer to supplier terms and calculate gross margin deterministically. |
+| US-13 | As a tourism supplier, I want my inventory and terms represented accurately so that the company does not sell an invalid offer. | Preserve rate, availability, cancellation terms, source, timestamp, and approval status. |
 
 ## Real company challenges and responses
 
@@ -351,6 +458,9 @@ These cases must enter the scenario test set. Every test should verify correct f
 | Service quality drift | Fixed scenario tests, trace review, customer feedback, and prompt/version tracking. | Continuous evaluation, regression dashboards, model routing, and release gates. |
 | Unit economics | Record model calls, latency, tool usage, and operator handling time. | Pricing experiments, caching, smaller-model routing, and customer lifetime-value analysis. |
 | Customer acquisition | Define target personas and value proposition. | Landing-page experiments, referral loops, partnerships, SEO, and acquisition-cost measurement. |
+| Revenue and pricing | Simulate supplier cost, customer price, commission/markup, membership tier, and advertising revenue. | Contracted rates, pricing governance, tax treatment, churn, lifetime value, and contribution-margin experiments. |
+| Membership fairness | Enforce transparent free-tier limits and label advertising without weakening recommendation quality. | Self-service billing, cancellation, proration, benefit experiments, and consumer-law review. |
+| Supplier dependence | Preserve supplier source, terms, timestamps, and margin evidence; require approval for simulated commercial changes. | Multiple partners, negotiated allocations, supplier scorecards, reconciliation, and dispute processes. |
 | Business continuity | Manual takeover and exportable case records. | Backups, monitoring, disaster recovery, and documented operating procedures. |
 
 ## Functional requirements
@@ -371,8 +481,13 @@ These cases must enter the scenario test set. Every test should verify correct f
 | FR-12 | Record agent hand-offs, tool calls, decisions, confidence, and outcomes. |
 | FR-13 | Provide the operator with prioritised cases and an approval interface. |
 | FR-14 | Capture customer feedback and link it to the delivered service. |
-| FR-15 | Enable a Marketing & Growth Agent to plan paid campaigns, create compliant assets, track channels and leads, and require human approval for real publication or budget expenditure. |
+| FR-15 | Enable Operations Agent to plan paid campaigns, create compliant assets, track channels and leads, continue leads into customer service, and require human approval for real publication or budget expenditure. |
 | FR-16 | Allow the customer to recheck the route daily or at any time during an active trip; preserve old versions, revalidate current status, and save a new active version only after customer confirmation. |
+| FR-17 | Enforce free-member limits of no more than two simultaneous planned/active trips and no more than five days per trip before creating or extending an itinerary. |
+| FR-18 | Show only clearly labelled advertising to free members; paid members must receive an ad-free experience, and advertisements must not influence hard constraints or recommendation ranking. |
+| FR-19 | Allow paid members to use route maps and other premium features without the free-tier trip-count or itinerary-duration limits while their entitlement is active. |
+| FR-20 | Enable Supplier Partnership Agent to ingest and compare simulated supplier inventory, rates, availability, terms, commissions, and reliability evidence. |
+| FR-21 | Calculate supplier cost, customer price, fees, commission/markup, and expected gross margin deterministically, with transparent customer pricing and operator approval for out-of-policy margins. |
 
 ## Requirement classification
 
@@ -389,8 +504,12 @@ The Stage 1 report will maintain a versioned catalogue rather than treating ever
 ### Mandatory capabilities
 
 - Distinct business-role agents that collaborate, use tools, and react to results.
-- Marketing & Growth can plan simulated acquisition campaigns, create assets, track leads, and submit publication and spend for human approval.
+- Operations Agent combines acquisition, marketing, lead handling, customer intake, routine support, entitlement checks, and case routing.
+- Travel Planning Agent creates complete plans across transport, accommodation, and activities.
+- Customer Exception Agent combines disruption recovery and complaint resolution using shared evidence.
+- Supplier Partnership Agent sources simulated B2B inventory and records supplier terms and commercial margins.
 - Customer intake, three travel modes, plan generation, comparison, and explanation.
+- Free and paid membership entitlements, including free-tier trip limits, labelled ads, paid ad removal, and paid route-map access.
 - Deterministic budget, constraint, and schedule validation.
 - Disruption-driven re-planning and auditable itinerary versions.
 - Customer-initiated in-trip route rechecks, current-status validation, and incremental re-planning.
@@ -402,8 +521,8 @@ The Stage 1 report will maintain a versioned catalogue rather than treating ever
 
 - RAG for destination, supplier, and policy knowledge.
 - Real weather or travel-data integration.
-- Multilingual/voice interaction, mobile client, map visualisation, and proactive notifications.
-- Long-term preference memory, analytics, supplier scoring, and commercial experiments.
+- Multilingual/voice interaction, mobile client, and proactive notifications.
+- Long-term preference memory, advanced analytics, and additional commercial experiments.
 
 Optional features may enter the MVP only after all mandatory acceptance tests pass.
 
@@ -436,7 +555,7 @@ The evaluation will include cases where the LLM should ask for clarification, ca
 - The first prototype supports only the configured Australian routes and sample inventory.
 - Supplier, weather, and order data are simulated or provided through controlled APIs.
 - Prices and availability are snapshots and are not commercial quotations.
-- Each request represents one traveller with one active itinerary.
+- Each request represents one traveller and one itinerary, while membership determines how many itineraries may remain planned or active simultaneously.
 - The user provides truthful requirements and can correct extracted information before confirmation.
 - Network, model, and tool calls may fail; the workflow must expose failure instead of fabricating a result.
 - The human operator is available for queued high-risk decisions within the prototype demonstration.
@@ -448,7 +567,9 @@ Assumptions will be assigned identifiers and revisited whenever a requirement or
 
 | Decision | Selected approach | Considered/discarded alternative | Rationale |
 | --- | --- | --- | --- |
-| Agent control | Manager-led orchestration with specialist tools/hand-offs. | Unrestricted group chat between all agents. | Clear ownership, predictable traces, simpler testing, and lower cost. |
+| Agent control | Operations-led routing to three non-overlapping specialist agents, with shared guardrails. | Many narrow agents or unrestricted group chat. | Clear ownership, fewer overlapping responsibilities, predictable traces, simpler testing, and lower cost. |
+| Revenue | Supplier margin plus paid membership and labelled free-tier advertising. | A free planning service with no revenue mechanism. | Allows the prototype to test unit economics as well as technical feasibility. |
+| Membership | Deterministic free/paid entitlements. | Let the LLM decide access limits conversationally. | Limits, ads, and premium access must be consistent, testable, and auditable. |
 | Correctness | LLM plus deterministic domain services. | Let the LLM calculate and rank everything. | Arithmetic, constraints, and policies need reproducible results. |
 | Booking scope | Simulated transactions and human approval. | Connect to real payment/booking providers in the MVP. | Reduces legal, financial, security, and integration risk. |
 | Data scope | Small controlled Australian dataset. | Global real-time travel marketplace. | Supports meaningful evaluation within a four-person course project. |
@@ -464,9 +585,9 @@ The Stage 1 package is expected to contain:
 - User Requirement Diagram and Feature Diagram.
 - Use Case Diagram plus detailed principal use cases.
 - Package Diagram, Class Diagram, Structured Class Diagram, and Collaboration Diagram.
-- Activity Diagrams for planning, disruption recovery, and complaint handling.
-- State Machines for travel requests/orders and complaints.
-- Sequence Diagrams for planning, re-planning, complaint resolution, and human approval.
+- Activity Diagrams for membership/intake, supplier sourcing, travel planning, and exception handling.
+- State Machines for memberships, travel requests/orders, and exception cases.
+- Sequence Diagrams for acquisition/intake, supplier sourcing, planning, re-planning, complaint resolution, and human approval.
 - Component relationships and extension points for future agents, tools, data providers, and interfaces.
 - A traceability matrix linking requirement → use case/model → component → test → acceptance evidence.
 
@@ -492,21 +613,22 @@ Tutor feedback that changes the agreed requirements will be recorded as a baseli
 
 - Australian domestic short trips with a limited set of routes.
 - Simulated acquisition campaigns, advertising assets, channel performance, and lead-conversion data.
-- Simulated transport, accommodation, activity, order, refund, and policy data.
-- One traveller per request and one connected end-to-end demonstration.
+- Simulated supplier catalogues, contracted/wholesale rates, customer prices, margins, transport, accommodation, activity, order, refund, and policy data.
+- Free and paid membership states, deterministic free-tier limits, labelled free-tier ads, paid ad removal, and a paid route-map view.
+- One traveller per request and one connected end-to-end demonstration covering commercial and service flows.
 - Planning, comparison, re-planning, complaints, and human approval.
 - Customer and operator views plus auditable agent traces.
 
 ### Excluded
 
-- Real booking, payment, refund, compensation, or supplier contracts.
+- Real booking, membership payment, supplier settlement, refund, compensation, or supplier contracts.
 - International visa, legal, medical, insurance, or safety advice.
 - Guaranteed real-time price or availability.
 - Complex group travel and fully autonomous high-risk decisions.
 
 ## Core data entities
 
-Customer, Lead, AudienceSegment, MarketingCampaign, AdCreative, ChannelPerformance, TravelRequest, TransportOption, AccommodationOption, Activity, ItineraryVersion, SimulatedOrder, DisruptionEvent, Complaint, CompanyPolicy, HumanApproval, CustomerFeedback, AgentExecutionLog, and CostRecord.
+Customer, MembershipPlan, Subscription, Entitlement, Advertisement, Lead, AudienceSegment, MarketingCampaign, AdCreative, ChannelPerformance, Supplier, SupplierAgreement, SupplierOffer, TravelRequest, TransportOption, AccommodationOption, Activity, ItineraryVersion, SimulatedOrder, PriceBreakdown, MarginRecord, DisruptionEvent, ExceptionCase, CompanyPolicy, HumanApproval, CustomerFeedback, AgentExecutionLog, and CostRecord.
 
 ## Development roadmap
 
@@ -515,7 +637,8 @@ Customer, Lead, AudienceSegment, MarketingCampaign, AdCreative, ChannelPerforman
 - Interview potential travellers and identify the highest-cost planning/support problems.
 - Define personas, customer journey, service promise, failure policy, and OPC feasibility hypotheses.
 - Prioritise one connected scenario rather than attempting a full booking platform.
-- Establish the Marketing & Growth Agent's simulated acquisition workflow and validate audience, proposition, channel, and acquisition-cost assumptions.
+- Establish Operations Agent's simulated acquisition-to-customer-service workflow and validate audience, proposition, channel, and acquisition-cost assumptions.
+- Validate supplier-margin, membership-subscription, and advertising revenue assumptions with a simple unit-economics model.
 
 ### Phase 1 — Requirements and modelling
 
@@ -525,15 +648,15 @@ Customer, Lead, AudienceSegment, MarketingCampaign, AdCreative, ChannelPerforman
 
 ### Phase 2 — Planning MVP
 
-- Implement structured intake, Travel Manager, Fare Planning, simulated transport data, hard constraints, three modes, alternatives, and explanations.
+- Implement Operations Agent intake, membership checks, Travel Planning Agent, simulated supplier/transport data, hard constraints, three modes, alternatives, and explanations.
 
 ### Phase 3 — Complete service
 
-- Add itinerary planning, accommodation/activities, budget/conflict tools, plan versions, simulated orders, Reviewer checks, and operator trace view.
+- Add accommodation/activities, supplier offers, deterministic price/margin calculations, free/paid entitlements, ads, paid route map, plan versions, simulated orders, Reviewer checks, and operator trace view.
 
 ### Phase 4 — Recovery and complaints
 
-- Add weather/disruption events, impact analysis, re-planning, complaint state management, policy lookup, priority queue, and human approval.
+- Add Customer Exception Agent, weather/disruption events, impact analysis, re-planning, complaint state management, policy lookup, priority queue, and human approval.
 
 ### Phase 5 — Evaluation and demonstration
 
@@ -560,7 +683,7 @@ Customer, Lead, AudienceSegment, MarketingCampaign, AdCreative, ChannelPerforman
 - Operator analytics for demand, complaints, SLA, quality, and unit economics.
 - Automated evaluation datasets, model routing, caching, and regression release gates.
 - Supplier reliability scoring, disruption prediction, and proactive customer support.
-- Business experiments for pricing, acquisition channels, partnerships, and retention.
+- Business experiments for supplier margin, membership pricing, advertising, acquisition channels, partnerships, conversion, and retention.
 
 ## Planned repository structure
 
@@ -579,10 +702,10 @@ Customer, Lead, AudienceSegment, MarketingCampaign, AdCreative, ChannelPerforman
 
 | Workstream | Primary owner | Responsibilities |
 | --- | --- | --- |
-| Acquisition and growth operations | Member A | Marketing & Growth Agent, audiences and campaigns, advertising assets, lead attribution, growth data, and acquisition-flow tests. |
-| Customer service and complaints | Member B | Customer Service, Complaint Agent, customer/operator UI, complaint states, human escalation, and user testing. |
-| Planning and transport | Member C | Travel Manager, Fare Planning, scoring modes, transport/budget tools, and agent orchestration. |
-| Itinerary, disruption, and assurance | Member D | Itinerary/Disruption Agents, event data, Reviewer, tracing, edge cases, and system tests. |
+| Operations and membership | Member A | Operations Agent, acquisition campaigns, customer front desk, membership entitlements, advertising rules, lead attribution, and operating-flow tests. |
+| Travel planning | Member B | Travel Planning Agent, transport/accommodation/activity composition, scoring modes, budget/conflict tools, route-map view, and planning tests. |
+| Customer exceptions and assurance | Member C | Customer Exception Agent, disruption recovery, complaints, policy tools, human escalation, Reviewer/Guardrail, and edge-case tests. |
+| Supplier partnerships and profitability | Member D | Supplier Partnership Agent, supplier data/terms, price and margin tools, unit economics, commercial traces, and system tests. |
 
 Architecture decisions, integration, business validation, report review, presentation, and demonstration are shared by all four members. Contributions should be evidenced through issues, commits, reviews, models, and test ownership.
 
@@ -590,26 +713,26 @@ Before Stage 1 submission, the placeholders below must be replaced with actual n
 
 | Member | Requirements/models | Implementation/tests | Presentation/operations | Evidence links |
 | --- | --- | --- | --- | --- |
-| Member A — TBD | Acquisition and campaign requirements/models | Marketing & Growth, campaigns, lead attribution, growth tests | Acquisition-flow and marketing demo | Issues/commits/models — TBD |
-| Member B — TBD | Customer-service and complaint requirements/models | Customer Service, Complaint, UI, human escalation, user tests | Customer-journey and complaint demo | Issues/commits/models — TBD |
-| Member C — TBD | Planning and orchestration requirements/models | Travel Manager, Fare Planning, scoring/budget tools | Architecture and travel-mode demo | Issues/commits/models — TBD |
-| Member D — TBD | Itinerary, disruption, and quality requirements/models | Itinerary, Disruption, Reviewer, tracing, system tests | Testing, Agile evidence, and disruption demo | Issues/commits/models — TBD |
+| Member A — TBD | Operations, marketing, and membership requirements/models | Operations Agent, campaigns, front desk, entitlements, ads | Acquisition, membership, and customer-intake demo | Issues/commits/models — TBD |
+| Member B — TBD | Planning and itinerary requirements/models | Travel Planning Agent, scoring, budget/conflict tools, route map | Planning and travel-mode demo | Issues/commits/models — TBD |
+| Member C — TBD | Disruption, complaint, and assurance requirements/models | Customer Exception Agent, Reviewer, escalation, user tests | Exception recovery and complaint demo | Issues/commits/models — TBD |
+| Member D — TBD | Supplier and revenue requirements/models | Supplier Partnership Agent, supplier offers, margin tools, profitability tests | Supplier sourcing and unit-economics demo | Issues/commits/models — TBD |
 
 ## Demonstration story
 
-1. Marketing & Growth creates a simulated ad for budget-conscious travellers; operator approval produces a traceable lead.
-2. The customer enters “Sydney to Melbourne, budget $800”; Customer Service collects dates, party size, and constraints.
-3. Agents find candidates, and deterministic tools exclude over-budget or conflicting plans.
-4. The system produces a checked itinerary and explains its evidence and trade-offs.
-5. The customer switches to Comfort mode and compares the new version.
-6. A simulated weather event cancels an outdoor activity.
-7. TripMate AI proposes a checked alternative and reports the cost difference.
-8. The customer complains that the replacement provides lower value.
-9. Complaint Agent investigates the order, original evidence, trace, and policy.
+1. Operations Agent creates a simulated, approved ad for budget-conscious free members and turns a response into a traceable lead.
+2. The customer enters “Sydney to Melbourne, budget $800”; Operations Agent checks membership and collects dates, party size, and constraints.
+3. Supplier Partnership Agent supplies simulated contracted inventory with rates and terms.
+4. Travel Planning Agent builds candidates; deterministic tools exclude over-budget/conflicting plans and calculate customer price and company margin.
+5. The system produces a checked itinerary and explains its evidence, price, and trade-offs.
+6. The demo shows a free member reaching the two-trip or five-day limit, then upgrading to unlock longer planning, remove ads, and display the route map.
+7. A simulated weather event cancels an outdoor activity.
+8. Customer Exception Agent proposes a checked alternative and reports the cost difference.
+9. The customer complains that the replacement provides lower value; the same Agent investigates the order, supplier terms, original evidence, trace, and policy.
 10. A proposed refund enters the operator approval queue.
-11. The operator decides, Customer Service explains the outcome, and feedback is recorded.
+11. The operator decides, Operations Agent explains the outcome, and feedback and commercial impact are recorded.
 
-This story demonstrates user value, company operations, LLM perception, agent delegation, deterministic tools, adaptation, complaint handling, and human accountability.
+This story demonstrates user value, a credible revenue loop, membership differentiation, company operations, LLM perception, non-overlapping agent delegation, deterministic tools, adaptation, complaint handling, and human accountability.
 
 ## Contributing
 
