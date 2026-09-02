@@ -35,7 +35,7 @@ Project Requirement 发生变化时，应同时更新对应的 Requirement ID、
 
 | 方向 | 负责范围 | Use Cases | 个人模型主线 |
 | --- | --- | --- | --- |
-| Operations Agent | 获客、前台、意图收集、会员校验和分流 | UC-05、UC-07 | UC-05 |
+| Operations Agent | 统一对外接待、意图识别、信息补全、会员校验、分流协调和对外回复门控 | UC-05、UC-07 | UC-05 |
 | Travel Planning Agent | 完整行程、约束、比较和修改 | UC-01、UC-02 | UC-01 |
 | Customer Exception Agent | 异常恢复、投诉、证据和升级 | UC-03、UC-04 | UC-03 |
 | Supplier Partnership Agent | 供应商资源、库存条款、价格和差价 | UC-06 | UC-06 |
@@ -78,7 +78,7 @@ Project Requirement 发生变化时，应同时更新对应的 Requirement ID、
 | UC-02 | Revise Preferences and Compare Versions | Travel Planning | 校验后的新行程版本 |
 | UC-03 | Recheck an Active Trip and Recover from Disruption | Customer Exception | 校验后的恢复方案 |
 | UC-04 | Investigate and Resolve a Complaint | Customer Exception | 解决方案或人工升级 |
-| UC-05 | Acquire, Receive, and Route a Customer | Operations | 合格 Lead 或正确分流的 Case |
+| UC-05 | Receive, Coordinate, and Respond to External Requests | Operations | 经确认并可追踪的 CustomerCase 或 SupplierCase，以及受控的统一对外回复 |
 | UC-06 | Source Supplier Inventory and Validate Margin | Supplier Partnership | 通过审核的 Offer 和 Price Breakdown |
 | UC-07 | Enforce Membership and Premium Access | Operations | 允许请求或解释会员限制 |
 
