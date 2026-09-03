@@ -38,7 +38,7 @@ Project Requirement 发生变化时，应同时更新对应的 Requirement ID、
 | Operations Agent | 统一对外接待、意图识别、信息补全、会员校验、分流协调和对外回复门控 | UC-05、UC-07 | UC-05 |
 | Travel Planning Agent | 完整行程、约束、比较和修改 | UC-01、UC-02 | UC-01 |
 | Customer Exception Agent | 异常恢复、投诉、证据和升级 | UC-03、UC-04 | UC-03 |
-| Supplier Partnership Agent | 供应商资源、库存条款、价格和差价 | UC-06 | UC-06 |
+| Supplier Partnership Agent | 供应商资源、库存条款、价格和差价，以及基于供应商数据的营销方案 | UC-06、UC-08 | UC-06 |
 
 “个人模型主线”把同一成员的 Ad hoc Requirement、Use Case Specification、Activity Diagram、Interaction Diagram 和 State Machine 串在一起。额外的 Use Case Specification 仍由对应 Agent 负责人完成。
 
@@ -57,10 +57,10 @@ Project Requirement 发生变化时，应同时更新对应的 Requirement ID、
 
 | Agent | Core Features | Optional Feature 候选 |
 | --- | --- | --- |
-| Operations | OPS-01 Campaign 与 Lead；OPS-02 前台接待与分流；OPS-03 Membership 校验 | OPS-O1 Campaign 实验或留存分析 |
+| Operations | OPS-02 前台接待与分流；OPS-03 Membership 校验 | OPS-O1 接待效率或留存分析 |
 | Travel Planning | PLAN-01 请求与约束收集；PLAN-02 完整行程生成；PLAN-03 方案比较与修改 | PLAN-O1 目的地/政策 RAG 或更多实时数据 |
 | Customer Exception | EXC-01 异常恢复；EXC-02 投诉调查与解决 | EXC-O1 主动异常预测或通知 |
-| Supplier Partnership | SUP-01 Supplier Offer 导入与校验；SUP-02 定价与差价计算 | SUP-O1 Supplier Reliability Scorecard 或需求驱动的合作建议 |
+| Supplier Partnership | SUP-01 Supplier Offer 导入与校验；SUP-02 定价与差价计算；SUP-03 基于供应商数据的营销方案 | SUP-O1 Supplier Reliability Scorecard 或营销方案实验建议 |
 
 四个方向共用以下控制：
 
@@ -70,7 +70,7 @@ Project Requirement 发生变化时，应同时更新对应的 Requirement ID、
 
 ## 5. Use Case 基线
 
-小组采用 7 个 Use Cases，符合总数 5-10 个的要求。
+小组采用 8 个 Use Cases，符合总数 5-10 个的要求。
 
 | ID | Use Case | Owner | 主要结果 |
 | --- | --- | --- | --- |
@@ -81,6 +81,9 @@ Project Requirement 发生变化时，应同时更新对应的 Requirement ID、
 | UC-05 | Receive, Coordinate, and Respond to External Requests | Operations | 经确认并可追踪的 CustomerCase 或 SupplierCase，以及受控的统一对外回复 |
 | UC-06 | Source Supplier Inventory and Validate Margin | Supplier Partnership | 通过审核的 Offer 和 Price Breakdown |
 | UC-07 | Enforce Membership and Premium Access | Operations | 允许请求或解释会员限制 |
+| UC-08 | Plan, Evaluate, and Approve a Marketing Campaign | Supplier Partnership | 基于相关供应商数据形成经评估和人工审批的营销方案 |
+
+UC-05 只接收并处理带来源标记的 `Campaign Response`，不负责活动设计、供应商数据分析、预算、审批或发布。上述营销活动生命周期属于 UC-08，由 Supplier Partnership Agent 负责；外部发布或实际支出前必须取得 Human Founder/Operator 审批。
 
 每份 Use Case Specification 包含 Goal、Actors、Trigger、Preconditions、Main Flow、Alternative/Error Flows、Postconditions、Business Rules、Tools/Data、Approval Conditions、Acceptance Criteria，以及关联的 Requirement/Diagram ID。
 
@@ -94,7 +97,7 @@ Project Requirement 发生变化时，应同时更新对应的 Requirement ID、
 | --- | --- | --- | ---: |
 | G-01 | Project Requirement Documentation | 包含当前 Agent、用户、Core/Optional Features 和成员分工 | 必交 |
 | G-02 | Feature Diagram | 一张完整 Feature Model，包含适合的 Non-functional Requirements | 1 |
-| G-03 | Overall Use Case Diagram | Actors、7 个 Use Cases、System Boundary 和正确的 include/extend | 1 |
+| G-03 | Overall Use Case Diagram | Actors、8 个 Use Cases、System Boundary 和正确的 include/extend | 1 |
 | G-04 | Class Diagram | 正确使用 Generalisation、Composition、Aggregation、Interface、Multiplicity 和 Role Name | 3 |
 | G-05 | Complex Structure Models | 用 Object、Collaboration/Communication 和 Structured/Composite Class 表达运行时结构 | 3 |
 | G-06 | Traceability Matrix | Requirement 连接到 Feature、Use Case、Diagram、Acceptance Evidence 和 Owner | 支持材料 |
@@ -114,7 +117,7 @@ Ad hoc Overall Design、Architecture Analysis/Design、Package 和 Deployment Di
 | I-04 | Interaction Diagram | 1 张，优先使用 Sequence Diagram |
 | I-05 | State Machine Diagram | 1 张生命周期模型 |
 
-这五项必须描述同一业务行为。例如，Operations 负责人不能用 Campaign 分流作为 Ad hoc Requirement，却提交 Supplier Offer 的 State Machine。
+这五项必须描述同一业务行为。例如，Operations 负责人不能把 UC-08 的营销方案设计作为 Ad hoc Requirement，却提交前台接待与分流的 State Machine。
 
 ## 7. 个人图分配
 
@@ -140,7 +143,7 @@ Ad hoc Overall Design、Architecture Analysis/Design、Package 和 Deployment Di
 
 ### Overall Use Case Diagram
 
-Actors 包括 Free Traveller、Paid Traveller、Human Founder/Operator、Tourism Supplier、Travel/Weather/Map Data Provider 和 Advertising Channel。使用 7 个基线 Use Cases，并复用少量 include 行为，例如 Validate Membership、Retrieve Offers、Validate Constraints、Review Proposal、Request Approval 和 Record Trace。
+Actors 包括 Free Traveller、Paid Traveller、Human Founder/Operator、Tourism Supplier、Travel/Weather/Map Data Provider 和 Advertising Channel。使用 8 个基线 Use Cases，并复用少量 include 行为，例如 Validate Membership、Retrieve Offers、Validate Constraints、Review Proposal、Request Approval 和 Record Trace。UC-08 归 Supplier Partnership Agent，基于相关供应商数据提出和评估营销方案；UC-05 与 Advertising Channel 的关系只表示接收带来源标记的 `Campaign Response`。
 
 ### Class Diagram
 
@@ -164,7 +167,7 @@ Actors 包括 Free Traveller、Paid Traveller、Human Founder/Operator、Tourism
 
 | 目标日期 | 结果 |
 | --- | --- |
-| 9 月 2-5 日 | 确认四个 Agent 负责人，冻结 Requirement IDs 和 7 个 Use Cases |
+| 9 月 2-5 日 | 确认四个 Agent 负责人，冻结 Requirement IDs 和 8 个 Use Cases |
 | 9 月 6-11 日 | 完成各 Agent 的 Ad hoc Requirement、Specifications 和三张个人图 |
 | 9 月 12-16 日 | 完成 Feature、Overall Use Case、Class 和 Complex Structure Models |
 | 9 月 17-20 日 | 整合 Report 与 Traceability Matrix，完成跨模型检查 |
@@ -183,7 +186,7 @@ Actors 包括 Free Traveller、Paid Traveller、Human Founder/Operator、Tourism
 
 提交前由全组统一检查：
 
-- Requirement、7 个 Use Cases、Diagrams 和 Video 使用相同的四个 Agent 名称和职责。
+- Requirement、8 个 Use Cases、Diagrams 和 Video 使用相同的四个 Agent 名称和职责。
 - 每位成员至少负责两个 Core Features 和一个 Optional Feature。
 - 每位成员的 Ad hoc Requirement、Use Case Specification、Activity、Interaction 和 State Machine 围绕同一业务行为。
 - Class Diagram 包含行为图中使用的重要对象。
