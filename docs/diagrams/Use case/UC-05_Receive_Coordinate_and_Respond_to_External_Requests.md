@@ -1,165 +1,196 @@
 # UC-05: Receive, Coordinate, and Respond to External Requests
+**Owner / Author:** Jiaheng Guo  
+**Related requirements:** OPS-02, OPS-AH-01  
+**Related diagrams:** AD-01, SD-01, SM-01, G-03
 
-## Identification
+**Name:** Receive, Coordinate, and Respond to External Requests
 
-- **Author:** Jiaheng Guo
-- **Use Case ID:** UC-05
-- **Primary Requirement ID:** OPS-02
-- **Related Requirement ID:** OPS-03
-- **Related Use Cases:** UC-07, UC-08
-- **Related Ad Hoc Diagram ID:** OPS-Ad_Hoc
-- **Overall Use Case Diagram ID:** G-03
+**Goal:** Receive an external request, confirm the required information, coordinate the responsible handler, and deliver an approved and traceable response.
 
-## Use Case Summary
+**Level:** User-goal level
 
-| Template Field | UC-05 Definition |
-| --- | --- |
-| **Name** | Receive, Coordinate, and Respond to External Requests |
-| **Goal** | Receive an external request, confirm the required information, coordinate the responsible handler, and deliver an approved and traceable response. |
-| **Level** | User Goal |
-| **Precondition** | The controlled external interface, processing rules, Case Repository, Agent Trace, and access-control services are available. |
-| **Success Condition** | The response is delivered, the processing record is complete, and the Case reaches `Response Delivered`. |
-| **Failure Condition** | The Case remains open in the relevant waiting or escalation state when processing cannot be completed. |
-| **Trigger** | A customer or Travel Service Provider submits a new request or follow-up message, including a source-tagged `Campaign Response`. |
+**Primary Actors:** Traveller; Travel Service Provider
 
-> **Scope:** UC-05 receives a `Campaign Response` and records its source. UC-08 belongs to the Supplier Partnership Agent and covers supplier-data-based campaign planning, evaluation, budgeting, approval, and publication.
+**Supporting External Actor:** Human Founder/Operator
 
-## Actors
+**Internal Participants:** Operations Agent; Travel Planning Agent; Customer Exception Agent; Supplier Partnership Agent; Entitlement Service; Reviewer/Guardrail; Authentication and Access Control mechanism; Agent Trace
 
-### Primary Actors
+**Preconditions:**
 
-- Customer
-- Travel Service Provider
+1. The controlled external interface is available.
 
-### Supporting Actors and Systems
+2. Request categories, required fields, routing rules, and approval rules are configured.
 
-- Advertising Channel
-- Travel Planning Agent
-- Customer Exception Agent
-- Supplier Partnership Agent
-- Human Founder/Operator
-- Authentication and Access Control mechanism
-- Entitlement Service through UC-07
-- Scheduled Case Review mechanism
+3. The Operations Agent can access the Case Repository, Approved Service Information, Entitlement Service, and Agent Trace.
 
-## Main Success Scenario
+4. Authentication and access-control services are available.
 
-1. A customer or Travel Service Provider submits an operational request through the controlled external interface.
+**Success Condition:** The approved response is delivered through the Operations Agent, the processing and delivery records are stored in the Agent Trace, and the Case is closed.
+
+**Failure Condition:** If the request cannot be verified, confirmed, coordinated, approved, or delivered, the Case remains open in the relevant waiting or escalation state.
+
+**Trigger:** A Traveller or Travel Service Provider submits a new request or follow-up message through the controlled external interface. The request may be a source-tagged Campaign Response.
+
+**Main Success Scenario**
+
+1. The requester submits an external request.
+
 2. The Operations Agent identifies the requester type and request source.
-3. The system creates a `Draft CustomerCase` or `Draft SupplierCase`.
+
+3. The system creates a Draft CustomerCase or SupplierCase.
+
 4. The requester completes the required identity and access checks.
-5. The Operations Agent identifies the intent and extracts the provided information.
-6. Required Field Rules identify missing information, which the Operations Agent obtains from the requester.
-7. The requester confirms the structured request.
-8. The Case enters `Confirmed`.
-9. Routing Rules select the responsible specialist Agent or UC-07, and the hand-off is recorded.
-10. The specialist returns its findings, evidence, unresolved issues, and proposed response.
-11. The Operations Agent reviews the response and obtains Human Approval when required.
-12. The Operations Agent sends the response through the controlled external interface.
-13. The system records delivery and closes the Case with `Response Delivered`.
 
-## Alternative and Error Scenarios
+5. The Operations Agent uses the LLM to identify the request type and extract the available information.
 
-### A1 - Identity is not verified
+6. Deterministic rules identify the required fields for the request type.
 
-An anonymous requester receives application-function information. The Case remains `Draft` until identity and access are verified or Human Assistance is requested.
+7. The Operations Agent obtains any missing information from the requester.
 
-### A2 - Information or intent is unclear
+8. The requester confirms the structured request.
 
-The Operations Agent asks focused questions. Low-confidence classification is referred to Human Assistance if clarification does not resolve it. Multiple independent intents become related Cases after the requester confirms the split.
+9. The system updates the Case to Confirmed.
 
-### A3 - The requester asks for a human
+10. Routing Rules assign the Case to the responsible specialist Agent or the Entitlement Service.
 
-Each explicit request increments `humanRequestCount`. At `humanRequestCount >= 2`, the Case is sent to Human Assistance with the information collected so far.
+11. The Operations Agent records the hand-off and continues tracking the Case.
 
-### A4 - Confirmed information changes
+12. The responsible specialist returns its findings, evidence, and proposed response.
 
-The requester confirms the changed fields. Changes affecting category, routing, risk, or approval conditions require confirmation of the complete summary.
+13. The Operations Agent checks the response against the confirmed request, available evidence, business rules, and approval status.
 
-### A5 - Specialist coordination is interrupted
+14. Human Approval is obtained when the response contains a restricted commitment.
 
-If more information is required, the Case enters `Awaiting Requester`. If the specialist is unavailable, the Case remains open and is referred to Human Assistance.
+15. The Operations Agent sends the approved response through the controlled external interface.
 
-### A6 - Review or approval requires revision
+16. The system records the delivery and closes the Case.
 
-A response that fails review returns to the specialist with the reason. A restricted commitment places the Case in `Awaiting Human Approval` until the Human Founder/Operator approves, edits, rejects, or takes over the response.
+**Alternative and Error Flows**
 
-### A7 - Delivery does not complete
+**A1. Routine enquiry (at Steps 5-10)**
 
-The Case remains `Ready to Respond` while delivery is retried. Persistent failure is referred to Human Assistance.
+If the request can be answered using Approved Service Information, the Operations Agent prepares and sends the response without specialist coordination.
 
-### A8 - The Case becomes inactive or is withdrawn
+**A2. Identity cannot be verified (at Step 4)**
 
-A Case in `Awaiting Requester` for more than 30 calendar days is reported once to Human Assistance for a continue-waiting or archive decision. A confirmed withdrawal closes the Case with `Requester Withdrawn`.
+The Case remains in Draft. Protected Case, membership, or supplier information is processed after verification is completed.
 
-### A9 - The requester replies to an Archived Case
+**A3. Required information is missing (at Steps 5-7)**
 
-After access verification, the Operations Agent creates a linked Draft branch Case. The archive remains read-only, and the new Case starts with its own `humanRequestCount`.
+The Operations Agent asks focused questions and continues intake after the requester supplies the missing information.
 
-## Business Rules
+**A4. Classification confidence is low (at Step 5)**
 
-1. The Operations Agent is the controlled external communication gateway.
+The Operations Agent asks the requester to clarify the intent. If the intent remains unclear, the Case is sent to Human Assistance.
+
+**A5. The request contains multiple independent intents (at Steps 5-8)**
+
+The Operations Agent proposes separate but related Cases. The Cases are created after the requester confirms the split.
+
+**A6. Confirmed information changes (after Step 8)**
+
+The Operations Agent updates the affected fields and obtains confirmation. If the change affects category, routing, risk, or approval conditions, the requester confirms the complete request summary again.
+
+**A7. The specialist requires more information (at Step 12)**
+
+The Case enters Awaiting Requester. The Operations Agent obtains and confirms the additional information before returning it to the specialist.
+
+**A8. The specialist is unavailable (at Steps 10-12)**
+
+The Case remains open and is sent to Human Assistance with the request details and recorded coordination failure.
+
+**A9. The proposed response fails review (at Step 13)**
+
+The Operations Agent returns the response to the responsible specialist with the revision reason.
+
+**A10. Human Approval is required (at Step 14)**
+
+The Case enters Awaiting Human Approval. The Human Founder/Operator may approve, edit, reject, or take over the response.
+
+**A11. Delivery fails (at Steps 15-16)**
+
+The Case remains Ready to Respond while delivery is retried. Persistent delivery failure is sent to Human Assistance.
+
+**A12. The requester withdraws the request (at any step before closure)**
+
+The withdrawal is recorded and the Case is closed as Requester Withdrawn.
+
+**Business Rules**
+
+1. The Operations Agent is TripMate AI’s controlled external communication gateway.
+
 2. Protected processing requires verified identity and access.
-3. Required information must be complete and confirmed before specialist coordination.
-4. Identity, membership, contractual, financial, refund, and compensation decisions use the relevant deterministic rule or authorised human decision.
-5. `classificationConfidence < configuredThreshold` starts clarification or escalation.
-6. Specialist results require Operations review; restricted commitments require Human Approval.
-7. Confirmations, tool results, routing, decisions, messages, hand-offs, and state changes are recorded in the Agent Trace.
 
-## Tools and Data
+3. Required information must be complete and confirmed before specialist coordination begins.
+
+4. The LLM may classify requests, extract information, identify missing fields, and explain results.
+
+5. Deterministic rules define required fields, membership entitlements, routing conditions, and approval requirements.
+
+6. Planning and revision requests are routed to the Travel Planning Agent.
+
+7. Disruptions and complaints are routed to the Customer Exception Agent.
+
+8. Supplier cooperation, inventory, offer, and price-related requests are routed to the Supplier Partnership Agent.
+
+9. Membership checks are handled through the Entitlement Service.
+
+10. Specialist responses are reviewed by the Operations Agent before delivery.
+
+11. Restricted financial, contractual, legal, access, refund, or compensation decisions require Human Approval.
+
+12. If humanRequestCount >= 2, the Case is sent to Human Assistance.
+
+13. Confirmations, classifications, tool results, routing decisions, hand-offs, approvals, responses, and closure events are recorded in the Agent Trace.
+
+**Tools and Data**
 
 - Controlled External Interface
-- Campaign Response source metadata
+
 - LLM Classification Output
+
 - Authentication and Access Control mechanism
+
 - Required Field Rules
-- Configured Threshold Store
+
 - Routing Rules
-- OperationCase Repository
+
+- CustomerCase and SupplierCase Repository
+
 - Approved Service Information
-- Agent Trace
+
+- Entitlement Service
+
 - Specialist Findings and Proposed Responses
+
 - Human Assistance Queue
+
 - Human Approval Record
-- Scheduled Case Review mechanism
-- Archived Case Store
-- Entitlement Service through UC-07
 
-## Approval Conditions
+- Agent Trace
 
-Human Approval is required when a response contains a contract, binding commercial term, financial commitment, refund, compensation, restricted access decision, or other legal or public commitment.
+**Acceptance Criteria**
 
-Routine acknowledgements, clarification questions, and factual status updates follow the routine communication check.
+**AC-UC05-01 — Request intake**
 
-## Acceptance Criteria
+Given an external request, when the Operations Agent begins intake, then a Draft CustomerCase or SupplierCase is created with the requester type and request source.
 
-### AC-UC05-01 - Intake and confirmation
+**AC-UC05-02 — Information confirmation**
 
-Given an external request, when intake is complete, then a Draft Case exists with a confirmed intent and all required information.
+Given a Draft Case, when all required information has been collected and confirmed by the requester, then the Case becomes eligible for routing.
 
-### AC-UC05-02 - Access control
+**AC-UC05-03 — Routing**
 
-Given protected processing, when the Case proceeds, then verified identity and access are recorded.
+Given a confirmed request, when Routing Rules are applied, then the Case is assigned to the responsible specialist Agent or Entitlement Service and the hand-off is recorded.
 
-### AC-UC05-03 - Routing
+**AC-UC05-04 — Human assistance**
 
-Given a confirmed Case, when Routing Rules are applied, then the Case is assigned to the responsible specialist or UC-07 and the hand-off is traced.
+Given unresolved classification uncertainty or humanRequestCount >= 2, when the escalation rule is met, then the Case is sent to Human Assistance with its available information and escalation reason.
 
-### AC-UC05-04 - Escalation
+**AC-UC05-05 — Response control**
 
-Given unresolved low confidence, specialist unavailability, or `humanRequestCount >= 2`, when the relevant rule is met, then the Case is sent to Human Assistance with its context and reason.
+Given a proposed specialist response, when the Operations Agent reviews it, then only a response that satisfies the confirmed request, evidence, business rules, and approval conditions proceeds to delivery.
 
-### AC-UC05-05 - Approval
+**AC-UC05-06 — Completion**
 
-Given a restricted commitment, when the response is ready, then its approval outcome is recorded before delivery.
-
-### AC-UC05-06 - Completion
-
-Given an approved response, when delivery succeeds, then the result is recorded and the Case reaches `Response Delivered`.
-
-## G-03 Use Case Diagram Alignment
-
-- UC-01, UC-02, UC-03, UC-04, UC-06, and UC-07 conditionally extend UC-05 according to the confirmed intent.
-- Advertising Channel is associated with UC-08 and UC-05.
-- UC-08 and UC-05 have no direct use-case association.
-- All business Agents remain inside the TripMate AI system boundary.
+Given an approved response, when delivery succeeds, then the response and delivery result are recorded and the Case is closed.
