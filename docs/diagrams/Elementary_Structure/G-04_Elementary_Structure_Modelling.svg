@@ -1,0 +1,706 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="5204.0" height="6041" viewBox="0 0 5204.0 6041">
+<defs><marker id="open" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto-start-reverse"><path d="M0,0 L9,3 L0,6" fill="none" stroke="#444"/></marker><marker id="triangle" markerWidth="12" markerHeight="12" refX="10" refY="5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="white" stroke="#444"/></marker><marker id="diamond" markerWidth="14" markerHeight="10" refX="1" refY="5" orient="auto-start-reverse"><path d="M1,5 L6,1 L11,5 L6,9 z" fill="#444" stroke="#444"/></marker><marker id="whiteDiamond" markerWidth="14" markerHeight="10" refX="1" refY="5" orient="auto-start-reverse"><path d="M1,5 L6,1 L11,5 L6,9 z" fill="white" stroke="#444"/></marker></defs>
+<rect width="100%" height="100%" fill="white"/>
+<text x="2602.0" y="38" text-anchor="middle" font-family="Arial" font-size="28" font-weight="bold" fill="#263246">TripMate AI - Elementary Structure Model</text>
+<polyline points="4425.832,1852.0 4425.832,2016 3218.7394285714286,2016 3218.7394285714286,1903.0" fill="none" stroke="#445064" stroke-width="1.2" marker-end="url(#triangle)"/>
+<text x="3827.2857142857147" y="2010.0" font-family="Arial" font-size="11" fill="#263246" stroke="white" stroke-width="4" paint-order="stroke"></text>
+<polyline points="1834.664,2541.0 1834.664,2034 3287.478857142857,2034 3287.478857142857,1903.0" fill="none" stroke="#445064" stroke-width="1.2" marker-end="url(#triangle)"/>
+<text x="2566.0714285714284" y="2028.0" font-family="Arial" font-size="11" fill="#263246" stroke="white" stroke-width="4" paint-order="stroke"></text>
+<polyline points="1499.496,1304.0 1499.496,1366 2620.504,1366 2620.504,1304.0" fill="none" stroke="#445064" stroke-width="1.2" marker-end="url(#triangle)"/>
+<text x="2065.0" y="1360.0" font-family="Arial" font-size="11" fill="#263246" stroke="white" stroke-width="4" paint-order="stroke"></text>
+<polyline points="2065.328,1321.0 2065.328,1384 2680.672,1384 2680.672,1304.0" fill="none" stroke="#445064" stroke-width="1.2" marker-end="url(#triangle)"/>
+<text x="2378.0" y="1378.0" font-family="Arial" font-size="11" fill="#263246" stroke="white" stroke-width="4" paint-order="stroke"></text>
+<polyline points="3245.16,1287.0 3245.16,1402 2740.84,1402 2740.84,1304.0" fill="none" stroke="#445064" stroke-width="1.2" marker-end="url(#triangle)"/>
+<text x="2998.0" y="1396.0" font-family="Arial" font-size="11" fill="#263246" stroke="white" stroke-width="4" paint-order="stroke"></text>
+<polyline points="3818.992,1321.0 3818.992,1420 2801.008,1420 2801.008,1304.0" fill="none" stroke="#445064" stroke-width="1.2" marker-end="url(#triangle)"/>
+<text x="3315.0" y="1414.0" font-family="Arial" font-size="11" fill="#263246" stroke="white" stroke-width="4" paint-order="stroke"></text>
+<polyline points="884.824,1886.0 884.824,2070 2657.176,2070 2657.176,1971.0" fill="none" stroke="#445064" stroke-width="1.2" marker-end="url(#open)"/>
+<text x="1776.0" y="2064.0" font-family="Arial" font-size="11" fill="#263246" stroke="white" stroke-width="4" paint-order="stroke">submits</text>
+<polyline points="2423.656,2541.0 2423.656,2088 2753.344,2088 2753.344,1971.0" fill="none" stroke="#445064" stroke-width="1.2" marker-end="url(#open)"/>
+<text x="2428.656" y="2308.5" font-family="Arial" font-size="11" fill="#263246" stroke="white" stroke-width="4" paint-order="stroke">submits</text>
+<polyline points="2846.488,1971.0 2846.488,2124 3357.2262857142855,2124 3357.2262857142855,1903.0" fill="none" stroke="#445064" stroke-width="1.2" marker-end="url(#open)"/>
+<text x="3106.8571428571427" y="2118.0" font-family="Arial" font-size="11" fill="#263246" stroke="white" stroke-width="4" paint-order="stroke">produces after confirmation</text>
+<polyline points="3422.6057142857144,1903.0 3422.6057142857144,2142 3901.68,2142 3901.68,1937.0" fill="none" stroke="#445064" stroke-width="1.2" marker-end="url(#open)" marker-start="url(#diamond)"/>
+<text x="3667.142857142857" y="2136.0" font-family="Arial" font-size="11" fill="#263246" stroke="white" stroke-width="4" paint-order="stroke">retains</text>
+<polyline points="4058.152,1729.0 4058.152,1438 2861.848,1438 2861.848,1304.0" fill="none" stroke="#445064" stroke-width="1.2" marker-end="url(#open)"/>
+<text x="3465.0" y="1432.0" font-family="Arial" font-size="11" fill="#263246" stroke="white" stroke-width="4" paint-order="stroke">assigns</text>
+<polyline points="979.984,1886.0 979.984,2160 1542.016,2160 1542.016,1869.0" fill="none" stroke="#445064" stroke-width="1.2" marker-end="url(#open)"/>
+<text x="1266.0" y="2154.0" font-family="Arial" font-size="11" fill="#263246" stroke="white" stroke-width="4" paint-order="stroke">holds</text>
+<polyline points="1697.816,1869.0 1697.816,2178 2212.184,2178 2212.184,1886.0" fill="none" stroke="#445064" stroke-width="1.2" marker-end="url(#open)"/>
+<text x="1960.0" y="2172.0" font-family="Arial" font-size="11" fill="#263246" stroke="white" stroke-width="4" paint-order="stroke">applies</text>
+<polyline points="1075.648,1886.0 1075.648,2196 690,2196 690,2760 888.352,2760 888.352,2997.0" fill="none" stroke="#445064" stroke-width="1.2" marker-end="url(#open)" marker-start="url(#open)"/>
+<text x="695.0" y="2472.0" font-family="Arial" font-size="11" fill="#263246" stroke="white" stroke-width="4" paint-order="stroke">owns</text>
+<polyline points="979.48,3154.0 979.48,3267 1426.1563636363637,3267 1426.1563636363637,3222.0" fill="none" stroke="#445064" stroke-width="1.2" marker-end="url(#open)" marker-start="url(#diamond)"/>
+<text x="1207.818181818182" y="3261.0" font-family="Arial" font-size="11" fill="#263246" stroke="white" stroke-width="4" paint-order="stroke">contains</text>
+<polyline points="1464.5847272727274,3222.0 1464.5847272727274,3285 2722.688,3285 2722.688,3171.0" fill="none" stroke="#445064" stroke-width="1.2" marker-end="url(#open)" marker-start="url(#diamond)"/>
+<text x="2098.636363636364" y="3279.0" font-family="Arial" font-size="11" fill="#263246" stroke="white" stroke-width="4" paint-order="stroke">comprises</text>
+<polyline points="2877.1440000000002,3171.0 2877.1440000000002,3303 3206.1893333333333,3303 3206.1893333333333,3222.0" fill="none" stroke="#445064" stroke-width="1.2" marker-end="url(#open)"/>
+<text x="3046.666666666667" y="3297.0" font-family="Arial" font-size="11" fill="#263246" stroke="white" stroke-width="4" paint-order="stroke">selects</text>
+<polyline points="2581.976,2698.0 2581.976,2778 3259.690666666667,2778 3259.690666666667,2997.0" fill="none" stroke="#445064" stroke-width="1.2" marker-end="url(#open)" marker-start="url(#open)"/>
+<text x="2925.8333333333335" y="2772.0" font-family="Arial" font-size="11" fill="#263246" stroke="white" stroke-width="4" paint-order="stroke">provides</text>
+<polyline points="3306.808,3222.0 3306.808,3321 3983.192,3321 3983.192,3137.0" fill="none" stroke="#445064" stroke-width="1.2" marker-end="url(#open)"/>
+<text x="3650.0" y="3315.0" font-family="Arial" font-size="11" fill="#263246" stroke="white" stroke-width="4" paint-order="stroke">offers</text>
+<polyline points="3359.9733333333334,3222.0 3359.9733333333334,3339 4573.36,3339 4573.36,3205.0" fill="none" stroke="#445064" stroke-width="1.2" marker-end="url(#open)" marker-start="url(#diamond)"/>
+<text x="3971.6666666666665" y="3333.0" font-family="Arial" font-size="11" fill="#263246" stroke="white" stroke-width="4" paint-order="stroke">owns history</text>
+<polyline points="4518.472,1852.0 4518.472,2214 4910.0,2214 4910.0,4080 862.0994285714286,4080 862.0994285714286,4335.0" fill="none" stroke="#445064" stroke-width="1.2" marker-end="url(#open)"/>
+<text x="2891.0497142857143" y="4074.0" font-family="Arial" font-size="11" fill="#263246" stroke="white" stroke-width="4" paint-order="stroke">opens</text>
+<polyline points="923.4468571428572,4492.0 923.4468571428572,4656 1543.696,4656 1543.696,4509.0" fill="none" stroke="#445064" stroke-width="1.2" marker-end="url(#open)" marker-start="url(#diamond)"/>
+<text x="1238.5714285714284" y="4650.0" font-family="Arial" font-size="11" fill="#263246" stroke="white" stroke-width="4" paint-order="stroke">investigates</text>
+<polyline points="991.8502857142857,4492.0 991.8502857142857,4674 2133.864,4674 2133.864,4526.0" fill="none" stroke="#445064" stroke-width="1.2" marker-end="url(#open)"/>
+<text x="1567.857142857143" y="4668.0" font-family="Arial" font-size="11" fill="#263246" stroke="white" stroke-width="4" paint-order="stroke">produces</text>
+<polyline points="1060.2537142857143,4492.0 1060.2537142857143,4692 2804.032,4692 2804.032,4509.0" fill="none" stroke="#445064" stroke-width="1.2" marker-end="url(#open)"/>
+<text x="1937.1428571428573" y="4686.0" font-family="Arial" font-size="11" fill="#263246" stroke="white" stroke-width="4" paint-order="stroke">produces</text>
+<polyline points="3225.8,4335.0 3225.8,4098 4928.0,4098 4928.0,3357 3420.866666666667,3357 3420.866666666667,3222.0" fill="none" stroke="#445064" stroke-width="1.2" marker-end="url(#open)" marker-start="url(#whiteDiamond)"/>
+<text x="4081.9" y="4092.0" font-family="Arial" font-size="11" fill="#263246" stroke="white" stroke-width="4" paint-order="stroke">selected offers</text>
+<polyline points="2915.632,1304.0 2915.632,1474 672,1474 672,4710 1504.368,4710 1504.368,5073.0" fill="none" stroke="#445064" stroke-width="1.2" marker-end="url(#open)"/>
+<text x="677.0" y="3086.0" font-family="Arial" font-size="11" fill="#263246" stroke="white" stroke-width="4" paint-order="stroke">executes</text>
+<polyline points="2975.464,1147.0 2975.464,892 654,892 654,290 1544.536,290 1544.536,245.0" fill="none" stroke="#445064" stroke-width="1.2" marker-end="url(#open)" stroke-dasharray="6 4"/>
+<text x="1819.732" y="886.0" font-family="Arial" font-size="11" fill="#263246" stroke="white" stroke-width="4" paint-order="stroke">«uses»</text>
+<polyline points="1615.296,1147.0 1615.296,910 636,910 636,308 2134.704,308 2134.704,228.0" fill="none" stroke="#445064" stroke-width="1.2" marker-end="url(#open)" stroke-dasharray="6 4"/>
+<text x="1390.352" y="302.0" font-family="Arial" font-size="11" fill="#263246" stroke="white" stroke-width="4" paint-order="stroke">«uses»</text>
+<polyline points="2157.128,1147.0 2157.128,928 4946.0,928 4946.0,326 2660.872,326 2660.872,245.0" fill="none" stroke="#445064" stroke-width="1.2" marker-end="url(#open)" stroke-dasharray="6 4"/>
+<text x="3556.5640000000003" y="922.0" font-family="Arial" font-size="11" fill="#263246" stroke="white" stroke-width="4" paint-order="stroke">«uses»</text>
+<polyline points="3336.96,1147.0 3336.96,946 4964.0,946 4964.0,344 3841.04,344 3841.04,211.0" fill="none" stroke="#445064" stroke-width="1.2" marker-end="url(#open)" stroke-dasharray="6 4"/>
+<text x="4155.48" y="940.0" font-family="Arial" font-size="11" fill="#263246" stroke="white" stroke-width="4" paint-order="stroke">«uses»</text>
+<polyline points="3894.792,1147.0 3894.792,964 4982.0,964 4982.0,362 3315.208,362 3315.208,228.0" fill="none" stroke="#445064" stroke-width="1.2" marker-end="url(#open)" stroke-dasharray="6 4"/>
+<text x="4153.604" y="356.0" font-family="Arial" font-size="11" fill="#263246" stroke="white" stroke-width="4" paint-order="stroke">«uses»</text>
+<polyline points="3894.624,707.0 3894.624,380 3937.376,380 3937.376,211.0" fill="none" stroke="#445064" stroke-width="1.2" marker-end="url(#triangle)" stroke-dasharray="6 4"/>
+<text x="3899.624" y="537.5" font-family="Arial" font-size="11" fill="#263246" stroke="white" stroke-width="4" paint-order="stroke"></text>
+<polyline points="1168.4560000000001,1886.0 1168.4560000000001,2232 3610.544,2232 3610.544,2541.0" fill="none" stroke="#445064" stroke-width="1.2" marker-end="url(#open)"/>
+<text x="2394.5" y="2226.0" font-family="Arial" font-size="11" fill="#263246" stroke="white" stroke-width="4" paint-order="stroke">receives</text>
+<polyline points="2204.288,707.0 2204.288,416 2295.712,416 2295.712,228.0" fill="none" stroke="#445064" stroke-width="1.2" marker-end="url(#triangle)" stroke-dasharray="6 4"/>
+<text x="2209.288" y="555.5" font-family="Arial" font-size="11" fill="#263246" stroke="white" stroke-width="4" paint-order="stroke"></text>
+<polyline points="4612.12,1852.0 4612.12,2268 618,2268 618,3375 2725.88,3375 2725.88,3810.0" fill="none" stroke="#445064" stroke-width="1.2" marker-end="url(#open)" marker-start="url(#diamond)"/>
+<text x="2620.06" y="2262.0" font-family="Arial" font-size="11" fill="#263246" stroke="white" stroke-width="4" paint-order="stroke">captures</text>
+<polyline points="2873.9519999999998,4035.0 2873.9519999999998,4116 2136.048,4116 2136.048,3984.0" fill="none" stroke="#445064" stroke-width="1.2" marker-end="url(#open)" marker-start="url(#diamond)"/>
+<text x="2510.0" y="4110.0" font-family="Arial" font-size="11" fill="#263246" stroke="white" stroke-width="4" paint-order="stroke">normalises to</text>
+<polyline points="2251.784,1321.0 2251.784,1492 600,1492 600,2814 1084.216,2814 1084.216,2997.0" fill="none" stroke="#445064" stroke-width="1.2" marker-end="url(#open)"/>
+<text x="1430.892" y="1486.0" font-family="Arial" font-size="11" fill="#263246" stroke="white" stroke-width="4" paint-order="stroke">creates</text>
+<polyline points="2123.616,3154.0 2123.616,3393 1517.293090909091,3393 1517.293090909091,3222.0" fill="none" stroke="#445064" stroke-width="1.2" marker-end="url(#open)"/>
+<text x="1825.4545454545455" y="3387.0" font-family="Arial" font-size="11" fill="#263246" stroke="white" stroke-width="4" paint-order="stroke">baseline</text>
+<polyline points="1547.9934545454546,3222.0 1547.9934545454546,3411 3396.552,3411 3396.552,3810.0" fill="none" stroke="#445064" stroke-width="1.2" marker-end="url(#open)"/>
+<text x="2477.2727272727275" y="3405.0" font-family="Arial" font-size="11" fill="#263246" stroke="white" stroke-width="4" paint-order="stroke">validated by</text>
+<polyline points="3431.2799999999997,1287.0 3431.2799999999997,1510 5000.0,1510 5000.0,4134 1139.577142857143,4134 1139.577142857143,4335.0" fill="none" stroke="#445064" stroke-width="1.2" marker-end="url(#open)"/>
+<text x="3074.7885714285712" y="4128.0" font-family="Arial" font-size="11" fill="#263246" stroke="white" stroke-width="4" paint-order="stroke">handles</text>
+<polyline points="2283.112,4335.0 2283.112,4152 582,4152 582,3447 1605.0698181818182,3447 1605.0698181818182,3222.0" fill="none" stroke="#445064" stroke-width="1.2" marker-end="url(#open)"/>
+<text x="1437.556" y="4146.0" font-family="Arial" font-size="11" fill="#263246" stroke="white" stroke-width="4" paint-order="stroke">proposes</text>
+<polyline points="1194.3725714285715,4492.0 1194.3725714285715,4728 2687.056,4728 2687.056,5073.0" fill="none" stroke="#445064" stroke-width="1.2" marker-end="url(#open)"/>
+<text x="1945.7142857142858" y="4722.0" font-family="Arial" font-size="11" fill="#263246" stroke="white" stroke-width="4" paint-order="stroke">collects</text>
+<polyline points="3462.776,3222.0 3462.776,3465 5018.0,3465 5018.0,4764 2807.224,4764 2807.224,5073.0" fill="none" stroke="#445064" stroke-width="1.2" marker-end="url(#open)"/>
+<text x="3917.612" y="4758.0" font-family="Arial" font-size="11" fill="#263246" stroke="white" stroke-width="4" paint-order="stroke">supported by</text>
+<polyline points="3382.608,707.0 3382.608,452 3477.392,452 3477.392,228.0" fill="none" stroke="#445064" stroke-width="1.2" marker-end="url(#triangle)" stroke-dasharray="6 4"/>
+<text x="3387.608" y="573.5" font-family="Arial" font-size="11" fill="#263246" stroke="white" stroke-width="4" paint-order="stroke"></text>
+<polyline points="3007.44,2715.0 3007.44,2832 5036.0,2832 5036.0,4170 3907.56,4170 3907.56,4335.0" fill="none" stroke="#445064" stroke-width="1.2" marker-end="url(#open)"/>
+<text x="4026.7200000000003" y="2826.0" font-family="Arial" font-size="11" fill="#263246" stroke="white" stroke-width="4" paint-order="stroke">submits</text>
+<polyline points="4052.272,4543.0 4052.272,4782 3317.728,4782 3317.728,4611.0" fill="none" stroke="#445064" stroke-width="1.2" marker-end="url(#open)"/>
+<text x="3690.0" y="4776.0" font-family="Arial" font-size="11" fill="#263246" stroke="white" stroke-width="4" paint-order="stroke">drives</text>
+<polyline points="3382.104,4611.0 3382.104,4800 4497.896,4800 4497.896,4492.0" fill="none" stroke="#445064" stroke-width="1.2" marker-end="url(#open)" marker-start="url(#diamond)"/>
+<text x="3945.0" y="4794.0" font-family="Arial" font-size="11" fill="#263246" stroke="white" stroke-width="4" paint-order="stroke">defines</text>
+<polyline points="4641.936,4335.0 4641.936,4188 5054.0,4188 5054.0,3483 3531.3973333333333,3483 3531.3973333333333,3222.0" fill="none" stroke="#445064" stroke-width="1.2" marker-end="url(#open)"/>
+<text x="4297.698666666667" y="3477.0" font-family="Arial" font-size="11" fill="#263246" stroke="white" stroke-width="4" paint-order="stroke">applies to</text>
+<polyline points="1611.768,5247.0 1611.768,5326 2218.232,5326 2218.232,5246.0" fill="none" stroke="#445064" stroke-width="1.2" marker-end="url(#open)" marker-start="url(#diamond)"/>
+<text x="1920.0" y="5320.0" font-family="Arial" font-size="11" fill="#263246" stroke="white" stroke-width="4" paint-order="stroke">records</text>
+<polyline points="1611.6,707.0 1611.6,488 1708.4,488 1708.4,245.0" fill="none" stroke="#445064" stroke-width="1.2" marker-end="url(#triangle)" stroke-dasharray="6 4"/>
+<text x="1713.4" y="360.5" font-family="Arial" font-size="11" fill="#263246" stroke="white" stroke-width="4" paint-order="stroke"></text>
+<polyline points="4051.432,830.0 4051.432,982 5072.0,982 5072.0,4818 3318.568,4818 3318.568,5073.0" fill="none" stroke="#445064" stroke-width="1.2" marker-end="url(#open)"/>
+<text x="5077.0" y="2894.0" font-family="Arial" font-size="11" fill="#263246" stroke="white" stroke-width="4" paint-order="stroke">creates</text>
+<polyline points="3461.264,5264.0 3461.264,5344 2928.736,5344 2928.736,5229.0" fill="none" stroke="#445064" stroke-width="1.2" marker-end="url(#open)"/>
+<text x="3200.0" y="5338.0" font-family="Arial" font-size="11" fill="#263246" stroke="white" stroke-width="4" paint-order="stroke">considers</text>
+<polyline points="3166.096,2715.0 3166.096,2850 5090.0,2850 5090.0,4836 3908.904,4836 3908.904,5073.0" fill="none" stroke="#445064" stroke-width="1.2" marker-end="url(#open)"/>
+<text x="5095.0" y="3837.0" font-family="Arial" font-size="11" fill="#263246" stroke="white" stroke-width="4" paint-order="stroke">decides</text>
+<polyline points="2790.928,707.0 2790.928,524 2761.072,524 2761.072,245.0" fill="none" stroke="#445064" stroke-width="1.2" marker-end="url(#triangle)" stroke-dasharray="6 4"/>
+<text x="2766.072" y="378.5" font-family="Arial" font-size="11" fill="#263246" stroke="white" stroke-width="4" paint-order="stroke"></text>
+<polyline points="3483.617142857143,1903.0 3483.617142857143,2286 564,2286 564,4854 1749.24,4854 1749.24,5073.0" fill="none" stroke="#445064" stroke-width="1.2" marker-end="url(#open)"/>
+<text x="2028.8085714285714" y="2280.0" font-family="Arial" font-size="11" fill="#263246" stroke="white" stroke-width="4" paint-order="stroke">processed by</text>
+<polyline points="3552.020571428571,1903.0 3552.020571428571,2304 3774.408,2304 3774.408,2541.0" fill="none" stroke="#445064" stroke-width="1.2" marker-end="url(#open)"/>
+<text x="3557.020571428571" y="2097.5" font-family="Arial" font-size="11" fill="#263246" stroke="white" stroke-width="4" paint-order="stroke">requires</text>
+<polyline points="4704.424,1852.0 4704.424,2340 546,2340 546,2868 1183.576,2868 1183.576,2997.0" fill="none" stroke="#445064" stroke-width="1.2" marker-end="url(#open)"/>
+<text x="2630.212" y="2334.0" font-family="Arial" font-size="11" fill="#263246" stroke="white" stroke-width="4" paint-order="stroke">concerns</text>
+<polyline points="1985.2559999999999,2664.0 1985.2559999999999,2886 3586.4106666666667,2886 3586.4106666666667,2997.0" fill="none" stroke="#445064" stroke-width="1.2" marker-end="url(#open)"/>
+<text x="2790.833333333333" y="2880.0" font-family="Arial" font-size="11" fill="#263246" stroke="white" stroke-width="4" paint-order="stroke">assesses</text>
+<polyline points="1631.9061818181817,3222.0 1631.9061818181817,3501 1695.3665454545453,3501 1695.3665454545453,3222.0" fill="none" stroke="#445064" stroke-width="1.2" marker-end="url(#open)"/>
+<text x="1636.9061818181817" y="3355.5" font-family="Arial" font-size="11" fill="#263246" stroke="white" stroke-width="4" paint-order="stroke">revises</text>
+<polyline points="3969.92,1321.0 3969.92,1528 5108.0,1528 5108.0,4206 3480.08,4206 3480.08,4335.0" fill="none" stroke="#445064" stroke-width="1.2" marker-end="url(#open)"/>
+<text x="5113.0" y="2861.0" font-family="Arial" font-size="11" fill="#263246" stroke="white" stroke-width="4" paint-order="stroke">prepares</text>
+<polyline points="3539.752,4611.0 3539.752,4872 4070.248,4872 4070.248,5073.0" fill="none" stroke="#445064" stroke-width="1.2" marker-end="url(#open)"/>
+<text x="3810.0" y="4866.0" font-family="Arial" font-size="11" fill="#263246" stroke="white" stroke-width="4" paint-order="stroke">approval history</text>
+<polyline points="3523.584,1147.0 3523.584,1000 528,1000 528,560 2858.416,560 2858.416,245.0" fill="none" stroke="#445064" stroke-width="1.2" marker-end="url(#open)" stroke-dasharray="6 4"/>
+<text x="2030.792" y="994.0" font-family="Arial" font-size="11" fill="#263246" stroke="white" stroke-width="4" paint-order="stroke">«uses»</text>
+<polyline points="4049.416,1147.0 4049.416,1018 510,1018 510,578 2954.584,578 2954.584,245.0" fill="none" stroke="#445064" stroke-width="1.2" marker-end="url(#open)" stroke-dasharray="6 4"/>
+<text x="2284.708" y="1012.0" font-family="Arial" font-size="11" fill="#263246" stroke="white" stroke-width="4" paint-order="stroke">«uses»</text>
+<polyline points="2343.248,1147.0 2343.248,1036 492,1036 492,596 4038.752,596 4038.752,211.0" fill="none" stroke="#445064" stroke-width="1.2" marker-end="url(#open)" stroke-dasharray="6 4"/>
+<text x="2270.376" y="590.0" font-family="Arial" font-size="11" fill="#263246" stroke="white" stroke-width="4" paint-order="stroke">«uses»</text>
+<polyline points="4129.08,1147.0 4129.08,1054 5126.0,1054 5126.0,614 4134.92,614 4134.92,211.0" fill="none" stroke="#445064" stroke-width="1.2" marker-end="url(#open)" stroke-dasharray="6 4"/>
+<text x="4632.54" y="1048.0" font-family="Arial" font-size="11" fill="#263246" stroke="white" stroke-width="4" paint-order="stroke">«uses»</text>
+<polyline points="2278.912,3154.0 2278.912,3519 1740.1789090909092,3519 1740.1789090909092,3222.0" fill="none" stroke="#445064" stroke-width="1.2" marker-end="url(#open)"/>
+<text x="2014.5454545454545" y="3513.0" font-family="Arial" font-size="11" fill="#263246" stroke="white" stroke-width="4" paint-order="stroke">revision</text>
+<polyline points="1761.4712727272727,3222.0 1761.4712727272727,3537 2301.256,3537 2301.256,3810.0" fill="none" stroke="#445064" stroke-width="1.2" marker-end="url(#open)"/>
+<text x="2036.3636363636363" y="3531.0" font-family="Arial" font-size="11" fill="#263246" stroke="white" stroke-width="4" paint-order="stroke">applies snapshot</text>
+<polyline points="1688.576,4335.0 1688.576,4224 474,4224 474,3573 1827.7876363636365,3573 1827.7876363636365,3222.0" fill="none" stroke="#445064" stroke-width="1.2" marker-end="url(#open)"/>
+<text x="1155.8938181818182" y="3567.0" font-family="Arial" font-size="11" fill="#263246" stroke="white" stroke-width="4" paint-order="stroke">affects</text>
+<polyline points="1728.408,1304.0 1728.408,1546 2955.592,1546 2955.592,1729.0" fill="none" stroke="#445064" stroke-width="1.2" marker-end="url(#open)"/>
+<text x="2347.0" y="1540.0" font-family="Arial" font-size="11" fill="#263246" stroke="white" stroke-width="4" paint-order="stroke">coordinates</text>
+<text x="894.824" y="1911.0" font-family="Arial" font-size="11" stroke="white" stroke-width="3" paint-order="stroke">0..1</text>
+<text x="2667.176" y="1996.0" font-family="Arial" font-size="11" stroke="white" stroke-width="3" paint-order="stroke">0..*</text>
+<text x="2433.656" y="2523.0" font-family="Arial" font-size="11" stroke="white" stroke-width="3" paint-order="stroke">0..1</text>
+<text x="2763.344" y="1996.0" font-family="Arial" font-size="11" stroke="white" stroke-width="3" paint-order="stroke">0..*</text>
+<text x="2856.488" y="1996.0" font-family="Arial" font-size="11" stroke="white" stroke-width="3" paint-order="stroke">1</text>
+<text x="3367.2262857142855" y="1928.0" font-family="Arial" font-size="11" stroke="white" stroke-width="3" paint-order="stroke">0..*</text>
+<text x="3432.6057142857144" y="1928.0" font-family="Arial" font-size="11" stroke="white" stroke-width="3" paint-order="stroke">1</text>
+<text x="3911.68" y="1962.0" font-family="Arial" font-size="11" stroke="white" stroke-width="3" paint-order="stroke">0..*</text>
+<text x="4068.152" y="1711.0" font-family="Arial" font-size="11" stroke="white" stroke-width="3" paint-order="stroke">0..*</text>
+<text x="2871.848" y="1329.0" font-family="Arial" font-size="11" stroke="white" stroke-width="3" paint-order="stroke">1</text>
+<text x="989.984" y="1911.0" font-family="Arial" font-size="11" stroke="white" stroke-width="3" paint-order="stroke">1</text>
+<text x="1552.016" y="1894.0" font-family="Arial" font-size="11" stroke="white" stroke-width="3" paint-order="stroke">0..*</text>
+<text x="1707.816" y="1894.0" font-family="Arial" font-size="11" stroke="white" stroke-width="3" paint-order="stroke">0..*</text>
+<text x="2222.184" y="1911.0" font-family="Arial" font-size="11" stroke="white" stroke-width="3" paint-order="stroke">1</text>
+<text x="1085.648" y="1911.0" font-family="Arial" font-size="11" stroke="white" stroke-width="3" paint-order="stroke">1</text>
+<text x="898.352" y="2979.0" font-family="Arial" font-size="11" stroke="white" stroke-width="3" paint-order="stroke">0..*</text>
+<text x="989.48" y="3179.0" font-family="Arial" font-size="11" stroke="white" stroke-width="3" paint-order="stroke">1</text>
+<text x="1436.1563636363637" y="3247.0" font-family="Arial" font-size="11" stroke="white" stroke-width="3" paint-order="stroke">0..*</text>
+<text x="1474.5847272727274" y="3247.0" font-family="Arial" font-size="11" stroke="white" stroke-width="3" paint-order="stroke">1</text>
+<text x="2732.688" y="3196.0" font-family="Arial" font-size="11" stroke="white" stroke-width="3" paint-order="stroke">0..*</text>
+<text x="2887.1440000000002" y="3196.0" font-family="Arial" font-size="11" stroke="white" stroke-width="3" paint-order="stroke">0..*</text>
+<text x="3216.1893333333333" y="3247.0" font-family="Arial" font-size="11" stroke="white" stroke-width="3" paint-order="stroke">1</text>
+<text x="2591.976" y="2723.0" font-family="Arial" font-size="11" stroke="white" stroke-width="3" paint-order="stroke">1</text>
+<text x="3269.690666666667" y="2979.0" font-family="Arial" font-size="11" stroke="white" stroke-width="3" paint-order="stroke">0..*</text>
+<text x="3316.808" y="3247.0" font-family="Arial" font-size="11" stroke="white" stroke-width="3" paint-order="stroke">0..*</text>
+<text x="3993.192" y="3162.0" font-family="Arial" font-size="11" stroke="white" stroke-width="3" paint-order="stroke">1</text>
+<text x="3369.9733333333334" y="3247.0" font-family="Arial" font-size="11" stroke="white" stroke-width="3" paint-order="stroke">1</text>
+<text x="4583.36" y="3230.0" font-family="Arial" font-size="11" stroke="white" stroke-width="3" paint-order="stroke">0..*</text>
+<text x="4528.472" y="1877.0" font-family="Arial" font-size="11" stroke="white" stroke-width="3" paint-order="stroke">1</text>
+<text x="872.0994285714286" y="4317.0" font-family="Arial" font-size="11" stroke="white" stroke-width="3" paint-order="stroke">0..1</text>
+<text x="933.4468571428572" y="4517.0" font-family="Arial" font-size="11" stroke="white" stroke-width="3" paint-order="stroke">1</text>
+<text x="1553.696" y="4534.0" font-family="Arial" font-size="11" stroke="white" stroke-width="3" paint-order="stroke">1</text>
+<text x="1001.8502857142857" y="4517.0" font-family="Arial" font-size="11" stroke="white" stroke-width="3" paint-order="stroke">1</text>
+<text x="2143.864" y="4551.0" font-family="Arial" font-size="11" stroke="white" stroke-width="3" paint-order="stroke">0..*</text>
+<text x="1070.2537142857143" y="4517.0" font-family="Arial" font-size="11" stroke="white" stroke-width="3" paint-order="stroke">1</text>
+<text x="2814.032" y="4534.0" font-family="Arial" font-size="11" stroke="white" stroke-width="3" paint-order="stroke">0..*</text>
+<text x="3235.8" y="4317.0" font-family="Arial" font-size="11" stroke="white" stroke-width="3" paint-order="stroke">0..*</text>
+<text x="3430.866666666667" y="3247.0" font-family="Arial" font-size="11" stroke="white" stroke-width="3" paint-order="stroke">0..*</text>
+<text x="2925.632" y="1329.0" font-family="Arial" font-size="11" stroke="white" stroke-width="3" paint-order="stroke">1</text>
+<text x="1514.368" y="5055.0" font-family="Arial" font-size="11" stroke="white" stroke-width="3" paint-order="stroke">0..*</text>
+<text x="1178.4560000000001" y="1911.0" font-family="Arial" font-size="11" stroke="white" stroke-width="3" paint-order="stroke">1</text>
+<text x="3620.544" y="2523.0" font-family="Arial" font-size="11" stroke="white" stroke-width="3" paint-order="stroke">0..*</text>
+<text x="4622.12" y="1877.0" font-family="Arial" font-size="11" stroke="white" stroke-width="3" paint-order="stroke">1</text>
+<text x="2735.88" y="3792.0" font-family="Arial" font-size="11" stroke="white" stroke-width="3" paint-order="stroke">0..1</text>
+<text x="2883.9519999999998" y="4060.0" font-family="Arial" font-size="11" stroke="white" stroke-width="3" paint-order="stroke">1</text>
+<text x="2146.048" y="4009.0" font-family="Arial" font-size="11" stroke="white" stroke-width="3" paint-order="stroke">1</text>
+<text x="2261.784" y="1346.0" font-family="Arial" font-size="11" stroke="white" stroke-width="3" paint-order="stroke">1</text>
+<text x="1094.216" y="2979.0" font-family="Arial" font-size="11" stroke="white" stroke-width="3" paint-order="stroke">0..*</text>
+<text x="2133.616" y="3179.0" font-family="Arial" font-size="11" stroke="white" stroke-width="3" paint-order="stroke">0..*</text>
+<text x="1527.293090909091" y="3247.0" font-family="Arial" font-size="11" stroke="white" stroke-width="3" paint-order="stroke">1</text>
+<text x="1557.9934545454546" y="3247.0" font-family="Arial" font-size="11" stroke="white" stroke-width="3" paint-order="stroke">1</text>
+<text x="3406.552" y="3792.0" font-family="Arial" font-size="11" stroke="white" stroke-width="3" paint-order="stroke">0..*</text>
+<text x="3441.2799999999997" y="1312.0" font-family="Arial" font-size="11" stroke="white" stroke-width="3" paint-order="stroke">1</text>
+<text x="1149.577142857143" y="4317.0" font-family="Arial" font-size="11" stroke="white" stroke-width="3" paint-order="stroke">0..*</text>
+<text x="2293.112" y="4317.0" font-family="Arial" font-size="11" stroke="white" stroke-width="3" paint-order="stroke">0..*</text>
+<text x="1615.0698181818182" y="3247.0" font-family="Arial" font-size="11" stroke="white" stroke-width="3" paint-order="stroke">1</text>
+<text x="1204.3725714285715" y="4517.0" font-family="Arial" font-size="11" stroke="white" stroke-width="3" paint-order="stroke">0..*</text>
+<text x="2697.056" y="5055.0" font-family="Arial" font-size="11" stroke="white" stroke-width="3" paint-order="stroke">0..*</text>
+<text x="3472.776" y="3247.0" font-family="Arial" font-size="11" stroke="white" stroke-width="3" paint-order="stroke">0..*</text>
+<text x="2817.224" y="5055.0" font-family="Arial" font-size="11" stroke="white" stroke-width="3" paint-order="stroke">1..*</text>
+<text x="3017.44" y="2740.0" font-family="Arial" font-size="11" stroke="white" stroke-width="3" paint-order="stroke">1</text>
+<text x="3917.56" y="4317.0" font-family="Arial" font-size="11" stroke="white" stroke-width="3" paint-order="stroke">0..*</text>
+<text x="4062.272" y="4568.0" font-family="Arial" font-size="11" stroke="white" stroke-width="3" paint-order="stroke">1</text>
+<text x="3327.728" y="4636.0" font-family="Arial" font-size="11" stroke="white" stroke-width="3" paint-order="stroke">0..*</text>
+<text x="3392.104" y="4636.0" font-family="Arial" font-size="11" stroke="white" stroke-width="3" paint-order="stroke">1</text>
+<text x="4507.896" y="4517.0" font-family="Arial" font-size="11" stroke="white" stroke-width="3" paint-order="stroke">0..1</text>
+<text x="4651.936" y="4317.0" font-family="Arial" font-size="11" stroke="white" stroke-width="3" paint-order="stroke">0..*</text>
+<text x="3541.3973333333333" y="3247.0" font-family="Arial" font-size="11" stroke="white" stroke-width="3" paint-order="stroke">1..*</text>
+<text x="1621.768" y="5272.0" font-family="Arial" font-size="11" stroke="white" stroke-width="3" paint-order="stroke">1</text>
+<text x="2228.232" y="5271.0" font-family="Arial" font-size="11" stroke="white" stroke-width="3" paint-order="stroke">0..*</text>
+<text x="4061.432" y="855.0" font-family="Arial" font-size="11" stroke="white" stroke-width="3" paint-order="stroke">1</text>
+<text x="3328.568" y="5055.0" font-family="Arial" font-size="11" stroke="white" stroke-width="3" paint-order="stroke">0..*</text>
+<text x="3471.264" y="5289.0" font-family="Arial" font-size="11" stroke="white" stroke-width="3" paint-order="stroke">0..*</text>
+<text x="2938.736" y="5254.0" font-family="Arial" font-size="11" stroke="white" stroke-width="3" paint-order="stroke">1..*</text>
+<text x="3176.096" y="2740.0" font-family="Arial" font-size="11" stroke="white" stroke-width="3" paint-order="stroke">1</text>
+<text x="3918.904" y="5055.0" font-family="Arial" font-size="11" stroke="white" stroke-width="3" paint-order="stroke">0..*</text>
+<text x="3493.617142857143" y="1928.0" font-family="Arial" font-size="11" stroke="white" stroke-width="3" paint-order="stroke">0..1</text>
+<text x="1759.24" y="5055.0" font-family="Arial" font-size="11" stroke="white" stroke-width="3" paint-order="stroke">0..*</text>
+<text x="3562.020571428571" y="1928.0" font-family="Arial" font-size="11" stroke="white" stroke-width="3" paint-order="stroke">1</text>
+<text x="3784.408" y="2523.0" font-family="Arial" font-size="11" stroke="white" stroke-width="3" paint-order="stroke">0..*</text>
+<text x="4714.424" y="1877.0" font-family="Arial" font-size="11" stroke="white" stroke-width="3" paint-order="stroke">0..*</text>
+<text x="1193.576" y="2979.0" font-family="Arial" font-size="11" stroke="white" stroke-width="3" paint-order="stroke">0..1</text>
+<text x="1995.2559999999999" y="2689.0" font-family="Arial" font-size="11" stroke="white" stroke-width="3" paint-order="stroke">0..*</text>
+<text x="3596.4106666666667" y="2979.0" font-family="Arial" font-size="11" stroke="white" stroke-width="3" paint-order="stroke">0..1</text>
+<text x="1641.9061818181817" y="3247.0" font-family="Arial" font-size="11" stroke="white" stroke-width="3" paint-order="stroke">0..*</text>
+<text x="1705.3665454545453" y="3247.0" font-family="Arial" font-size="11" stroke="white" stroke-width="3" paint-order="stroke">0..1</text>
+<text x="3979.92" y="1346.0" font-family="Arial" font-size="11" stroke="white" stroke-width="3" paint-order="stroke">1</text>
+<text x="3490.08" y="4317.0" font-family="Arial" font-size="11" stroke="white" stroke-width="3" paint-order="stroke">0..*</text>
+<text x="3549.752" y="4636.0" font-family="Arial" font-size="11" stroke="white" stroke-width="3" paint-order="stroke">1</text>
+<text x="4080.248" y="5055.0" font-family="Arial" font-size="11" stroke="white" stroke-width="3" paint-order="stroke">0..*</text>
+<text x="2288.912" y="3179.0" font-family="Arial" font-size="11" stroke="white" stroke-width="3" paint-order="stroke">0..*</text>
+<text x="1750.1789090909092" y="3247.0" font-family="Arial" font-size="11" stroke="white" stroke-width="3" paint-order="stroke">1</text>
+<text x="1771.4712727272727" y="3247.0" font-family="Arial" font-size="11" stroke="white" stroke-width="3" paint-order="stroke">0..*</text>
+<text x="2311.256" y="3792.0" font-family="Arial" font-size="11" stroke="white" stroke-width="3" paint-order="stroke">1</text>
+<text x="1698.576" y="4317.0" font-family="Arial" font-size="11" stroke="white" stroke-width="3" paint-order="stroke">0..*</text>
+<text x="1837.7876363636365" y="3247.0" font-family="Arial" font-size="11" stroke="white" stroke-width="3" paint-order="stroke">0..1</text>
+<text x="1738.408" y="1329.0" font-family="Arial" font-size="11" stroke="white" stroke-width="3" paint-order="stroke">1</text>
+<text x="2965.592" y="1711.0" font-family="Arial" font-size="11" stroke="white" stroke-width="3" paint-order="stroke">0..*</text>
+<rect x="1380.0" y="110" width="480" height="135" fill="white" stroke="#445064"/>
+<path d="M 1380.0 154 h 480" stroke="#445064"/>
+<path d="M 1380.0 180 h 480" stroke="#445064"/>
+<text x="1620.0" y="126" text-anchor="middle" font-family="Arial" font-size="11">«interface»</text>
+<text x="1620.0" y="143" text-anchor="middle" font-family="Arial" font-size="13" font-weight="bold">ILLMService</text>
+<text x="1389.0" y="199" font-family="Arial" font-size="12">+extract(input: String, schema: String): ExtractionResult</text>
+<text x="1389.0" y="216" font-family="Arial" font-size="12">+draft(context: String): String</text>
+<text x="1389.0" y="233" font-family="Arial" font-size="12">+explain(result: String): String</text>
+<rect x="1970.0" y="110" width="480" height="118" fill="white" stroke="#445064"/>
+<path d="M 1970.0 154 h 480" stroke="#445064"/>
+<path d="M 1970.0 180 h 480" stroke="#445064"/>
+<text x="2210.0" y="126" text-anchor="middle" font-family="Arial" font-size="11">«interface»</text>
+<text x="2210.0" y="143" text-anchor="middle" font-family="Arial" font-size="13" font-weight="bold">IEntitlementService</text>
+<text x="1979.0" y="199" font-family="Arial" font-size="12">+evaluate(traveller: Traveller, action: RequestedAction, dates:</text>
+<text x="1979.0" y="216" font-family="Arial" font-size="12">  DateRange [0..1]): EntitlementDecision</text>
+<rect x="2560.0" y="110" width="480" height="135" fill="white" stroke="#445064"/>
+<path d="M 2560.0 154 h 480" stroke="#445064"/>
+<path d="M 2560.0 180 h 480" stroke="#445064"/>
+<text x="2800.0" y="126" text-anchor="middle" font-family="Arial" font-size="11">«interface»</text>
+<text x="2800.0" y="143" text-anchor="middle" font-family="Arial" font-size="13" font-weight="bold">IConstraintValidationService</text>
+<text x="2569.0" y="199" font-family="Arial" font-size="12">+validatePlan(version: ItineraryVersion): ValidationResult</text>
+<text x="2569.0" y="216" font-family="Arial" font-size="12">+validateProposal(subject: SubjectRef): ValidationResult</text>
+<text x="2569.0" y="233" font-family="Arial" font-size="12">+validateOffer(offer: SupplierOffer): ValidationResult</text>
+<rect x="3150.0" y="110" width="480" height="118" fill="white" stroke="#445064"/>
+<path d="M 3150.0 154 h 480" stroke="#445064"/>
+<path d="M 3150.0 180 h 480" stroke="#445064"/>
+<text x="3390.0" y="126" text-anchor="middle" font-family="Arial" font-size="11">«interface»</text>
+<text x="3390.0" y="143" text-anchor="middle" font-family="Arial" font-size="13" font-weight="bold">IPricingService</text>
+<text x="3159.0" y="199" font-family="Arial" font-size="12">+calculate(offer: SupplierOffer, discount: Money): PriceBreakdown</text>
+<text x="3159.0" y="216" font-family="Arial" font-size="12">+checkMargin(breakdown: PriceBreakdown): Boolean</text>
+<rect x="3740.0" y="110" width="480" height="101" fill="white" stroke="#445064"/>
+<path d="M 3740.0 154 h 480" stroke="#445064"/>
+<path d="M 3740.0 180 h 480" stroke="#445064"/>
+<text x="3980.0" y="126" text-anchor="middle" font-family="Arial" font-size="11">«interface»</text>
+<text x="3980.0" y="143" text-anchor="middle" font-family="Arial" font-size="13" font-weight="bold">IReviewService</text>
+<text x="3749.0" y="199" font-family="Arial" font-size="12">+review(subject: SubjectRef, evidence: Evidence[*]): ReviewResult</text>
+<rect x="1380.0" y="707" width="480" height="140" fill="white" stroke="#445064"/>
+<path d="M 1380.0 751 h 480" stroke="#445064"/>
+<path d="M 1380.0 782 h 480" stroke="#445064"/>
+<text x="1620.0" y="723" text-anchor="middle" font-family="Arial" font-size="11">«adapter»</text>
+<text x="1620.0" y="740" text-anchor="middle" font-family="Arial" font-size="13" font-weight="bold">LLMAdapter</text>
+<text x="1389.0" y="770" font-family="Arial" font-size="12">-modelReference: String</text>
+<text x="1389.0" y="801" font-family="Arial" font-size="12">+extract(input: String, schema: String): ExtractionResult</text>
+<text x="1389.0" y="818" font-family="Arial" font-size="12">+draft(context: String): String</text>
+<text x="1389.0" y="835" font-family="Arial" font-size="12">+explain(result: String): String</text>
+<rect x="1970.0" y="707" width="480" height="123" fill="white" stroke="#445064"/>
+<path d="M 1970.0 751 h 480" stroke="#445064"/>
+<path d="M 1970.0 782 h 480" stroke="#445064"/>
+<text x="2210.0" y="723" text-anchor="middle" font-family="Arial" font-size="11">«service»</text>
+<text x="2210.0" y="740" text-anchor="middle" font-family="Arial" font-size="13" font-weight="bold">EntitlementService</text>
+<text x="1979.0" y="770" font-family="Arial" font-size="12">-ruleVersion: String</text>
+<text x="1979.0" y="801" font-family="Arial" font-size="12">+evaluate(traveller: Traveller, action: RequestedAction, dates:</text>
+<text x="1979.0" y="818" font-family="Arial" font-size="12">  DateRange [0..1]): EntitlementDecision</text>
+<rect x="2560.0" y="707" width="480" height="140" fill="white" stroke="#445064"/>
+<path d="M 2560.0 751 h 480" stroke="#445064"/>
+<path d="M 2560.0 782 h 480" stroke="#445064"/>
+<text x="2800.0" y="723" text-anchor="middle" font-family="Arial" font-size="11">«service»</text>
+<text x="2800.0" y="740" text-anchor="middle" font-family="Arial" font-size="13" font-weight="bold">ConstraintValidationService</text>
+<text x="2569.0" y="770" font-family="Arial" font-size="12">-ruleSetVersion: String</text>
+<text x="2569.0" y="801" font-family="Arial" font-size="12">+validatePlan(version: ItineraryVersion): ValidationResult</text>
+<text x="2569.0" y="818" font-family="Arial" font-size="12">+validateProposal(subject: SubjectRef): ValidationResult</text>
+<text x="2569.0" y="835" font-family="Arial" font-size="12">+validateOffer(offer: SupplierOffer): ValidationResult</text>
+<rect x="3150.0" y="707" width="480" height="140" fill="white" stroke="#445064"/>
+<path d="M 3150.0 751 h 480" stroke="#445064"/>
+<path d="M 3150.0 799 h 480" stroke="#445064"/>
+<text x="3390.0" y="723" text-anchor="middle" font-family="Arial" font-size="11">«service»</text>
+<text x="3390.0" y="740" text-anchor="middle" font-family="Arial" font-size="13" font-weight="bold">PricingService</text>
+<text x="3159.0" y="770" font-family="Arial" font-size="12">-configVersion: String</text>
+<text x="3159.0" y="787" font-family="Arial" font-size="12">-minimumMargin: Money</text>
+<text x="3159.0" y="818" font-family="Arial" font-size="12">+calculate(offer: SupplierOffer, discount: Money): PriceBreakdown</text>
+<text x="3159.0" y="835" font-family="Arial" font-size="12">+checkMargin(breakdown: PriceBreakdown): Boolean</text>
+<rect x="3740.0" y="707" width="480" height="123" fill="white" stroke="#445064"/>
+<path d="M 3740.0 751 h 480" stroke="#445064"/>
+<path d="M 3740.0 799 h 480" stroke="#445064"/>
+<text x="3980.0" y="723" text-anchor="middle" font-family="Arial" font-size="11">«service»</text>
+<text x="3980.0" y="740" text-anchor="middle" font-family="Arial" font-size="13" font-weight="bold">ReviewerGuardrail</text>
+<text x="3749.0" y="770" font-family="Arial" font-size="12">-reviewerId: String</text>
+<text x="3749.0" y="787" font-family="Arial" font-size="12">-policyVersion: String</text>
+<text x="3749.0" y="818" font-family="Arial" font-size="12">+review(subject: SubjectRef, evidence: Evidence[*]): ReviewResult</text>
+<rect x="1380.0" y="1147" width="480" height="157" fill="white" stroke="#445064"/>
+<path d="M 1380.0 1191 h 480" stroke="#445064"/>
+<path d="M 1380.0 1239 h 480" stroke="#445064"/>
+<text x="1620.0" y="1174" text-anchor="middle" font-family="Arial" font-size="13" font-weight="bold">OperationsAgent</text>
+<text x="1389.0" y="1210" font-family="Arial" font-size="12">-routingRulesVersion: String</text>
+<text x="1389.0" y="1227" font-family="Arial" font-size="12">-requiredFieldRulesVersion: String</text>
+<text x="1389.0" y="1258" font-family="Arial" font-size="12">+intake(request: ExternalRequest): Case[*]</text>
+<text x="1389.0" y="1275" font-family="Arial" font-size="12">+route(case: Case): CaseAssignment</text>
+<text x="1389.0" y="1292" font-family="Arial" font-size="12">+releaseResponse(case: Case): void</text>
+<rect x="1970.0" y="1147" width="480" height="174" fill="white" stroke="#445064"/>
+<path d="M 1970.0 1191 h 480" stroke="#445064"/>
+<path d="M 1970.0 1222 h 480" stroke="#445064"/>
+<text x="2210.0" y="1174" text-anchor="middle" font-family="Arial" font-size="13" font-weight="bold">TravelPlanningAgent</text>
+<text x="1979.0" y="1210" font-family="Arial" font-size="12">-defaultRankingMode: RankingMode</text>
+<text x="1979.0" y="1241" font-family="Arial" font-size="12">+createPlan(request: TravelRequest): TravelPlan</text>
+<text x="1979.0" y="1258" font-family="Arial" font-size="12">+createRevision(baseline: ItineraryVersion, amendment: String):</text>
+<text x="1979.0" y="1275" font-family="Arial" font-size="12">  ItineraryVersion</text>
+<text x="1979.0" y="1292" font-family="Arial" font-size="12">+compareVersions(baseline: ItineraryVersion, revision:</text>
+<text x="1979.0" y="1309" font-family="Arial" font-size="12">  ItineraryVersion): PlanComparison</text>
+<rect x="2560.0" y="1147" width="480" height="157" fill="white" stroke="#445064"/>
+<path d="M 2560.0 1191 h 480" stroke="#445064"/>
+<path d="M 2560.0 1239 h 480" stroke="#445064"/>
+<text x="2800.0" y="1163" text-anchor="middle" font-family="Arial" font-size="11">«abstract»</text>
+<text x="2800.0" y="1180" text-anchor="middle" font-family="Arial" font-size="13" font-weight="bold" font-style="italic">Agent</text>
+<text x="2569.0" y="1210" font-family="Arial" font-size="12">-agentId: String</text>
+<text x="2569.0" y="1227" font-family="Arial" font-size="12">-status: AgentStatus</text>
+<text x="2569.0" y="1258" font-family="Arial" font-size="12">+handleCase(case: Case): AgentResult</text>
+<text x="2569.0" y="1275" font-family="Arial" font-size="12">+requestReview(subject: SubjectRef): ReviewResult</text>
+<text x="2569.0" y="1292" font-family="Arial" font-size="12">+recordTrace(entry: TraceEntry): void</text>
+<rect x="3150.0" y="1147" width="480" height="140" fill="white" stroke="#445064"/>
+<path d="M 3150.0 1191 h 480" stroke="#445064"/>
+<path d="M 3150.0 1222 h 480" stroke="#445064"/>
+<text x="3390.0" y="1174" text-anchor="middle" font-family="Arial" font-size="13" font-weight="bold">CustomerExceptionAgent</text>
+<text x="3159.0" y="1210" font-family="Arial" font-size="12">-confidenceThreshold: Decimal</text>
+<text x="3159.0" y="1241" font-family="Arial" font-size="12">+investigate(issue: ExceptionIssue): ExceptionCase</text>
+<text x="3159.0" y="1258" font-family="Arial" font-size="12">+prepareRecovery(case: ExceptionCase): RecoveryProposal</text>
+<text x="3159.0" y="1275" font-family="Arial" font-size="12">+recommendResolution(case: ExceptionCase): ResolutionRecommendation</text>
+<rect x="3740.0" y="1147" width="480" height="174" fill="white" stroke="#445064"/>
+<path d="M 3740.0 1191 h 480" stroke="#445064"/>
+<path d="M 3740.0 1222 h 480" stroke="#445064"/>
+<text x="3980.0" y="1174" text-anchor="middle" font-family="Arial" font-size="13" font-weight="bold">SupplierPartnershipAgent</text>
+<text x="3749.0" y="1210" font-family="Arial" font-size="12">-pricingConfigVersion: String</text>
+<text x="3749.0" y="1241" font-family="Arial" font-size="12">+assessOffer(case: SupplierCase, evidence: Evidence[*]):</text>
+<text x="3749.0" y="1258" font-family="Arial" font-size="12">  SupplierOffer</text>
+<text x="3749.0" y="1275" font-family="Arial" font-size="12">+prepareCampaign(brief: CampaignBrief): CampaignProposal</text>
+<text x="3749.0" y="1292" font-family="Arial" font-size="12">+summariseReliability(supplier: Supplier, period: DateRange):</text>
+<text x="3749.0" y="1309" font-family="Arial" font-size="12">  SupplierReliabilitySummary</text>
+<rect x="790.0" y="1729" width="480" height="157" fill="white" stroke="#445064"/>
+<path d="M 790.0 1773 h 480" stroke="#445064"/>
+<path d="M 790.0 1821 h 480" stroke="#445064"/>
+<text x="1030.0" y="1756" text-anchor="middle" font-family="Arial" font-size="13" font-weight="bold">Traveller</text>
+<text x="799.0" y="1792" font-family="Arial" font-size="12">-travellerId: String</text>
+<text x="799.0" y="1809" font-family="Arial" font-size="12">-displayName: String</text>
+<text x="799.0" y="1840" font-family="Arial" font-size="12">+submitRequest(content: String): ExternalRequest</text>
+<text x="799.0" y="1857" font-family="Arial" font-size="12">+confirmRequest(requestId: String): void</text>
+<text x="799.0" y="1874" font-family="Arial" font-size="12">+confirmAmendment(amendment: String): void</text>
+<rect x="1380.0" y="1729" width="480" height="140" fill="white" stroke="#445064"/>
+<path d="M 1380.0 1773 h 480" stroke="#445064"/>
+<path d="M 1380.0 1838 h 480" stroke="#445064"/>
+<text x="1620.0" y="1756" text-anchor="middle" font-family="Arial" font-size="13" font-weight="bold">Subscription</text>
+<text x="1389.0" y="1792" font-family="Arial" font-size="12">-subscriptionId: String</text>
+<text x="1389.0" y="1809" font-family="Arial" font-size="12">-status: SubscriptionStatus</text>
+<text x="1389.0" y="1826" font-family="Arial" font-size="12">-validityPeriod: DateRange</text>
+<text x="1389.0" y="1857" font-family="Arial" font-size="12">+isActive(on: Date): Boolean</text>
+<rect x="1970.0" y="1729" width="480" height="157" fill="white" stroke="#445064"/>
+<path d="M 1970.0 1773 h 480" stroke="#445064"/>
+<path d="M 1970.0 1855 h 480" stroke="#445064"/>
+<text x="2210.0" y="1756" text-anchor="middle" font-family="Arial" font-size="13" font-weight="bold">MembershipPlan</text>
+<text x="1979.0" y="1792" font-family="Arial" font-size="12">-planId: String</text>
+<text x="1979.0" y="1809" font-family="Arial" font-size="12">-tier: MembershipTier</text>
+<text x="1979.0" y="1826" font-family="Arial" font-size="12">-featureEntitlements: String[*]</text>
+<text x="1979.0" y="1843" font-family="Arial" font-size="12">{FREE: PLANNED + ACTIVE &lt;= 2; inclusive days &lt;= 5}</text>
+<text x="1979.0" y="1874" font-family="Arial" font-size="12">+allowsFeature(featureId: String): Boolean</text>
+<rect x="2560.0" y="1729" width="480" height="242" fill="white" stroke="#445064"/>
+<path d="M 2560.0 1773 h 480" stroke="#445064"/>
+<path d="M 2560.0 1923 h 480" stroke="#445064"/>
+<text x="2800.0" y="1756" text-anchor="middle" font-family="Arial" font-size="13" font-weight="bold">ExternalRequest</text>
+<text x="2569.0" y="1792" font-family="Arial" font-size="12">-requestId: String</text>
+<text x="2569.0" y="1809" font-family="Arial" font-size="12">-sourceChannel: SourceChannel</text>
+<text x="2569.0" y="1826" font-family="Arial" font-size="12">-classificationConfidence: Decimal</text>
+<text x="2569.0" y="1843" font-family="Arial" font-size="12">-confirmed: Boolean</text>
+<text x="2569.0" y="1860" font-family="Arial" font-size="12">-requesterKind: RequesterKind</text>
+<text x="2569.0" y="1877" font-family="Arial" font-size="12">-sourceCampaignId: String [0..1]</text>
+<text x="2569.0" y="1894" font-family="Arial" font-size="12">{Traveller xor Supplier for direct intake}</text>
+<text x="2569.0" y="1911" font-family="Arial" font-size="12">-humanRequestCount: Integer</text>
+<text x="2569.0" y="1942" font-family="Arial" font-size="12">+identifyMissingFields(): String[*]</text>
+<text x="2569.0" y="1959" font-family="Arial" font-size="12">+confirm(): void</text>
+<rect x="3150.0" y="1729" width="480" height="174" fill="white" stroke="#445064"/>
+<path d="M 3150.0 1773 h 480" stroke="#445064"/>
+<path d="M 3150.0 1855 h 480" stroke="#445064"/>
+<text x="3390.0" y="1745" text-anchor="middle" font-family="Arial" font-size="11">«abstract»</text>
+<text x="3390.0" y="1762" text-anchor="middle" font-family="Arial" font-size="13" font-weight="bold" font-style="italic">Case</text>
+<text x="3159.0" y="1792" font-family="Arial" font-size="12">-caseId: String</text>
+<text x="3159.0" y="1809" font-family="Arial" font-size="12">-status: CaseStatus</text>
+<text x="3159.0" y="1826" font-family="Arial" font-size="12">-createdAt: DateTime</text>
+<text x="3159.0" y="1843" font-family="Arial" font-size="12">-confirmedAt: DateTime</text>
+<text x="3159.0" y="1874" font-family="Arial" font-size="12">+close(reason: ClosureReason): void</text>
+<text x="3159.0" y="1891" font-family="Arial" font-size="12">+escalate(reason: String): void</text>
+<rect x="3740.0" y="1729" width="480" height="208" fill="white" stroke="#445064"/>
+<path d="M 3740.0 1773 h 480" stroke="#445064"/>
+<path d="M 3740.0 1889 h 480" stroke="#445064"/>
+<text x="3980.0" y="1756" text-anchor="middle" font-family="Arial" font-size="13" font-weight="bold">CaseAssignment</text>
+<text x="3749.0" y="1792" font-family="Arial" font-size="12">-role: AssignmentRole</text>
+<text x="3749.0" y="1809" font-family="Arial" font-size="12">-assignedAt: DateTime</text>
+<text x="3749.0" y="1826" font-family="Arial" font-size="12">-releasedAt: DateTime [0..1]</text>
+<text x="3749.0" y="1843" font-family="Arial" font-size="12">-status: AssignmentStatus</text>
+<text x="3749.0" y="1860" font-family="Arial" font-size="12">{active PRIMARY_HANDLER &lt;= 1 per Case}</text>
+<text x="3749.0" y="1877" font-family="Arial" font-size="12">{COORDINATOR must be OperationsAgent}</text>
+<text x="3749.0" y="1908" font-family="Arial" font-size="12">+assign(): void</text>
+<text x="3749.0" y="1925" font-family="Arial" font-size="12">+release(): void</text>
+<rect x="4330.0" y="1729" width="480" height="123" fill="white" stroke="#445064"/>
+<path d="M 4330.0 1773 h 480" stroke="#445064"/>
+<path d="M 4330.0 1821 h 480" stroke="#445064"/>
+<text x="4570.0" y="1756" text-anchor="middle" font-family="Arial" font-size="13" font-weight="bold">CustomerCase</text>
+<text x="4339.0" y="1792" font-family="Arial" font-size="12">-caseType: CustomerCaseType</text>
+<text x="4339.0" y="1809" font-family="Arial" font-size="12">-riskLevel: RiskLevel</text>
+<text x="4339.0" y="1840" font-family="Arial" font-size="12">+requestClarification(question: String): void</text>
+<rect x="1675.0" y="2541" width="480" height="123" fill="white" stroke="#445064"/>
+<path d="M 1675.0 2585 h 480" stroke="#445064"/>
+<path d="M 1675.0 2633 h 480" stroke="#445064"/>
+<text x="1915.0" y="2568" text-anchor="middle" font-family="Arial" font-size="13" font-weight="bold">SupplierCase</text>
+<text x="1684.0" y="2604" font-family="Arial" font-size="12">-caseType: SupplierCaseType</text>
+<text x="1684.0" y="2621" font-family="Arial" font-size="12">-supplierReference: String</text>
+<text x="1684.0" y="2652" font-family="Arial" font-size="12">+requestSupplierCorrection(reason: String): void</text>
+<rect x="2265.0" y="2541" width="480" height="157" fill="white" stroke="#445064"/>
+<path d="M 2265.0 2585 h 480" stroke="#445064"/>
+<path d="M 2265.0 2650 h 480" stroke="#445064"/>
+<text x="2505.0" y="2568" text-anchor="middle" font-family="Arial" font-size="13" font-weight="bold">Supplier</text>
+<text x="2274.0" y="2604" font-family="Arial" font-size="12">-supplierId: String</text>
+<text x="2274.0" y="2621" font-family="Arial" font-size="12">-name: String</text>
+<text x="2274.0" y="2638" font-family="Arial" font-size="12">-eligibilityStatus: SupplierStatus</text>
+<text x="2274.0" y="2669" font-family="Arial" font-size="12">+submitOffer(source: Evidence): ExternalRequest</text>
+<text x="2274.0" y="2686" font-family="Arial" font-size="12">+provideCorrection(offerId: String): ExternalRequest</text>
+<rect x="2855.0" y="2541" width="480" height="174" fill="white" stroke="#445064"/>
+<path d="M 2855.0 2585 h 480" stroke="#445064"/>
+<path d="M 2855.0 2633 h 480" stroke="#445064"/>
+<text x="3095.0" y="2568" text-anchor="middle" font-family="Arial" font-size="13" font-weight="bold">HumanFounderOperator</text>
+<text x="2864.0" y="2604" font-family="Arial" font-size="12">-operatorId: String</text>
+<text x="2864.0" y="2621" font-family="Arial" font-size="12">-authorityScope: String[*]</text>
+<text x="2864.0" y="2652" font-family="Arial" font-size="12">+decide(subject: SubjectRef, decision: ApprovalDecision):</text>
+<text x="2864.0" y="2669" font-family="Arial" font-size="12">  HumanApproval</text>
+<text x="2864.0" y="2686" font-family="Arial" font-size="12">+submitCampaignBrief(brief: CampaignBrief): CampaignProposal</text>
+<text x="2864.0" y="2703" font-family="Arial" font-size="12">+takeOver(case: Case): void</text>
+<rect x="3445.0" y="2541" width="480" height="157" fill="white" stroke="#445064"/>
+<path d="M 3445.0 2585 h 480" stroke="#445064"/>
+<path d="M 3445.0 2667 h 480" stroke="#445064"/>
+<text x="3685.0" y="2568" text-anchor="middle" font-family="Arial" font-size="13" font-weight="bold">EntitlementDecision</text>
+<text x="3454.0" y="2604" font-family="Arial" font-size="12">-decisionId: String</text>
+<text x="3454.0" y="2621" font-family="Arial" font-size="12">-outcome: EntitlementOutcome</text>
+<text x="3454.0" y="2638" font-family="Arial" font-size="12">-reason: String</text>
+<text x="3454.0" y="2655" font-family="Arial" font-size="12">-decidedAt: DateTime</text>
+<text x="3454.0" y="2686" font-family="Arial" font-size="12">+explainsFailure(): String</text>
+<rect x="790.0" y="2997" width="480" height="157" fill="white" stroke="#445064"/>
+<path d="M 790.0 3041 h 480" stroke="#445064"/>
+<path d="M 790.0 3106 h 480" stroke="#445064"/>
+<text x="1030.0" y="3024" text-anchor="middle" font-family="Arial" font-size="13" font-weight="bold">TravelPlan</text>
+<text x="799.0" y="3060" font-family="Arial" font-size="12">-planId: String</text>
+<text x="799.0" y="3077" font-family="Arial" font-size="12">-status: PlanStatus</text>
+<text x="799.0" y="3094" font-family="Arial" font-size="12">-travelDates: DateRange</text>
+<text x="799.0" y="3125" font-family="Arial" font-size="12">+currentVersion(): ItineraryVersion [0..1]</text>
+<text x="799.0" y="3142" font-family="Arial" font-size="12">+addVersion(version: ItineraryVersion): void</text>
+<rect x="1380.0" y="2997" width="480" height="225" fill="white" stroke="#445064"/>
+<path d="M 1380.0 3041 h 480" stroke="#445064"/>
+<path d="M 1380.0 3174 h 480" stroke="#445064"/>
+<text x="1620.0" y="3024" text-anchor="middle" font-family="Arial" font-size="13" font-weight="bold">ItineraryVersion</text>
+<text x="1389.0" y="3060" font-family="Arial" font-size="12">-versionId: String</text>
+<text x="1389.0" y="3077" font-family="Arial" font-size="12">-versionNo: Integer</text>
+<text x="1389.0" y="3094" font-family="Arial" font-size="12">-status: PlanStatus</text>
+<text x="1389.0" y="3111" font-family="Arial" font-size="12">-rankingMode: RankingMode</text>
+<text x="1389.0" y="3128" font-family="Arial" font-size="12">-totalPrice: Money</text>
+<text x="1389.0" y="3145" font-family="Arial" font-size="12">{confirmed content frozen; amendment creates successor}</text>
+<text x="1389.0" y="3162" font-family="Arial" font-size="12">{feasible version has at least one item}</text>
+<text x="1389.0" y="3193" font-family="Arial" font-size="12">+calculateDuration(): Integer</text>
+<text x="1389.0" y="3210" font-family="Arial" font-size="12">+compareTo(other: ItineraryVersion): PlanComparison</text>
+<rect x="1970.0" y="2997" width="480" height="157" fill="white" stroke="#445064"/>
+<path d="M 1970.0 3041 h 480" stroke="#445064"/>
+<path d="M 1970.0 3123 h 480" stroke="#445064"/>
+<text x="2210.0" y="3024" text-anchor="middle" font-family="Arial" font-size="13" font-weight="bold">PlanComparison</text>
+<text x="1979.0" y="3060" font-family="Arial" font-size="12">-changedFields: String[*]</text>
+<text x="1979.0" y="3077" font-family="Arial" font-size="12">-priceDelta: Money</text>
+<text x="1979.0" y="3094" font-family="Arial" font-size="12">-tradeOffs: String[*]</text>
+<text x="1979.0" y="3111" font-family="Arial" font-size="12">{baseline != revision; same TravelPlan}</text>
+<text x="1979.0" y="3142" font-family="Arial" font-size="12">+renderExplanation(): String</text>
+<rect x="2560.0" y="2997" width="480" height="174" fill="white" stroke="#445064"/>
+<path d="M 2560.0 3041 h 480" stroke="#445064"/>
+<path d="M 2560.0 3140 h 480" stroke="#445064"/>
+<text x="2800.0" y="3013" text-anchor="middle" font-family="Arial" font-size="11">«entity»</text>
+<text x="2800.0" y="3030" text-anchor="middle" font-family="Arial" font-size="13" font-weight="bold">ItineraryItem</text>
+<text x="2569.0" y="3060" font-family="Arial" font-size="12">-itemId: String</text>
+<text x="2569.0" y="3077" font-family="Arial" font-size="12">-startAt: DateTime</text>
+<text x="2569.0" y="3094" font-family="Arial" font-size="12">-endAt: DateTime</text>
+<text x="2569.0" y="3111" font-family="Arial" font-size="12">-quotedPrice: Money</text>
+<text x="2569.0" y="3128" font-family="Arial" font-size="12">-kind: ItineraryItemKind</text>
+<text x="2569.0" y="3159" font-family="Arial" font-size="12">+validateTiming(): ValidationResult</text>
+<rect x="3150.0" y="2997" width="480" height="225" fill="white" stroke="#445064"/>
+<path d="M 3150.0 3041 h 480" stroke="#445064"/>
+<path d="M 3150.0 3157 h 480" stroke="#445064"/>
+<text x="3390.0" y="3024" text-anchor="middle" font-family="Arial" font-size="13" font-weight="bold">SupplierOffer</text>
+<text x="3159.0" y="3060" font-family="Arial" font-size="12">-offerId: String</text>
+<text x="3159.0" y="3077" font-family="Arial" font-size="12">-status: OfferStatus</text>
+<text x="3159.0" y="3094" font-family="Arial" font-size="12">-availableQuantity: Integer</text>
+<text x="3159.0" y="3111" font-family="Arial" font-size="12">-validUntil: DateTime</text>
+<text x="3159.0" y="3128" font-family="Arial" font-size="12">-supplierCost: Money</text>
+<text x="3159.0" y="3145" font-family="Arial" font-size="12">{APPROVED and unexpired before selection}</text>
+<text x="3159.0" y="3176" font-family="Arial" font-size="12">+isSelectable(at: DateTime): Boolean</text>
+<text x="3159.0" y="3193" font-family="Arial" font-size="12">+expire(): void</text>
+<text x="3159.0" y="3210" font-family="Arial" font-size="12">+invalidateCurrentDecisions(): void</text>
+<rect x="3740.0" y="2997" width="480" height="140" fill="white" stroke="#445064"/>
+<path d="M 3740.0 3041 h 480" stroke="#445064"/>
+<path d="M 3740.0 3106 h 480" stroke="#445064"/>
+<text x="3980.0" y="3013" text-anchor="middle" font-family="Arial" font-size="11">«entity»</text>
+<text x="3980.0" y="3030" text-anchor="middle" font-family="Arial" font-size="13" font-weight="bold">TravelProduct</text>
+<text x="3749.0" y="3060" font-family="Arial" font-size="12">-productId: String</text>
+<text x="3749.0" y="3077" font-family="Arial" font-size="12">-name: String</text>
+<text x="3749.0" y="3094" font-family="Arial" font-size="12">-productType: ProductType</text>
+<text x="3749.0" y="3125" font-family="Arial" font-size="12">+describe(): String</text>
+<rect x="4330.0" y="2997" width="480" height="208" fill="white" stroke="#445064"/>
+<path d="M 4330.0 3041 h 480" stroke="#445064"/>
+<path d="M 4330.0 3174 h 480" stroke="#445064"/>
+<text x="4570.0" y="3024" text-anchor="middle" font-family="Arial" font-size="13" font-weight="bold">PriceBreakdown</text>
+<text x="4339.0" y="3060" font-family="Arial" font-size="12">-supplierCost: Money</text>
+<text x="4339.0" y="3077" font-family="Arial" font-size="12">-markupRate: Decimal</text>
+<text x="4339.0" y="3094" font-family="Arial" font-size="12">-basePrice: Money</text>
+<text x="4339.0" y="3111" font-family="Arial" font-size="12">-discountAmount: Money</text>
+<text x="4339.0" y="3128" font-family="Arial" font-size="12">-sellingPrice: Money</text>
+<text x="4339.0" y="3145" font-family="Arial" font-size="12">-marginAmount: Money</text>
+<text x="4339.0" y="3162" font-family="Arial" font-size="12">{AUD; sellingPrice.amount &gt; 0; margin &gt;= minimum}</text>
+<text x="4339.0" y="3193" font-family="Arial" font-size="12">+passesMinimumMargin(minimum: Money): Boolean</text>
+<rect x="1970.0" y="3810" width="480" height="174" fill="white" stroke="#445064"/>
+<path d="M 1970.0 3854 h 480" stroke="#445064"/>
+<path d="M 1970.0 3936 h 480" stroke="#445064"/>
+<text x="2210.0" y="3837" text-anchor="middle" font-family="Arial" font-size="13" font-weight="bold">ConstraintSet</text>
+<text x="1979.0" y="3873" font-family="Arial" font-size="12">-constraintSetId: String</text>
+<text x="1979.0" y="3890" font-family="Arial" font-size="12">-hardConstraints: Constraint[*]</text>
+<text x="1979.0" y="3907" font-family="Arial" font-size="12">-preferences: Preference[*]</text>
+<text x="1979.0" y="3924" font-family="Arial" font-size="12">{confirmed snapshot; amendment creates new set}</text>
+<text x="1979.0" y="3955" font-family="Arial" font-size="12">+conflictsWith(other: ConstraintSet): String[*]</text>
+<text x="1979.0" y="3972" font-family="Arial" font-size="12">+changedFields(other: ConstraintSet): String[*]</text>
+<rect x="2560.0" y="3810" width="480" height="225" fill="white" stroke="#445064"/>
+<path d="M 2560.0 3854 h 480" stroke="#445064"/>
+<path d="M 2560.0 3987 h 480" stroke="#445064"/>
+<text x="2800.0" y="3837" text-anchor="middle" font-family="Arial" font-size="13" font-weight="bold">TravelRequest</text>
+<text x="2569.0" y="3873" font-family="Arial" font-size="12">-requestId: String</text>
+<text x="2569.0" y="3890" font-family="Arial" font-size="12">-origin: String</text>
+<text x="2569.0" y="3907" font-family="Arial" font-size="12">-destination: String</text>
+<text x="2569.0" y="3924" font-family="Arial" font-size="12">-partySize: Integer</text>
+<text x="2569.0" y="3941" font-family="Arial" font-size="12">-budgetCeiling: Money</text>
+<text x="2569.0" y="3958" font-family="Arial" font-size="12">-travelDates: DateRange</text>
+<text x="2569.0" y="3975" font-family="Arial" font-size="12">-rankingMode: RankingMode</text>
+<text x="2569.0" y="4006" font-family="Arial" font-size="12">+validateCompleteness(): ValidationResult</text>
+<text x="2569.0" y="4023" font-family="Arial" font-size="12">+toConstraintSet(): ConstraintSet</text>
+<rect x="3150.0" y="3810" width="480" height="139" fill="white" stroke="#445064"/>
+<path d="M 3150.0 3854 h 480" stroke="#445064"/>
+<path d="M 3150.0 3919 h 480" stroke="#445064"/>
+<text x="3390.0" y="3837" text-anchor="middle" font-family="Arial" font-size="13" font-weight="bold">ValidationResult</text>
+<text x="3159.0" y="3873" font-family="Arial" font-size="12">-passed: Boolean</text>
+<text x="3159.0" y="3890" font-family="Arial" font-size="12">-failedRules: String[*]</text>
+<text x="3159.0" y="3907" font-family="Arial" font-size="12">-checkedAt: DateTime</text>
+<rect x="790.0" y="4335" width="480" height="157" fill="white" stroke="#445064"/>
+<path d="M 790.0 4379 h 480" stroke="#445064"/>
+<path d="M 790.0 4444 h 480" stroke="#445064"/>
+<text x="1030.0" y="4362" text-anchor="middle" font-family="Arial" font-size="13" font-weight="bold">ExceptionCase</text>
+<text x="799.0" y="4398" font-family="Arial" font-size="12">-exceptionCaseId: String</text>
+<text x="799.0" y="4415" font-family="Arial" font-size="12">-status: ExceptionStatus</text>
+<text x="799.0" y="4432" font-family="Arial" font-size="12">-confidence: Decimal</text>
+<text x="799.0" y="4463" font-family="Arial" font-size="12">+recordFinding(finding: String): void</text>
+<text x="799.0" y="4480" font-family="Arial" font-size="12">+referToHuman(reason: String): void</text>
+<rect x="1380.0" y="4335" width="480" height="174" fill="white" stroke="#445064"/>
+<path d="M 1380.0 4379 h 480" stroke="#445064"/>
+<path d="M 1380.0 4478 h 480" stroke="#445064"/>
+<text x="1620.0" y="4351" text-anchor="middle" font-family="Arial" font-size="11">«entity»</text>
+<text x="1620.0" y="4368" text-anchor="middle" font-family="Arial" font-size="13" font-weight="bold">ExceptionIssue</text>
+<text x="1389.0" y="4398" font-family="Arial" font-size="12">-issueId: String</text>
+<text x="1389.0" y="4415" font-family="Arial" font-size="12">-reportedAt: DateTime</text>
+<text x="1389.0" y="4432" font-family="Arial" font-size="12">-severity: Severity</text>
+<text x="1389.0" y="4449" font-family="Arial" font-size="12">-description: String</text>
+<text x="1389.0" y="4466" font-family="Arial" font-size="12">-kind: ExceptionIssueKind</text>
+<text x="1389.0" y="4497" font-family="Arial" font-size="12">+affectedItems(): ItineraryItem[*]</text>
+<rect x="1970.0" y="4335" width="480" height="191" fill="white" stroke="#445064"/>
+<path d="M 1970.0 4379 h 480" stroke="#445064"/>
+<path d="M 1970.0 4478 h 480" stroke="#445064"/>
+<text x="2210.0" y="4362" text-anchor="middle" font-family="Arial" font-size="13" font-weight="bold">RecoveryProposal</text>
+<text x="1979.0" y="4398" font-family="Arial" font-size="12">-proposalId: String</text>
+<text x="1979.0" y="4415" font-family="Arial" font-size="12">-status: ProposalStatus</text>
+<text x="1979.0" y="4432" font-family="Arial" font-size="12">-budgetImpact: Money</text>
+<text x="1979.0" y="4449" font-family="Arial" font-size="12">-timingImpact: String</text>
+<text x="1979.0" y="4466" font-family="Arial" font-size="12">-affectedVersionId: String</text>
+<text x="1979.0" y="4497" font-family="Arial" font-size="12">+validate(): ValidationResult</text>
+<text x="1979.0" y="4514" font-family="Arial" font-size="12">+revise(reasons: String[*]): RecoveryProposal</text>
+<rect x="2560.0" y="4335" width="480" height="174" fill="white" stroke="#445064"/>
+<path d="M 2560.0 4379 h 480" stroke="#445064"/>
+<path d="M 2560.0 4461 h 480" stroke="#445064"/>
+<text x="2800.0" y="4362" text-anchor="middle" font-family="Arial" font-size="13" font-weight="bold">ResolutionRecommendation</text>
+<text x="2569.0" y="4398" font-family="Arial" font-size="12">-recommendationId: String</text>
+<text x="2569.0" y="4415" font-family="Arial" font-size="12">-status: ProposalStatus</text>
+<text x="2569.0" y="4432" font-family="Arial" font-size="12">-recommendedResponse: String</text>
+<text x="2569.0" y="4449" font-family="Arial" font-size="12">-restrictedCommitment: Boolean</text>
+<text x="2569.0" y="4480" font-family="Arial" font-size="12">+validate(): ValidationResult</text>
+<text x="2569.0" y="4497" font-family="Arial" font-size="12">+revise(reasons: String[*]): ResolutionRecommendation</text>
+<rect x="3150.0" y="4335" width="480" height="276" fill="white" stroke="#445064"/>
+<path d="M 3150.0 4379 h 480" stroke="#445064"/>
+<path d="M 3150.0 4546 h 480" stroke="#445064"/>
+<text x="3390.0" y="4362" text-anchor="middle" font-family="Arial" font-size="13" font-weight="bold">CampaignProposal</text>
+<text x="3159.0" y="4398" font-family="Arial" font-size="12">-campaignId: String</text>
+<text x="3159.0" y="4415" font-family="Arial" font-size="12">-status: CampaignStatus</text>
+<text x="3159.0" y="4432" font-family="Arial" font-size="12">-targetAudience: String</text>
+<text x="3159.0" y="4449" font-family="Arial" font-size="12">-channel: SourceChannel</text>
+<text x="3159.0" y="4466" font-family="Arial" font-size="12">-campaignDates: DateRange</text>
+<text x="3159.0" y="4483" font-family="Arial" font-size="12">-budgetCeiling: Money</text>
+<text x="3159.0" y="4500" font-family="Arial" font-size="12">-promotionalContent: String</text>
+<text x="3159.0" y="4517" font-family="Arial" font-size="12">-estimatedCost: Money</text>
+<text x="3159.0" y="4534" font-family="Arial" font-size="12">{approval needs eligible offers and passed review}</text>
+<text x="3159.0" y="4565" font-family="Arial" font-size="12">+calculateEstimatedCost(): Money</text>
+<text x="3159.0" y="4582" font-family="Arial" font-size="12">+invalidateApproval(): void</text>
+<text x="3159.0" y="4599" font-family="Arial" font-size="12">+isEligibleForSimulation(): Boolean</text>
+<rect x="3740.0" y="4335" width="480" height="208" fill="white" stroke="#445064"/>
+<path d="M 3740.0 4379 h 480" stroke="#445064"/>
+<path d="M 3740.0 4512 h 480" stroke="#445064"/>
+<text x="3980.0" y="4362" text-anchor="middle" font-family="Arial" font-size="13" font-weight="bold">CampaignBrief</text>
+<text x="3749.0" y="4398" font-family="Arial" font-size="12">-briefId: String</text>
+<text x="3749.0" y="4415" font-family="Arial" font-size="12">-objective: String</text>
+<text x="3749.0" y="4432" font-family="Arial" font-size="12">-audience: String</text>
+<text x="3749.0" y="4449" font-family="Arial" font-size="12">-channel: SourceChannel</text>
+<text x="3749.0" y="4466" font-family="Arial" font-size="12">-dates: DateRange</text>
+<text x="3749.0" y="4483" font-family="Arial" font-size="12">-budgetCeiling: Money</text>
+<text x="3749.0" y="4500" font-family="Arial" font-size="12">-restrictions: String[*]</text>
+<text x="3749.0" y="4531" font-family="Arial" font-size="12">+validateCompleteness(): ValidationResult</text>
+<rect x="4330.0" y="4335" width="480" height="157" fill="white" stroke="#445064"/>
+<path d="M 4330.0 4379 h 480" stroke="#445064"/>
+<path d="M 4330.0 4461 h 480" stroke="#445064"/>
+<text x="4570.0" y="4362" text-anchor="middle" font-family="Arial" font-size="13" font-weight="bold">MemberOfferRule</text>
+<text x="4339.0" y="4398" font-family="Arial" font-size="12">-ruleId: String</text>
+<text x="4339.0" y="4415" font-family="Arial" font-size="12">-eligibleTiers: MembershipTier[*]</text>
+<text x="4339.0" y="4432" font-family="Arial" font-size="12">-discountAmount: Money</text>
+<text x="4339.0" y="4449" font-family="Arial" font-size="12">-validityPeriod: DateRange</text>
+<text x="4339.0" y="4480" font-family="Arial" font-size="12">+isApplicable(offer: SupplierOffer, tier: MembershipTier): Boolean</text>
+<rect x="1380.0" y="5073" width="480" height="174" fill="white" stroke="#445064"/>
+<path d="M 1380.0 5117 h 480" stroke="#445064"/>
+<path d="M 1380.0 5199 h 480" stroke="#445064"/>
+<text x="1620.0" y="5100" text-anchor="middle" font-family="Arial" font-size="13" font-weight="bold">AgentRun</text>
+<text x="1389.0" y="5136" font-family="Arial" font-size="12">-runId: String</text>
+<text x="1389.0" y="5153" font-family="Arial" font-size="12">-startedAt: DateTime</text>
+<text x="1389.0" y="5170" font-family="Arial" font-size="12">-completedAt: DateTime [0..1]</text>
+<text x="1389.0" y="5187" font-family="Arial" font-size="12">-status: RunStatus</text>
+<text x="1389.0" y="5218" font-family="Arial" font-size="12">+start(): void</text>
+<text x="1389.0" y="5235" font-family="Arial" font-size="12">+finish(status: RunStatus): void</text>
+<rect x="1970.0" y="5073" width="480" height="173" fill="white" stroke="#445064"/>
+<path d="M 1970.0 5117 h 480" stroke="#445064"/>
+<path d="M 1970.0 5216 h 480" stroke="#445064"/>
+<text x="2210.0" y="5100" text-anchor="middle" font-family="Arial" font-size="13" font-weight="bold">TraceEntry</text>
+<text x="1979.0" y="5136" font-family="Arial" font-size="12">-timestamp: DateTime</text>
+<text x="1979.0" y="5153" font-family="Arial" font-size="12">-eventType: TraceEventType</text>
+<text x="1979.0" y="5170" font-family="Arial" font-size="12">-subjectType: String</text>
+<text x="1979.0" y="5187" font-family="Arial" font-size="12">-subjectId: String</text>
+<text x="1979.0" y="5204" font-family="Arial" font-size="12">-summary: String</text>
+<rect x="2560.0" y="5073" width="480" height="156" fill="white" stroke="#445064"/>
+<path d="M 2560.0 5117 h 480" stroke="#445064"/>
+<path d="M 2560.0 5199 h 480" stroke="#445064"/>
+<text x="2800.0" y="5100" text-anchor="middle" font-family="Arial" font-size="13" font-weight="bold">Evidence</text>
+<text x="2569.0" y="5136" font-family="Arial" font-size="12">-evidenceId: String</text>
+<text x="2569.0" y="5153" font-family="Arial" font-size="12">-sourceType: String</text>
+<text x="2569.0" y="5170" font-family="Arial" font-size="12">-sourceReference: String</text>
+<text x="2569.0" y="5187" font-family="Arial" font-size="12">-capturedAt: DateTime</text>
+<rect x="3150.0" y="5073" width="480" height="191" fill="white" stroke="#445064"/>
+<path d="M 3150.0 5117 h 480" stroke="#445064"/>
+<path d="M 3150.0 5233 h 480" stroke="#445064"/>
+<text x="3390.0" y="5100" text-anchor="middle" font-family="Arial" font-size="13" font-weight="bold">ReviewResult</text>
+<text x="3159.0" y="5136" font-family="Arial" font-size="12">-reviewId: String</text>
+<text x="3159.0" y="5153" font-family="Arial" font-size="12">-outcome: ReviewOutcome</text>
+<text x="3159.0" y="5170" font-family="Arial" font-size="12">-reasons: String[*]</text>
+<text x="3159.0" y="5187" font-family="Arial" font-size="12">-reviewedAt: DateTime</text>
+<text x="3159.0" y="5204" font-family="Arial" font-size="12">-approvalRequired: Boolean</text>
+<text x="3159.0" y="5221" font-family="Arial" font-size="12">-subject: SubjectRef</text>
+<text x="3159.0" y="5252" font-family="Arial" font-size="12">+passed(): Boolean</text>
+<rect x="3740.0" y="5073" width="480" height="208" fill="white" stroke="#445064"/>
+<path d="M 3740.0 5117 h 480" stroke="#445064"/>
+<path d="M 3740.0 5250 h 480" stroke="#445064"/>
+<text x="3980.0" y="5100" text-anchor="middle" font-family="Arial" font-size="13" font-weight="bold">HumanApproval</text>
+<text x="3749.0" y="5136" font-family="Arial" font-size="12">-approvalId: String</text>
+<text x="3749.0" y="5153" font-family="Arial" font-size="12">-decision: ApprovalDecision</text>
+<text x="3749.0" y="5170" font-family="Arial" font-size="12">-reason: String</text>
+<text x="3749.0" y="5187" font-family="Arial" font-size="12">-scope: String</text>
+<text x="3749.0" y="5204" font-family="Arial" font-size="12">-decidedAt: DateTime</text>
+<text x="3749.0" y="5221" font-family="Arial" font-size="12">-subject: SubjectRef</text>
+<text x="3749.0" y="5238" font-family="Arial" font-size="12">{required for restricted commitments}</text>
+<text x="3749.0" y="5269" font-family="Arial" font-size="12">+permits(subject: SubjectRef): Boolean</text>
+</svg>
