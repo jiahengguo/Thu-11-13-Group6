@@ -1,0 +1,331 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2720" height="6500" viewBox="0 0 2720 6500">
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M1,1 L9,5 L1,9" fill="none" stroke="#555" stroke-width="1.1"/></marker></defs>
+<rect width="100%" height="100%" fill="white"/>
+<text x="40" y="50.8" font-family="Arial, sans-serif" font-size="28" font-weight="700" fill="#222" text-anchor="start"><tspan x="40" dy="0">AD-01 | Receive, coordinate and respond to a customer travel-planning request</tspan></text>
+<text x="40" y="95.75" font-family="Arial, sans-serif" font-size="15" font-weight="400" fill="#222" text-anchor="start"><tspan x="40" dy="0">Author: Jiaheng Guo | OPS-AH-01, OPS-02, OPS-03 | UC-05 + UC-07 | Scope: one confirmed travel-planning Case</tspan></text>
+<rect x="40" y="140" width="440" height="6320" fill="white" stroke="#b0b0b0"/>
+<rect x="40" y="140" width="440" height="60" fill="#eee" stroke="#b0b0b0"/>
+<text x="260.0" y="175.95" font-family="Arial, sans-serif" font-size="17" font-weight="700" fill="#222" text-anchor="middle"><tspan x="260.0" dy="0">Traveller</tspan></text>
+<rect x="480" y="140" width="440" height="6320" fill="white" stroke="#b0b0b0"/>
+<rect x="480" y="140" width="440" height="60" fill="#eee" stroke="#b0b0b0"/>
+<text x="700.0" y="175.95" font-family="Arial, sans-serif" font-size="17" font-weight="700" fill="#222" text-anchor="middle"><tspan x="700.0" dy="0">Operations Agent</tspan></text>
+<rect x="920" y="140" width="440" height="6320" fill="white" stroke="#b0b0b0"/>
+<rect x="920" y="140" width="440" height="60" fill="#eee" stroke="#b0b0b0"/>
+<text x="1140.0" y="175.95" font-family="Arial, sans-serif" font-size="17" font-weight="700" fill="#222" text-anchor="middle"><tspan x="1140.0" dy="0">Access / Entitlement Services</tspan></text>
+<rect x="1360" y="140" width="440" height="6320" fill="white" stroke="#b0b0b0"/>
+<rect x="1360" y="140" width="440" height="60" fill="#eee" stroke="#b0b0b0"/>
+<text x="1580.0" y="175.95" font-family="Arial, sans-serif" font-size="17" font-weight="700" fill="#222" text-anchor="middle"><tspan x="1580.0" dy="0">Travel Planning Agent</tspan></text>
+<rect x="1800" y="140" width="440" height="6320" fill="white" stroke="#b0b0b0"/>
+<rect x="1800" y="140" width="440" height="60" fill="#eee" stroke="#b0b0b0"/>
+<text x="2020.0" y="175.95" font-family="Arial, sans-serif" font-size="17" font-weight="700" fill="#222" text-anchor="middle"><tspan x="2020.0" dy="0">Reviewer / Guardrail</tspan></text>
+<rect x="2240" y="140" width="440" height="6320" fill="white" stroke="#b0b0b0"/>
+<rect x="2240" y="140" width="440" height="60" fill="#eee" stroke="#b0b0b0"/>
+<text x="2460.0" y="175.95" font-family="Arial, sans-serif" font-size="17" font-weight="700" fill="#222" text-anchor="middle"><tspan x="2460.0" dy="0">Human Founder / Operator</tspan></text>
+<path d="M 260.0 258 L 260.0 300" fill="none" stroke="#555" stroke-width="1.2" marker-end="url(#arrow)"/>
+<path d="M 260.0 380 L 260 400 L 530 400 L 530 390 L 700 390 L 700.0 410" fill="none" stroke="#555" stroke-width="1.2" marker-end="url(#arrow)"/>
+<path d="M 700.0 510 L 700 530 L 1100 530 L 1100 510 L 1140 510 L 1140.0 530" fill="none" stroke="#555" stroke-width="1.2" marker-end="url(#arrow)"/>
+<path d="M 1140.0 558 L 1140.0 600" fill="none" stroke="#555" stroke-width="1.2" marker-end="url(#arrow)"/>
+<path d="M 1140.0 680 L 1140.0 740" fill="none" stroke="#555" stroke-width="1.2" marker-end="url(#arrow)"/>
+<path d="M 1070.0 790.0 L 850.0 790.0" fill="none" stroke="#555" stroke-width="1.2" marker-end="url(#arrow)"/>
+<path d="M 550.0 790.0 L 410.0 790.0" fill="none" stroke="#555" stroke-width="1.2" marker-end="url(#arrow)"/>
+<path d="M 260.0 750 L 260 540 L 1110 540 L 1110 544.0 L 1126.0 544.0" fill="none" stroke="#555" stroke-width="1.2" marker-end="url(#arrow)"/>
+<path d="M 1140.0 840 L 1140 860 L 700 860 L 700.0 900" fill="none" stroke="#555" stroke-width="1.2" marker-end="url(#arrow)"/>
+<path d="M 700.0 928 L 700.0 980" fill="none" stroke="#555" stroke-width="1.2" marker-end="url(#arrow)"/>
+<path d="M 700.0 1060 L 700.0 1110" fill="none" stroke="#555" stroke-width="1.2" marker-end="url(#arrow)"/>
+<path d="M 700.0 1190 L 700.0 1250" fill="none" stroke="#555" stroke-width="1.2" marker-end="url(#arrow)"/>
+<path d="M 770.0 1300.0 L 2310.0 1300.0" fill="none" stroke="#555" stroke-width="1.2" marker-end="url(#arrow)"/>
+<path d="M 700.0 1350 L 700.0 1430" fill="none" stroke="#555" stroke-width="1.2" marker-end="url(#arrow)"/>
+<path d="M 260.0 1640 L 260 910 L 670 910 L 670 914.0 L 686.0 914.0" fill="none" stroke="#555" stroke-width="1.2" marker-end="url(#arrow)"/>
+<path d="M 700.0 1920 L 700 1940 L 430 1940 L 430 1920 L 260 1920 L 260.0 1940" fill="none" stroke="#555" stroke-width="1.2" marker-end="url(#arrow)"/>
+<path d="M 260.0 2020 L 260.0 2080" fill="none" stroke="#555" stroke-width="1.2" marker-end="url(#arrow)"/>
+<path d="M 260.0 2180 L 260.0 2270" fill="none" stroke="#555" stroke-width="1.2" marker-end="url(#arrow)"/>
+<path d="M 110.0 2310.0 L 90 2310 L 90 210 L 1310 210 L 1310 910 L 730 910 L 730 914.0 L 714.0 914.0" fill="none" stroke="#555" stroke-width="1.2" marker-end="url(#arrow)"/>
+<path d="M 330.0 2130.0 L 530 2130 L 530 2325.0 L 550.0 2325.0" fill="none" stroke="#555" stroke-width="1.2" marker-end="url(#arrow)"/>
+<path d="M 1140.0 2870 L 1140.0 2920" fill="none" stroke="#555" stroke-width="1.2" marker-end="url(#arrow)"/>
+<path d="M 1070.0 2970.0 L 870 2970 L 870 2985.0 L 850.0 2985.0" fill="none" stroke="#555" stroke-width="1.2" marker-end="url(#arrow)"/>
+<path d="M 700.0 3040 L 700 3060 L 260 3060 L 260.0 3100" fill="none" stroke="#555" stroke-width="1.2" marker-end="url(#arrow)"/>
+<path d="M 1140.0 3020 L 1140 3040 L 870 3040 L 870 3230 L 700 3230 L 700.0 3250" fill="none" stroke="#555" stroke-width="1.2" marker-end="url(#arrow)"/>
+<path d="M 700.0 3330 L 700.0 3390" fill="none" stroke="#555" stroke-width="1.2" marker-end="url(#arrow)"/>
+<path d="M 770.0 3440.0 L 790 3440 L 790 3520 L 2290 3520 L 2290 3440 L 2310.0 3440.0" fill="none" stroke="#555" stroke-width="1.2" marker-end="url(#arrow)"/>
+<path d="M 1140.0 4130 L 1140.0 4190" fill="none" stroke="#555" stroke-width="1.2" marker-end="url(#arrow)"/>
+<path d="M 1070.0 4240.0 L 870 4240 L 870 4255.0 L 850.0 4255.0" fill="none" stroke="#555" stroke-width="1.2" marker-end="url(#arrow)"/>
+<path d="M 700.0 4310 L 700 4330 L 260 4330 L 260.0 4370" fill="none" stroke="#555" stroke-width="1.2" marker-end="url(#arrow)"/>
+<path d="M 700.0 4650 L 700 4780 L 1403 4780 Q 1410 4768 1417 4780 L 1540 4780 L 1540 4680 L 2020 4680 L 2020.0 4710" fill="none" stroke="#555" stroke-width="1.2" marker-end="url(#arrow)"/>
+<path d="M 2020.0 4790 L 2020.0 4860" fill="none" stroke="#555" stroke-width="1.2" marker-end="url(#arrow)"/>
+<path d="M 1950.0 4910.0 L 1750 4910 L 1750 4790 L 1640 4790 L 1640 4792.0 L 1627 4792.0 Q 1620 4780.0 1613 4792.0 L 1592.0 4792.0" fill="none" stroke="#555" stroke-width="1.2" marker-end="url(#arrow)"/>
+<path d="M 2090.0 4910.0 L 2110 4910 L 2110 5030 L 2460 5030 L 2460.0 5050" fill="none" stroke="#555" stroke-width="1.2" marker-end="url(#arrow)"/>
+<path d="M 2460.0 5170 L 2460.0 5230" fill="none" stroke="#555" stroke-width="1.2" marker-end="url(#arrow)"/>
+<path d="M 2460.0 5330 L 2460.0 5540" fill="none" stroke="#555" stroke-width="1.2" marker-end="url(#arrow)"/>
+<path d="M 2390.0 5280.0 L 870 5280 L 870 5120 L 740 5120 L 740 5122.0 L 712.0 5122.0" fill="none" stroke="#555" stroke-width="1.2" marker-end="url(#arrow)"/>
+<path d="M 2020.0 4960 L 2020 5090 L 700 5090 L 700.0 5110" fill="none" stroke="#555" stroke-width="1.2" marker-end="url(#arrow)"/>
+<path d="M 700.0 5150 L 700.0 5190" fill="none" stroke="#555" stroke-width="1.2" marker-end="url(#arrow)"/>
+<path d="M 700.0 5510 L 700.0 5590" fill="none" stroke="#555" stroke-width="1.2" marker-end="url(#arrow)"/>
+<path d="M 770.0 5640.0 L 2290 5640 L 2290 6210 L 2310.0 6210.0" fill="none" stroke="#555" stroke-width="1.2" marker-end="url(#arrow)"/>
+<path d="M 700.0 5690 L 700.0 5800" fill="none" stroke="#555" stroke-width="1.2" marker-end="url(#arrow)"/>
+<path d="M 700.0 5880 L 700.0 5940" fill="none" stroke="#555" stroke-width="1.2" marker-end="url(#arrow)"/>
+<path d="M 770.0 1480.0 L 870 1480 L 870 1740 L 700 1740 L 700.0 1760" fill="none" stroke="#555" stroke-width="1.2" marker-end="url(#arrow)"/>
+<path d="M 2460.0 1350 L 2460 1770 L 730 1770 L 730 1774.0 L 714.0 1774.0" fill="none" stroke="#555" stroke-width="1.2" marker-end="url(#arrow)"/>
+<path d="M 700.0 1788 L 700.0 1840" fill="none" stroke="#555" stroke-width="1.2" marker-end="url(#arrow)"/>
+<path d="M 700.0 2380 L 700.0 2420" fill="none" stroke="#555" stroke-width="1.2" marker-end="url(#arrow)"/>
+<path d="M 700.0 2460 L 700.0 2500" fill="none" stroke="#555" stroke-width="1.2" marker-end="url(#arrow)"/>
+<path d="M 700.0 2580 L 700 2630 L 1093 2630 Q 1100 2618 1107 2630 L 1140 2630 L 1140.0 2650" fill="none" stroke="#555" stroke-width="1.2" marker-end="url(#arrow)"/>
+<path d="M 1140.0 2678 L 1140.0 2750" fill="none" stroke="#555" stroke-width="1.2" marker-end="url(#arrow)"/>
+<path d="M 1140.0 3980 L 1140.0 4020" fill="none" stroke="#555" stroke-width="1.2" marker-end="url(#arrow)"/>
+<path d="M 110.0 3145.0 L 90 3145.0 L 90 2430 L 660 2430 L 660 2432.0 L 688.0 2432.0" fill="none" stroke="#555" stroke-width="1.2" marker-end="url(#arrow)"/>
+<path d="M 110.0 4415.0 L 90 4415.0 L 90 4420 L 40 4420 L 40 2450 L 83 2450 Q 90 2438 97 2450 L 660 2450 L 660 2448.0 L 688.0 2448.0" fill="none" stroke="#555" stroke-width="1.2" marker-end="url(#arrow)"/>
+<path d="M 1210.0 2970.0 L 1230 2970 L 1230 3070 L 1140 3070 L 1140.0 3090" fill="none" stroke="#555" stroke-width="1.2" marker-end="url(#arrow)"/>
+<path d="M 1140.0 3170 L 1140.0 3230" fill="none" stroke="#555" stroke-width="1.2" marker-end="url(#arrow)"/>
+<path d="M 1140.0 3330 L 1140.0 3410" fill="none" stroke="#555" stroke-width="1.2" marker-end="url(#arrow)"/>
+<path d="M 990.0 3450.0 L 970 3450 L 970 3510 L 1310 3510 L 1310 2660 L 1170 2660 L 1170 2664.0 L 1154.0 2664.0" fill="none" stroke="#555" stroke-width="1.2" marker-end="url(#arrow)"/>
+<path d="M 1210.0 3280.0 L 1303 3280.0 Q 1310 3268.0 1317 3280.0 L 2290 3280 L 2290 3285.0 L 2310.0 3285.0" fill="none" stroke="#555" stroke-width="1.2" marker-end="url(#arrow)"/>
+<path d="M 2460.0 3230 L 2460 3210 L 1320 3210 L 1320 2620 L 1100 2620 L 1100 2660 L 1110 2660 L 1110 2664.0 L 1126.0 2664.0" fill="none" stroke="#555" stroke-width="1.2" marker-end="url(#arrow)"/>
+<path d="M 1210.0 4240.0 L 1230 4240 L 1230 4330 L 1140 4330 L 1140.0 4350" fill="none" stroke="#555" stroke-width="1.2" marker-end="url(#arrow)"/>
+<path d="M 1140.0 4430 L 1140.0 4490" fill="none" stroke="#555" stroke-width="1.2" marker-end="url(#arrow)"/>
+<path d="M 1140.0 4590 L 1140.0 4670" fill="none" stroke="#555" stroke-width="1.2" marker-end="url(#arrow)"/>
+<path d="M 990.0 4710.0 L 970 4710 L 970 4770 L 1310 4770 L 1310 3970 L 1180 3970 L 1180 3968.0 L 1152.0 3968.0" fill="none" stroke="#555" stroke-width="1.2" marker-end="url(#arrow)"/>
+<path d="M 1210.0 4540.0 L 1303 4540.0 Q 1310 4528.0 1317 4540.0 L 2290 4540 L 2290 4545.0 L 2310.0 4545.0" fill="none" stroke="#555" stroke-width="1.2" marker-end="url(#arrow)"/>
+<path d="M 2460.0 4490 L 2460 4470 L 1750 4470 L 1750 3910 L 1587.0 3910 Q 1580.0 3898 1573.0 3910 L 90 3910 L 90 4180 L 970 4180 L 970 3960 L 1120.0 3960.0" fill="none" stroke="#555" stroke-width="1.2" marker-end="url(#arrow)"/>
+<path d="M 700.0 3490 L 700.0 3520" fill="none" stroke="#555" stroke-width="1.2" marker-end="url(#arrow)"/>
+<path d="M 2460.0 3480 L 2460 3530 L 730 3530 L 730 3534.0 L 714.0 3534.0" fill="none" stroke="#555" stroke-width="1.2" marker-end="url(#arrow)"/>
+<path d="M 700.0 3548 L 700.0 3600" fill="none" stroke="#555" stroke-width="1.2" marker-end="url(#arrow)"/>
+<path d="M 700.0 3700 L 700 3720 L 1540 3720 L 1540 3670 L 1580 3670 L 1580.0 3690" fill="none" stroke="#555" stroke-width="1.2" marker-end="url(#arrow)"/>
+<path d="M 1580.0 3718 L 1580.0 3770" fill="none" stroke="#555" stroke-width="1.2" marker-end="url(#arrow)"/>
+<path d="M 1580.0 3880 L 1580.0 3950" fill="none" stroke="#555" stroke-width="1.2" marker-end="url(#arrow)"/>
+<path d="M 1510.0 4000.0 L 1490 4000 L 1490 3920 L 870 3920 L 870 3980 L 850.0 3980.0" fill="none" stroke="#555" stroke-width="1.2" marker-end="url(#arrow)"/>
+<path d="M 700.0 4020 L 700 4040 L 260 4040 L 260.0 4080" fill="none" stroke="#555" stroke-width="1.2" marker-end="url(#arrow)"/>
+<path d="M 110.0 4120.0 L 97 4120.0 Q 90 4108.0 83 4120.0 L 50 4120 L 50 2400 L 693.0 2400 Q 700.0 2388 707.0 2400 L 740 2400 L 740 2440 L 720.0 2440.0" fill="none" stroke="#555" stroke-width="1.2" marker-end="url(#arrow)"/>
+<path d="M 1580.0 4050 L 1580.0 4130" fill="none" stroke="#555" stroke-width="1.2" marker-end="url(#arrow)"/>
+<path d="M 1430.0 4185.0 L 1410 4185.0 L 1410 3950 L 1180 3950 L 1180 3952.0 L 1152.0 3952.0" fill="none" stroke="#555" stroke-width="1.2" marker-end="url(#arrow)"/>
+<path d="M 1730.0 4925.0 L 1750 4925.0 L 1750 5000 L 1410 5000 L 1410 4620 L 2630 4620 L 2630 3700 L 1610 3700 L 1610 3704.0 L 1594.0 3704.0" fill="none" stroke="#555" stroke-width="1.2" marker-end="url(#arrow)"/>
+<path d="M 1140.0 4290 L 1140 4310 L 870 4310 L 870 4550 L 700 4550 L 700.0 4570" fill="none" stroke="#555" stroke-width="1.2" marker-end="url(#arrow)"/>
+<path d="M 2502.0 5260.0 L 2630 5260 L 2630 4690 L 2027 4690 Q 2020 4678 2013 4690 L 1620 4690 L 1620 4808.0 L 1592.0 4808.0" fill="none" stroke="#555" stroke-width="1.2" marker-end="url(#arrow)"/>
+<path d="M 2460.0 5650 L 2460.0 5720" fill="none" stroke="#555" stroke-width="1.2" marker-end="url(#arrow)"/>
+<path d="M 2390.0 5770.0 L 2297 5770.0 Q 2290 5758.0 2283 5770.0 L 870 5770 L 870 5990 L 530 5990 L 530 5170 L 693.0 5170 Q 700.0 5158 707.0 5170 L 740 5170 L 740 5138.0 L 712.0 5138.0" fill="none" stroke="#555" stroke-width="1.2" marker-end="url(#arrow)"/>
+<path d="M 2460.0 5820 L 2460.0 5920" fill="none" stroke="#555" stroke-width="1.2" marker-end="url(#arrow)"/>
+<path d="M 2460.0 6000 L 2460.0 6060" fill="none" stroke="#555" stroke-width="1.2" marker-end="url(#arrow)"/>
+<path d="M 700.0 5270 L 700.0 5330" fill="none" stroke="#555" stroke-width="1.2" marker-end="url(#arrow)"/>
+<path d="M 700.0 5358 L 700.0 5410" fill="none" stroke="#555" stroke-width="1.2" marker-end="url(#arrow)"/>
+<path d="M 2460.0 6160 L 2460 6140 L 2630 6140 L 2630 5350 L 2467.0 5350 Q 2460.0 5338 2453.0 5350 L 740 5350 L 740 5340 L 730 5340 L 730 5344.0 L 714.0 5344.0" fill="none" stroke="#555" stroke-width="1.2" marker-end="url(#arrow)"/>
+<path d="M 1580.0 4820 L 1580.0 4870" fill="none" stroke="#555" stroke-width="1.2" marker-end="url(#arrow)"/>
+<path d="M 630.0 1480.0 L 610 1480 L 610 1580 L 700 1580 L 700.0 1600" fill="none" stroke="#555" stroke-width="1.2" marker-end="url(#arrow)"/>
+<path d="M 550.0 1640.0 L 430 1640 L 430 1680 L 410.0 1680.0" fill="none" stroke="#555" stroke-width="1.2" marker-end="url(#arrow)"/>
+<circle cx="260.0" cy="244.0" r="14" fill="#222"/>
+<rect x="110.0" y="300" width="300" height="80" rx="10" fill="white" stroke="#444" stroke-width="1.2" />
+<text x="260.0" y="345.6" font-family="Arial, sans-serif" font-size="16" font-weight="400" fill="#222" text-anchor="middle"><tspan x="260.0" dy="0">Submit travel-planning request</tspan></text>
+<rect x="550.0" y="410" width="300" height="100" rx="10" fill="white" stroke="#444" stroke-width="1.2" />
+<text x="700.0" y="455.2" font-family="Arial, sans-serif" font-size="16" font-weight="400" fill="#222" text-anchor="middle"><tspan x="700.0" dy="0">Identify requester and source;</tspan><tspan x="700.0" dy="20.8">create ExternalRequest</tspan></text>
+<path d="M1140.0,530 L1154.0,544.0 L1140.0,558 L1126.0,544.0 Z" fill="white" stroke="#444" stroke-width="1.2"/>
+<text x="1140.0" y="549.25" font-family="Arial, sans-serif" font-size="15" font-weight="400" fill="#222" text-anchor="middle"><tspan x="1140.0" dy="0"></tspan></text>
+<rect x="990.0" y="600" width="300" height="80" rx="10" fill="white" stroke="#444" stroke-width="1.2" />
+<text x="1140.0" y="645.6" font-family="Arial, sans-serif" font-size="16" font-weight="400" fill="#222" text-anchor="middle"><tspan x="1140.0" dy="0">Verify identity and access</tspan></text>
+<path d="M1140.0,740 L1210.0,790.0 L1140.0,840 L1070.0,790.0 Z" fill="white" stroke="#444" stroke-width="1.2"/>
+<text x="1140.0" y="795.25" font-family="Arial, sans-serif" font-size="15" font-weight="400" fill="#222" text-anchor="middle"><tspan x="1140.0" dy="0">Verified?</tspan></text>
+<rect x="550.0" y="750" width="300" height="80" rx="10" fill="white" stroke="#444" stroke-width="1.2" />
+<text x="700.0" y="785.2" font-family="Arial, sans-serif" font-size="16" font-weight="400" fill="#222" text-anchor="middle"><tspan x="700.0" dy="0">Explain verification requirement;</tspan><tspan x="700.0" dy="20.8">keep ExternalRequest pending</tspan></text>
+<rect x="110.0" y="750" width="300" height="80" rx="10" fill="white" stroke="#444" stroke-width="1.2" />
+<text x="260.0" y="795.6" font-family="Arial, sans-serif" font-size="16" font-weight="400" fill="#222" text-anchor="middle"><tspan x="260.0" dy="0">Provide verification information</tspan></text>
+<path d="M700.0,900 L714.0,914.0 L700.0,928 L686.0,914.0 Z" fill="white" stroke="#444" stroke-width="1.2"/>
+<text x="700.0" y="919.25" font-family="Arial, sans-serif" font-size="15" font-weight="400" fill="#222" text-anchor="middle"><tspan x="700.0" dy="0"></tspan></text>
+<rect x="550.0" y="980" width="300" height="80" rx="10" fill="white" stroke="#444" stroke-width="1.2" />
+<text x="700.0" y="1015.2" font-family="Arial, sans-serif" font-size="16" font-weight="400" fill="#222" text-anchor="middle"><tspan x="700.0" dy="0">Use LLM to extract intent,</tspan><tspan x="700.0" dy="20.8">travel facts and confidence</tspan></text>
+<rect x="550.0" y="1110" width="300" height="80" rx="10" fill="white" stroke="#444" stroke-width="1.2" />
+<text x="700.0" y="1145.2" font-family="Arial, sans-serif" font-size="16" font-weight="400" fill="#222" text-anchor="middle"><tspan x="700.0" dy="0">Apply required-field rules;</tspan><tspan x="700.0" dy="20.8">check completeness and confidence</tspan></text>
+<path d="M700.0,1250 L770.0,1300.0 L700.0,1350 L630.0,1300.0 Z" fill="white" stroke="#444" stroke-width="1.2"/>
+<text x="700.0" y="1295.5" font-family="Arial, sans-serif" font-size="15" font-weight="400" fill="#222" text-anchor="middle"><tspan x="700.0" dy="0">Human help</tspan><tspan x="700.0" dy="19.5">required?</tspan></text>
+<rect x="2310.0" y="1250" width="300" height="100" rx="10" fill="white" stroke="#444" stroke-width="1.2" />
+<text x="2460.0" y="1295.2" font-family="Arial, sans-serif" font-size="16" font-weight="400" fill="#222" text-anchor="middle"><tspan x="2460.0" dy="0">Resolve unclear intent / missing facts;</tspan><tspan x="2460.0" dy="20.8">provide verified intake guidance</tspan></text>
+<path d="M700.0,1430 L770.0,1480.0 L700.0,1530 L630.0,1480.0 Z" fill="white" stroke="#444" stroke-width="1.2"/>
+<text x="700.0" y="1475.5" font-family="Arial, sans-serif" font-size="15" font-weight="400" fill="#222" text-anchor="middle"><tspan x="700.0" dy="0">Complete</tspan><tspan x="700.0" dy="19.5">and clear?</tspan></text>
+<rect x="110.0" y="1640" width="300" height="80" rx="10" fill="white" stroke="#444" stroke-width="1.2" />
+<text x="260.0" y="1675.2" font-family="Arial, sans-serif" font-size="16" font-weight="400" fill="#222" text-anchor="middle"><tspan x="260.0" dy="0">Answer focused clarification;</tspan><tspan x="260.0" dy="20.8">provide missing / corrected facts</tspan></text>
+<rect x="550.0" y="1840" width="300" height="80" rx="10" fill="white" stroke="#444" stroke-width="1.2" />
+<text x="700.0" y="1875.2" font-family="Arial, sans-serif" font-size="16" font-weight="400" fill="#222" text-anchor="middle"><tspan x="700.0" dy="0">Present structured request</tspan><tspan x="700.0" dy="20.8">and any proposed intent split</tspan></text>
+<rect x="110.0" y="1940" width="300" height="80" rx="10" fill="white" stroke="#444" stroke-width="1.2" />
+<text x="260.0" y="1975.2" font-family="Arial, sans-serif" font-size="16" font-weight="400" fill="#222" text-anchor="middle"><tspan x="260.0" dy="0">Review and explicitly confirm</tspan><tspan x="260.0" dy="20.8">the structured request</tspan></text>
+<path d="M260.0,2080 L330.0,2130.0 L260.0,2180 L190.0,2130.0 Z" fill="white" stroke="#444" stroke-width="1.2"/>
+<text x="260.0" y="2135.25" font-family="Arial, sans-serif" font-size="15" font-weight="400" fill="#222" text-anchor="middle"><tspan x="260.0" dy="0">Confirmed?</tspan></text>
+<rect x="110.0" y="2270" width="300" height="80" rx="10" fill="white" stroke="#444" stroke-width="1.2" />
+<text x="260.0" y="2315.6" font-family="Arial, sans-serif" font-size="16" font-weight="400" fill="#222" text-anchor="middle"><tspan x="260.0" dy="0">Correct the request</tspan></text>
+<rect x="550.0" y="2270" width="300" height="110" rx="10" fill="white" stroke="#444" stroke-width="1.2" />
+<text x="700.0" y="2309.8" font-family="Arial, sans-serif" font-size="16" font-weight="400" fill="#222" text-anchor="middle"><tspan x="700.0" dy="0">Create CustomerCase from the</tspan><tspan x="700.0" dy="20.8">confirmed ExternalRequest;</tspan><tspan x="700.0" dy="20.8">record confirmation</tspan></text>
+<rect x="990.0" y="2750" width="300" height="120" rx="10" fill="white" stroke="#444" stroke-width="1.2" />
+<text x="1140.0" y="2774.0" font-family="Arial, sans-serif" font-size="16" font-weight="400" fill="#222" text-anchor="middle"><tspan x="1140.0" dy="0">Retrieve verified membership, active</tspan><tspan x="1140.0" dy="20.8">subscription, trip count and</tspan><tspan x="1140.0" dy="20.8">entitlements;</tspan><tspan x="1140.0" dy="20.8">evaluate requested action (UC-07);</tspan><tspan x="1140.0" dy="20.8">record decision, snapshot and rule</tspan></text>
+<path d="M1140.0,2920 L1210.0,2970.0 L1140.0,3020 L1070.0,2970.0 Z" fill="white" stroke="#444" stroke-width="1.2"/>
+<text x="1140.0" y="2965.5" font-family="Arial, sans-serif" font-size="15" font-weight="400" fill="#222" text-anchor="middle"><tspan x="1140.0" dy="0">Entitlement</tspan><tspan x="1140.0" dy="19.5">result</tspan></text>
+<rect x="550.0" y="2930" width="300" height="110" rx="10" fill="white" stroke="#444" stroke-width="1.2" />
+<text x="700.0" y="2969.8" font-family="Arial, sans-serif" font-size="16" font-weight="400" fill="#222" text-anchor="middle"><tspan x="700.0" dy="0">Explain failed membership rule</tspan><tspan x="700.0" dy="20.8">and permitted recovery options;</tspan><tspan x="700.0" dy="20.8">preserve existing trips</tspan></text>
+<rect x="110.0" y="3100" width="300" height="90" rx="10" fill="white" stroke="#444" stroke-width="1.2" />
+<text x="260.0" y="3140.2" font-family="Arial, sans-serif" font-size="16" font-weight="400" fill="#222" text-anchor="middle"><tspan x="260.0" dy="0">Choose a valid recovery option;</tspan><tspan x="260.0" dy="20.8">confirm any changed request facts</tspan></text>
+<rect x="2310.0" y="3230" width="300" height="110" rx="10" fill="white" stroke="#444" stroke-width="1.2" />
+<text x="2460.0" y="3280.2" font-family="Arial, sans-serif" font-size="16" font-weight="400" fill="#222" text-anchor="middle"><tspan x="2460.0" dy="0">Resolve verification failure;</tspan><tspan x="2460.0" dy="20.8">return when evidence is available</tspan></text>
+<rect x="550.0" y="3250" width="300" height="80" rx="10" fill="white" stroke="#444" stroke-width="1.2" />
+<text x="700.0" y="3295.6" font-family="Arial, sans-serif" font-size="16" font-weight="400" fill="#222" text-anchor="middle"><tspan x="700.0" dy="0">Apply routing rules; select handler</tspan></text>
+<path d="M700.0,3390 L770.0,3440.0 L700.0,3490 L630.0,3440.0 Z" fill="white" stroke="#444" stroke-width="1.2"/>
+<text x="700.0" y="3435.5" font-family="Arial, sans-serif" font-size="15" font-weight="400" fill="#222" text-anchor="middle"><tspan x="700.0" dy="0">Agent</tspan><tspan x="700.0" dy="19.5">available?</tspan></text>
+<rect x="2310.0" y="3400" width="300" height="80" rx="10" fill="white" stroke="#444" stroke-width="1.2" />
+<text x="2460.0" y="3435.2" font-family="Arial, sans-serif" font-size="16" font-weight="400" fill="#222" text-anchor="middle"><tspan x="2460.0" dy="0">Resolve handler unavailability;</tspan><tspan x="2460.0" dy="20.8">return a valid assignment</tspan></text>
+<rect x="550.0" y="3600" width="300" height="100" rx="10" fill="white" stroke="#444" stroke-width="1.2" />
+<text x="700.0" y="3634.8" font-family="Arial, sans-serif" font-size="16" font-weight="400" fill="#222" text-anchor="middle"><tspan x="700.0" dy="0">Assign Case; record CaseAssignment</tspan><tspan x="700.0" dy="20.8">and hand-off; continue tracking</tspan><tspan x="700.0" dy="20.8">[Assigned]</tspan></text>
+<rect x="1430.0" y="3770" width="300" height="110" rx="10" fill="white" stroke="#444" stroke-width="1.2" />
+<text x="1580.0" y="3809.8" font-family="Arial, sans-serif" font-size="16" font-weight="400" fill="#222" text-anchor="middle"><tspan x="1580.0" dy="0">Process confirmed planning Case</tspan><tspan x="1580.0" dy="20.8">(UC-01); return findings or</tspan><tspan x="1580.0" dy="20.8">request additional information</tspan></text>
+<rect x="990.0" y="4020" width="300" height="110" rx="10" fill="white" stroke="#444" stroke-width="1.2" />
+<text x="1140.0" y="4049.4" font-family="Arial, sans-serif" font-size="16" font-weight="400" fill="#222" text-anchor="middle"><tspan x="1140.0" dy="0">Use latest membership and returned</tspan><tspan x="1140.0" dy="20.8">Plan Version facts; recheck UC-07;</tspan><tspan x="1140.0" dy="20.8">record final decision, rule and</tspan><tspan x="1140.0" dy="20.8">snapshot</tspan></text>
+<path d="M1140.0,4190 L1210.0,4240.0 L1140.0,4290 L1070.0,4240.0 Z" fill="white" stroke="#444" stroke-width="1.2"/>
+<text x="1140.0" y="4235.5" font-family="Arial, sans-serif" font-size="15" font-weight="400" fill="#222" text-anchor="middle"><tspan x="1140.0" dy="0">Entitlement</tspan><tspan x="1140.0" dy="19.5">result</tspan></text>
+<rect x="550.0" y="4200" width="300" height="110" rx="10" fill="white" stroke="#444" stroke-width="1.2" />
+<text x="700.0" y="4239.8" font-family="Arial, sans-serif" font-size="16" font-weight="400" fill="#222" text-anchor="middle"><tspan x="700.0" dy="0">Explain failed plan / membership rule</tspan><tspan x="700.0" dy="20.8">and permitted recovery options;</tspan><tspan x="700.0" dy="20.8">preserve existing trips</tspan></text>
+<rect x="110.0" y="4370" width="300" height="90" rx="10" fill="white" stroke="#444" stroke-width="1.2" />
+<text x="260.0" y="4410.2" font-family="Arial, sans-serif" font-size="16" font-weight="400" fill="#222" text-anchor="middle"><tspan x="260.0" dy="0">Choose a valid recovery option;</tspan><tspan x="260.0" dy="20.8">confirm any changed request facts</tspan></text>
+<rect x="2310.0" y="4490" width="300" height="110" rx="10" fill="white" stroke="#444" stroke-width="1.2" />
+<text x="2460.0" y="4540.2" font-family="Arial, sans-serif" font-size="16" font-weight="400" fill="#222" text-anchor="middle"><tspan x="2460.0" dy="0">Resolve verification failure;</tspan><tspan x="2460.0" dy="20.8">return when evidence is available</tspan></text>
+<rect x="550.0" y="4570" width="300" height="80" rx="10" fill="white" stroke="#444" stroke-width="1.2" />
+<text x="700.0" y="4605.2" font-family="Arial, sans-serif" font-size="16" font-weight="400" fill="#222" text-anchor="middle"><tspan x="700.0" dy="0">Prepare unified reply; check against</tspan><tspan x="700.0" dy="20.8">confirmed request and approval scope</tspan></text>
+<rect x="1870.0" y="4710" width="300" height="80" rx="10" fill="white" stroke="#444" stroke-width="1.2" />
+<text x="2020.0" y="4745.2" font-family="Arial, sans-serif" font-size="16" font-weight="400" fill="#222" text-anchor="middle"><tspan x="2020.0" dy="0">Check evidence, consistency,</tspan><tspan x="2020.0" dy="20.8">policy and restricted commitments</tspan></text>
+<path d="M2020.0,4860 L2090.0,4910.0 L2020.0,4960 L1950.0,4910.0 Z" fill="white" stroke="#444" stroke-width="1.2"/>
+<text x="2020.0" y="4905.5" font-family="Arial, sans-serif" font-size="15" font-weight="400" fill="#222" text-anchor="middle"><tspan x="2020.0" dy="0">Review</tspan><tspan x="2020.0" dy="19.5">result</tspan></text>
+<rect x="1430.0" y="4870" width="300" height="110" rx="10" fill="white" stroke="#444" stroke-width="1.2" />
+<text x="1580.0" y="4930.6" font-family="Arial, sans-serif" font-size="16" font-weight="400" fill="#222" text-anchor="middle"><tspan x="1580.0" dy="0">Revise findings / proposed response</tspan></text>
+<rect x="2310.0" y="5050" width="300" height="120" rx="10" fill="white" stroke="#444" stroke-width="1.2" />
+<text x="2460.0" y="5084.4" font-family="Arial, sans-serif" font-size="16" font-weight="400" fill="#222" text-anchor="middle"><tspan x="2460.0" dy="0">Review restricted response / evidence;</tspan><tspan x="2460.0" dy="20.8">recheck affected rules after edits;</tspan><tspan x="2460.0" dy="20.8">record scoped HumanApproval</tspan><tspan x="2460.0" dy="20.8">[Awaiting Human Approval]</tspan></text>
+<path d="M2460.0,5230 L2530.0,5280.0 L2460.0,5330 L2390.0,5280.0 Z" fill="white" stroke="#444" stroke-width="1.2"/>
+<text x="2460.0" y="5275.5" font-family="Arial, sans-serif" font-size="15" font-weight="400" fill="#222" text-anchor="middle"><tspan x="2460.0" dy="0">Human</tspan><tspan x="2460.0" dy="19.5">decision?</tspan></text>
+<rect x="2310.0" y="5540" width="300" height="110" rx="10" fill="white" stroke="#444" stroke-width="1.2" />
+<text x="2460.0" y="5579.8" font-family="Arial, sans-serif" font-size="16" font-weight="400" fill="#222" text-anchor="middle"><tspan x="2460.0" dy="0">Handle Case manually;</tspan><tspan x="2460.0" dy="20.8">record an authorised reply</tspan><tspan x="2460.0" dy="20.8">or a closure decision</tspan></text>
+<path d="M700.0,5110 L720.0,5130.0 L700.0,5150 L680.0,5130.0 Z" fill="white" stroke="#444" stroke-width="1.2"/>
+<text x="700.0" y="5135.25" font-family="Arial, sans-serif" font-size="15" font-weight="400" fill="#222" text-anchor="middle"><tspan x="700.0" dy="0"></tspan></text>
+<rect x="550.0" y="5190" width="300" height="80" rx="10" fill="white" stroke="#444" stroke-width="1.2" />
+<text x="700.0" y="5225.2" font-family="Arial, sans-serif" font-size="16" font-weight="400" fill="#222" text-anchor="middle"><tspan x="700.0" dy="0">Prepare approved final reply</tspan><tspan x="700.0" dy="20.8">Case [Ready to Respond]</tspan></text>
+<rect x="550.0" y="5410" width="300" height="100" rx="10" fill="white" stroke="#444" stroke-width="1.2" />
+<text x="700.0" y="5444.8" font-family="Arial, sans-serif" font-size="16" font-weight="400" fill="#222" text-anchor="middle"><tspan x="700.0" dy="0">Send approved reply through the</tspan><tspan x="700.0" dy="20.8">controlled interface; retry</tspan><tspan x="700.0" dy="20.8">transient delivery failures</tspan></text>
+<path d="M700.0,5590 L770.0,5640.0 L700.0,5690 L630.0,5640.0 Z" fill="white" stroke="#444" stroke-width="1.2"/>
+<text x="700.0" y="5645.25" font-family="Arial, sans-serif" font-size="15" font-weight="400" fill="#222" text-anchor="middle"><tspan x="700.0" dy="0">Delivered?</tspan></text>
+<rect x="2310.0" y="6160" width="300" height="100" rx="10" fill="white" stroke="#444" stroke-width="1.2" />
+<text x="2460.0" y="6205.2" font-family="Arial, sans-serif" font-size="16" font-weight="400" fill="#222" text-anchor="middle"><tspan x="2460.0" dy="0">Resolve persistent delivery failure;</tspan><tspan x="2460.0" dy="20.8">keep Case Ready to Respond</tspan></text>
+<rect x="550.0" y="5800" width="300" height="80" rx="10" fill="white" stroke="#444" stroke-width="1.2" />
+<text x="700.0" y="5835.2" font-family="Arial, sans-serif" font-size="16" font-weight="400" fill="#222" text-anchor="middle"><tspan x="700.0" dy="0">Record successful delivery;</tspan><tspan x="700.0" dy="20.8">close Case [Closed]</tspan></text>
+<circle cx="700.0" cy="5954.0" r="14" fill="white" stroke="#333" stroke-width="1.2"/><circle cx="700.0" cy="5954.0" r="9" fill="#222"/>
+<path d="M700.0,1760 L714.0,1774.0 L700.0,1788 L686.0,1774.0 Z" fill="white" stroke="#444" stroke-width="1.2"/>
+<text x="700.0" y="1779.25" font-family="Arial, sans-serif" font-size="15" font-weight="400" fill="#222" text-anchor="middle"><tspan x="700.0" dy="0"></tspan></text>
+<path d="M700.0,2420 L720.0,2440.0 L700.0,2460 L680.0,2440.0 Z" fill="white" stroke="#444" stroke-width="1.2"/>
+<text x="700.0" y="2445.25" font-family="Arial, sans-serif" font-size="15" font-weight="400" fill="#222" text-anchor="middle"><tspan x="700.0" dy="0"></tspan></text>
+<rect x="550.0" y="2500" width="300" height="80" rx="10" fill="white" stroke="#444" stroke-width="1.2" />
+<text x="700.0" y="2535.2" font-family="Arial, sans-serif" font-size="16" font-weight="400" fill="#222" text-anchor="middle"><tspan x="700.0" dy="0">Record any confirmed changes</tspan><tspan x="700.0" dy="20.8">to the existing Case and request</tspan></text>
+<path d="M1140.0,2650 L1154.0,2664.0 L1140.0,2678 L1126.0,2664.0 Z" fill="white" stroke="#444" stroke-width="1.2"/>
+<text x="1140.0" y="2669.25" font-family="Arial, sans-serif" font-size="15" font-weight="400" fill="#222" text-anchor="middle"><tspan x="1140.0" dy="0"></tspan></text>
+<path d="M1140.0,3940 L1160.0,3960.0 L1140.0,3980 L1120.0,3960.0 Z" fill="white" stroke="#444" stroke-width="1.2"/>
+<text x="1140.0" y="3965.25" font-family="Arial, sans-serif" font-size="15" font-weight="400" fill="#222" text-anchor="middle"><tspan x="1140.0" dy="0"></tspan></text>
+<rect x="990.0" y="3090" width="300" height="80" rx="10" fill="white" stroke="#444" stroke-width="1.2" />
+<text x="1140.0" y="3125.2" font-family="Arial, sans-serif" font-size="16" font-weight="400" fill="#222" text-anchor="middle"><tspan x="1140.0" dy="0">Record VerificationFailed;</tspan><tspan x="1140.0" dy="20.8">block the protected action</tspan></text>
+<path d="M1140.0,3230 L1210.0,3280.0 L1140.0,3330 L1070.0,3280.0 Z" fill="white" stroke="#444" stroke-width="1.2"/>
+<text x="1140.0" y="3275.5" font-family="Arial, sans-serif" font-size="15" font-weight="400" fill="#222" text-anchor="middle"><tspan x="1140.0" dy="0">Escalation</tspan><tspan x="1140.0" dy="19.5">required?</tspan></text>
+<rect x="990.0" y="3410" width="300" height="80" rx="10" fill="white" stroke="#444" stroke-width="1.2" />
+<text x="1140.0" y="3445.2" font-family="Arial, sans-serif" font-size="16" font-weight="400" fill="#222" text-anchor="middle"><tspan x="1140.0" dy="0">Retry / obtain missing</tspan><tspan x="1140.0" dy="20.8">membership evidence</tspan></text>
+<rect x="990.0" y="4350" width="300" height="80" rx="10" fill="white" stroke="#444" stroke-width="1.2" />
+<text x="1140.0" y="4385.2" font-family="Arial, sans-serif" font-size="16" font-weight="400" fill="#222" text-anchor="middle"><tspan x="1140.0" dy="0">Record VerificationFailed;</tspan><tspan x="1140.0" dy="20.8">block the protected action</tspan></text>
+<path d="M1140.0,4490 L1210.0,4540.0 L1140.0,4590 L1070.0,4540.0 Z" fill="white" stroke="#444" stroke-width="1.2"/>
+<text x="1140.0" y="4535.5" font-family="Arial, sans-serif" font-size="15" font-weight="400" fill="#222" text-anchor="middle"><tspan x="1140.0" dy="0">Escalation</tspan><tspan x="1140.0" dy="19.5">required?</tspan></text>
+<rect x="990.0" y="4670" width="300" height="80" rx="10" fill="white" stroke="#444" stroke-width="1.2" />
+<text x="1140.0" y="4705.2" font-family="Arial, sans-serif" font-size="16" font-weight="400" fill="#222" text-anchor="middle"><tspan x="1140.0" dy="0">Retry / obtain missing</tspan><tspan x="1140.0" dy="20.8">membership evidence</tspan></text>
+<path d="M700.0,3520 L714.0,3534.0 L700.0,3548 L686.0,3534.0 Z" fill="white" stroke="#444" stroke-width="1.2"/>
+<text x="700.0" y="3539.25" font-family="Arial, sans-serif" font-size="15" font-weight="400" fill="#222" text-anchor="middle"><tspan x="700.0" dy="0"></tspan></text>
+<path d="M1580.0,3690 L1594.0,3704.0 L1580.0,3718 L1566.0,3704.0 Z" fill="white" stroke="#444" stroke-width="1.2"/>
+<text x="1580.0" y="3709.25" font-family="Arial, sans-serif" font-size="15" font-weight="400" fill="#222" text-anchor="middle"><tspan x="1580.0" dy="0"></tspan></text>
+<path d="M1580.0,3950 L1650.0,4000.0 L1580.0,4050 L1510.0,4000.0 Z" fill="white" stroke="#444" stroke-width="1.2"/>
+<text x="1580.0" y="3995.5" font-family="Arial, sans-serif" font-size="15" font-weight="400" fill="#222" text-anchor="middle"><tspan x="1580.0" dy="0">More facts</tspan><tspan x="1580.0" dy="19.5">needed?</tspan></text>
+<rect x="550.0" y="3940" width="300" height="80" rx="10" fill="white" stroke="#444" stroke-width="1.2" />
+<text x="700.0" y="3975.2" font-family="Arial, sans-serif" font-size="16" font-weight="400" fill="#222" text-anchor="middle"><tspan x="700.0" dy="0">Ask for additional facts</tspan><tspan x="700.0" dy="20.8">requested by the specialist</tspan></text>
+<rect x="110.0" y="4080" width="300" height="80" rx="10" fill="white" stroke="#444" stroke-width="1.2" />
+<text x="260.0" y="4115.2" font-family="Arial, sans-serif" font-size="16" font-weight="400" fill="#222" text-anchor="middle"><tspan x="260.0" dy="0">Provide additional information;</tspan><tspan x="260.0" dy="20.8">confirm the updated request</tspan></text>
+<rect x="1430.0" y="4130" width="300" height="110" rx="10" fill="white" stroke="#444" stroke-width="1.2" />
+<text x="1580.0" y="4169.8" font-family="Arial, sans-serif" font-size="16" font-weight="400" fill="#222" text-anchor="middle"><tspan x="1580.0" dy="0">Return evidence, proposed response,</tspan><tspan x="1580.0" dy="20.8">Plan Version, dates, status and</tspan><tspan x="1580.0" dy="20.8">inclusive calendar-day duration</tspan></text>
+<path d="M2460.0,5720 L2530.0,5770.0 L2460.0,5820 L2390.0,5770.0 Z" fill="white" stroke="#444" stroke-width="1.2"/>
+<text x="2460.0" y="5765.5" font-family="Arial, sans-serif" font-size="15" font-weight="400" fill="#222" text-anchor="middle"><tspan x="2460.0" dy="0">Recorded</tspan><tspan x="2460.0" dy="19.5">outcome?</tspan></text>
+<rect x="2310.0" y="5920" width="300" height="80" rx="10" fill="white" stroke="#444" stroke-width="1.2" />
+<text x="2460.0" y="5965.6" font-family="Arial, sans-serif" font-size="16" font-weight="400" fill="#222" text-anchor="middle"><tspan x="2460.0" dy="0">Record authorised Case closure</tspan></text>
+<circle cx="2460.0" cy="6074.0" r="14" fill="white" stroke="#333" stroke-width="1.2"/><circle cx="2460.0" cy="6074.0" r="9" fill="#222"/>
+<path d="M700.0,5330 L714.0,5344.0 L700.0,5358 L686.0,5344.0 Z" fill="white" stroke="#444" stroke-width="1.2"/>
+<text x="700.0" y="5349.25" font-family="Arial, sans-serif" font-size="15" font-weight="400" fill="#222" text-anchor="middle"><tspan x="700.0" dy="0"></tspan></text>
+<path d="M1580.0,4780 L1600.0,4800.0 L1580.0,4820 L1560.0,4800.0 Z" fill="white" stroke="#444" stroke-width="1.2"/>
+<text x="1580.0" y="4805.25" font-family="Arial, sans-serif" font-size="15" font-weight="400" fill="#222" text-anchor="middle"><tspan x="1580.0" dy="0"></tspan></text>
+<rect x="550.0" y="1600" width="300" height="80" rx="10" fill="white" stroke="#444" stroke-width="1.2" />
+<text x="700.0" y="1635.2" font-family="Arial, sans-serif" font-size="16" font-weight="400" fill="#222" text-anchor="middle"><tspan x="700.0" dy="0">Ask focused questions for</tspan><tspan x="700.0" dy="20.8">missing or unclear information</tspan></text>
+<rect x="1395" y="230" width="370" height="120" rx="0" fill="#f6f6f6" stroke="#444" stroke-width="1.2" stroke-dasharray="5 4"/>
+<text x="1407" y="267.6" font-family="Arial, sans-serif" font-size="14" font-weight="400" fill="#222" text-anchor="start"><tspan x="1407" dy="0">TRACE</tspan><tspan x="1407" dy="18.2">Record confirmations, tool results, routing, reviews,</tspan><tspan x="1407" dy="18.2">approvals, delivery and closure in AgentRun /</tspan><tspan x="1407" dy="18.2">TraceEntry.</tspan></text>
+<rect x="1835" y="950" width="370" height="145" rx="0" fill="#f6f6f6" stroke="#444" stroke-width="1.2" stroke-dasharray="5 4"/>
+<text x="1847" y="1000.1" font-family="Arial, sans-serif" font-size="14" font-weight="400" fill="#222" text-anchor="start"><tspan x="1847" dy="0">HUMAN ASSISTANCE</tspan><tspan x="1847" dy="18.2">Unresolved uncertainty, unavailable evidence, unsafe</tspan><tspan x="1847" dy="18.2">handling, or a second explicit human request requires</tspan><tspan x="1847" dy="18.2">assistance. Unresolved work remains open.</tspan></text>
+<rect x="1395" y="2560" width="370" height="195" rx="0" fill="#f6f6f6" stroke="#444" stroke-width="1.2" stroke-dasharray="5 4"/>
+<text x="1407" y="2626.0" font-family="Arial, sans-serif" font-size="14" font-weight="400" fill="#222" text-anchor="start"><tspan x="1407" dy="0">UC-07 RULES</tspan><tspan x="1407" dy="18.2">Free: the requested action must keep Planned + Active</tspan><tspan x="1407" dy="18.2">trips &lt;= 2; each trip &lt;= 5 calendar days.</tspan><tspan x="1407" dy="18.2">Days = end date - start date + 1.</tspan><tspan x="1407" dy="18.2">Active Paid: no Free-tier count / duration limits.</tspan></text>
+<rect x="75" y="3260" width="370" height="145" rx="0" fill="#f6f6f6" stroke="#444" stroke-width="1.2" stroke-dasharray="5 4"/>
+<text x="87" y="3310.1" font-family="Arial, sans-serif" font-size="14" font-weight="400" fill="#222" text-anchor="start"><tspan x="87" dy="0">MEMBERSHIP RECOVERY</tspan><tspan x="87" dy="18.2">Complete an existing trip, shorten requested dates, or</tspan><tspan x="87" dy="18.2">upgrade. Preserve existing trips; confirm changes.</tspan><tspan x="87" dy="18.2">UC-07 does not modify the itinerary.</tspan></text>
+<rect x="1835" y="3850" width="370" height="150" rx="0" fill="#f6f6f6" stroke="#444" stroke-width="1.2" stroke-dasharray="5 4"/>
+<text x="1847" y="3902.6" font-family="Arial, sans-serif" font-size="14" font-weight="400" fill="#222" text-anchor="start"><tspan x="1847" dy="0">POST-PLANNING CHECK</tspan><tspan x="1847" dy="18.2">Use latest verified membership and UC-01 plan facts.</tspan><tspan x="1847" dy="18.2">Record both snapshots if membership changed; check</tspan><tspan x="1847" dy="18.2">applicable feature / member-offer entitlements.</tspan></text>
+<rect x="75" y="4980" width="370" height="135" rx="0" fill="#f6f6f6" stroke="#444" stroke-width="1.2" stroke-dasharray="5 4"/>
+<text x="87" y="5025.1" font-family="Arial, sans-serif" font-size="14" font-weight="400" fill="#222" text-anchor="start"><tspan x="87" dy="0">WITHDRAWAL BEFORE CLOSURE</tspan><tspan x="87" dy="18.2">Record withdrawal and stop processing. Close an</tspan><tspan x="87" dy="18.2">existing Case as Requester Withdrawn; otherwise</tspan><tspan x="87" dy="18.2">retain the intake record.</tspan></text>
+<rect x="1395" y="5830" width="370" height="135" rx="0" fill="#f6f6f6" stroke="#444" stroke-width="1.2" stroke-dasharray="5 4"/>
+<text x="1407" y="5875.1" font-family="Arial, sans-serif" font-size="14" font-weight="400" fill="#222" text-anchor="start"><tspan x="1407" dy="0">COMPLETION</tspan><tspan x="1407" dy="18.2">Waiting for facts, human action or retry does not close a</tspan><tspan x="1407" dy="18.2">Case. Final nodes follow successful delivery or a</tspan><tspan x="1407" dy="18.2">recorded closure decision.</tspan></text>
+<rect x="938.4" y="761.0" width="43.2" height="24" fill="white"/>
+<text x="960.0" y="777.9" font-family="Arial, sans-serif" font-size="14" font-weight="400" fill="#222" text-anchor="middle"><tspan x="960.0" dy="0">[no]</tspan></text>
+<rect x="1147.0" y="843.0" width="51.0" height="24" fill="white"/>
+<text x="1172.5" y="859.9" font-family="Arial, sans-serif" font-size="14" font-weight="400" fill="#222" text-anchor="middle"><tspan x="1172.5" dy="0">[yes]</tspan></text>
+<rect x="1514.5" y="1271.0" width="51.0" height="24" fill="white"/>
+<text x="1540.0" y="1287.9" font-family="Arial, sans-serif" font-size="14" font-weight="400" fill="#222" text-anchor="middle"><tspan x="1540.0" dy="0">[yes]</tspan></text>
+<rect x="707.0" y="1378.0" width="43.2" height="24" fill="white"/>
+<text x="728.6" y="1394.9" font-family="Arial, sans-serif" font-size="14" font-weight="400" fill="#222" text-anchor="middle"><tspan x="728.6" dy="0">[no]</tspan></text>
+<rect x="267.0" y="2213.0" width="82.2" height="24" fill="white"/>
+<text x="308.1" y="2229.9" font-family="Arial, sans-serif" font-size="14" font-weight="400" fill="#222" text-anchor="middle"><tspan x="308.1" dy="0">[changes]</tspan></text>
+<rect x="404.5" y="2101.0" width="51.0" height="24" fill="white"/>
+<text x="430.0" y="2117.9" font-family="Arial, sans-serif" font-size="14" font-weight="400" fill="#222" text-anchor="middle"><tspan x="430.0" dy="0">[yes]</tspan></text>
+<rect x="932.8" y="2941.0" width="74.4" height="24" fill="white"/>
+<text x="970.0" y="2957.9" font-family="Arial, sans-serif" font-size="14" font-weight="400" fill="#222" text-anchor="middle"><tspan x="970.0" dy="0">[Denied]</tspan></text>
+<rect x="1147.0" y="3023.0" width="82.2" height="24" fill="white"/>
+<text x="1188.1" y="3039.9" font-family="Arial, sans-serif" font-size="14" font-weight="400" fill="#222" text-anchor="middle"><tspan x="1188.1" dy="0">[Allowed]</tspan></text>
+<rect x="797.0" y="3468.0" width="43.2" height="24" fill="white"/>
+<text x="818.6" y="3484.9" font-family="Arial, sans-serif" font-size="14" font-weight="400" fill="#222" text-anchor="middle"><tspan x="818.6" dy="0">[no]</tspan></text>
+<rect x="932.8" y="4211.0" width="74.4" height="24" fill="white"/>
+<text x="970.0" y="4227.9" font-family="Arial, sans-serif" font-size="14" font-weight="400" fill="#222" text-anchor="middle"><tspan x="970.0" dy="0">[Denied]</tspan></text>
+<rect x="1812.8" y="4881.0" width="74.4" height="24" fill="white"/>
+<text x="1850.0" y="4897.9" font-family="Arial, sans-serif" font-size="14" font-weight="400" fill="#222" text-anchor="middle"><tspan x="1850.0" dy="0">[revise]</tspan></text>
+<rect x="2117.0" y="4958.0" width="191.4" height="24" fill="white"/>
+<text x="2212.7" y="4974.9" font-family="Arial, sans-serif" font-size="14" font-weight="400" fill="#222" text-anchor="middle"><tspan x="2212.7" dy="0">[restricted commitment]</tspan></text>
+<rect x="2285.0" y="5423.0" width="168.0" height="24" fill="white"/>
+<text x="2369.0" y="5439.9" font-family="Arial, sans-serif" font-size="14" font-weight="400" fill="#222" text-anchor="middle"><tspan x="2369.0" dy="0">[reject / take over]</tspan></text>
+<rect x="1518.7" y="5251.0" width="222.6" height="24" fill="white"/>
+<text x="1630.0" y="5267.9" font-family="Arial, sans-serif" font-size="14" font-weight="400" fill="#222" text-anchor="middle"><tspan x="1630.0" dy="0">[approve / authorised edit]</tspan></text>
+<rect x="1782.6" y="5013.0" width="230.4" height="24" fill="white"/>
+<text x="1897.8" y="5029.9" font-family="Arial, sans-serif" font-size="14" font-weight="400" fill="#222" text-anchor="middle"><tspan x="1897.8" dy="0">[passed; no approval needed]</tspan></text>
+<rect x="1446.0" y="5611.0" width="168.0" height="24" fill="white"/>
+<text x="1530.0" y="5627.9" font-family="Arial, sans-serif" font-size="14" font-weight="400" fill="#222" text-anchor="middle"><tspan x="1530.0" dy="0">[persistent failure]</tspan></text>
+<rect x="707.0" y="5733.0" width="51.0" height="24" fill="white"/>
+<text x="732.5" y="5749.9" font-family="Arial, sans-serif" font-size="14" font-weight="400" fill="#222" text-anchor="middle"><tspan x="732.5" dy="0">[yes]</tspan></text>
+<rect x="794.5" y="1451.0" width="51.0" height="24" fill="white"/>
+<text x="820.0" y="1467.9" font-family="Arial, sans-serif" font-size="14" font-weight="400" fill="#222" text-anchor="middle"><tspan x="820.0" dy="0">[yes]</tspan></text>
+<rect x="965.0" y="3063.0" width="168.0" height="24" fill="white"/>
+<text x="1049.0" y="3079.9" font-family="Arial, sans-serif" font-size="14" font-weight="400" fill="#222" text-anchor="middle"><tspan x="1049.0" dy="0">[VerificationFailed]</tspan></text>
+<rect x="1147.0" y="3358.0" width="43.2" height="24" fill="white"/>
+<text x="1168.6" y="3374.9" font-family="Arial, sans-serif" font-size="14" font-weight="400" fill="#222" text-anchor="middle"><tspan x="1168.6" dy="0">[no]</tspan></text>
+<rect x="1724.5" y="3251.0" width="51.0" height="24" fill="white"/>
+<text x="1750.0" y="3267.9" font-family="Arial, sans-serif" font-size="14" font-weight="400" fill="#222" text-anchor="middle"><tspan x="1750.0" dy="0">[yes]</tspan></text>
+<rect x="965.0" y="4323.0" width="168.0" height="24" fill="white"/>
+<text x="1049.0" y="4339.9" font-family="Arial, sans-serif" font-size="14" font-weight="400" fill="#222" text-anchor="middle"><tspan x="1049.0" dy="0">[VerificationFailed]</tspan></text>
+<rect x="1147.0" y="4618.0" width="43.2" height="24" fill="white"/>
+<text x="1168.6" y="4634.9" font-family="Arial, sans-serif" font-size="14" font-weight="400" fill="#222" text-anchor="middle"><tspan x="1168.6" dy="0">[no]</tspan></text>
+<rect x="1724.5" y="4511.0" width="51.0" height="24" fill="white"/>
+<text x="1750.0" y="4527.9" font-family="Arial, sans-serif" font-size="14" font-weight="400" fill="#222" text-anchor="middle"><tspan x="1750.0" dy="0">[yes]</tspan></text>
+<rect x="707.0" y="3493.0" width="51.0" height="24" fill="white"/>
+<text x="732.5" y="3509.9" font-family="Arial, sans-serif" font-size="14" font-weight="400" fill="#222" text-anchor="middle"><tspan x="732.5" dy="0">[yes]</tspan></text>
+<rect x="1432.0" y="3948.0" width="51.0" height="24" fill="white"/>
+<text x="1457.5" y="3964.9" font-family="Arial, sans-serif" font-size="14" font-weight="400" fill="#222" text-anchor="middle"><tspan x="1457.5" dy="0">[yes]</tspan></text>
+<rect x="1587.0" y="4078.0" width="43.2" height="24" fill="white"/>
+<text x="1608.6" y="4094.9" font-family="Arial, sans-serif" font-size="14" font-weight="400" fill="#222" text-anchor="middle"><tspan x="1608.6" dy="0">[no]</tspan></text>
+<rect x="1147.0" y="4293.0" width="82.2" height="24" fill="white"/>
+<text x="1188.1" y="4309.9" font-family="Arial, sans-serif" font-size="14" font-weight="400" fill="#222" text-anchor="middle"><tspan x="1188.1" dy="0">[Allowed]</tspan></text>
+<rect x="2470.6" y="4963.0" width="152.4" height="24" fill="white"/>
+<text x="2546.7999999999997" y="4979.9" font-family="Arial, sans-serif" font-size="14" font-weight="400" fill="#222" text-anchor="middle"><tspan x="2546.7999999999997" dy="0">[request revision]</tspan></text>
+<rect x="1553.8" y="5741.0" width="152.4" height="24" fill="white"/>
+<text x="1630.0" y="5757.9" font-family="Arial, sans-serif" font-size="14" font-weight="400" fill="#222" text-anchor="middle"><tspan x="1630.0" dy="0">[reply authorised]</tspan></text>
+<rect x="2467.0" y="5858.0" width="105.6" height="24" fill="white"/>
+<text x="2519.8" y="5874.9" font-family="Arial, sans-serif" font-size="14" font-weight="400" fill="#222" text-anchor="middle"><tspan x="2519.8" dy="0">[close Case]</tspan></text>
+<rect x="559.8" y="1518.0" width="43.2" height="24" fill="white"/>
+<text x="581.4" y="1534.9" font-family="Arial, sans-serif" font-size="14" font-weight="400" fill="#222" text-anchor="middle"><tspan x="581.4" dy="0">[no]</tspan></text>
+</svg>
