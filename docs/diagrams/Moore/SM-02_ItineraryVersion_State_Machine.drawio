@@ -1,0 +1,338 @@
+<?xml version='1.0' encoding='utf-8'?>
+<mxfile host="app.diagrams.net" agent="Codex">
+  <diagram id="SM-02" name="SM-02 State Machine">
+    <mxGraphModel page="1" pageWidth="2600" pageHeight="2520" grid="1" gridSize="10" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title" value="SM-02 | ItineraryVersion assessment lifecycle" style="html=0;whiteSpace=wrap;fontFamily=Arial;fontSize=17;strokeColor=#334155;fillColor=#ffffff;spacing=10;strokeColor=none;fillColor=none;align=left;fontSize=26;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="35" y="15" width="2490" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="subtitle" value="Owner: Moore | TP-01, TP-02, TP-AH-01 | UC-01 / UC-02&#10;State variable: ItineraryVersion.assessmentStatus : ItineraryAssessmentStatus. Final nodes end this assessment; records remain retained." style="html=0;whiteSpace=wrap;fontFamily=Arial;fontSize=17;strokeColor=#334155;fillColor=#ffffff;spacing=10;strokeColor=none;fillColor=none;align=left;" vertex="1" parent="1">
+          <mxGeometry x="35" y="72" width="2490" height="76" as="geometry" />
+        </mxCell>
+        <mxCell id="initial" value="" style="html=0;whiteSpace=wrap;fontFamily=Arial;fontSize=17;strokeColor=#334155;fillColor=#ffffff;spacing=10;ellipse;fillColor=#172b4d;" vertex="1" parent="1">
+          <mxGeometry x="293" y="170" width="34" height="34" as="geometry" />
+        </mxCell>
+        <mxCell id="draft" value="" style="html=0;whiteSpace=wrap;fontFamily=Arial;fontSize=17;strokeColor=#334155;fillColor=#ffffff;spacing=10;rounded=1;arcSize=12;" vertex="1" parent="1" assessmentState="Draft">
+          <mxGeometry x="100" y="260" width="420" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="draft_name" value="Draft" style="text;html=0;whiteSpace=wrap;fontFamily=Arial;fontSize=20;fontStyle=1;align=center;verticalAlign=middle;strokeColor=none;fillColor=none;" vertex="1" parent="draft">
+          <mxGeometry x="0" y="0" width="420" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="draft_body" value="Confirmed constraint snapshot;&#10;candidate content under construction." style="text;html=0;whiteSpace=wrap;fontFamily=Arial;fontSize=16;align=left;verticalAlign=middle;spacing=12;strokeColor=none;fillColor=none;" vertex="1" parent="draft">
+          <mxGeometry x="0" y="46" width="420" height="74" as="geometry" />
+        </mxCell>
+        <mxCell id="draft_divider" value="" style="endArrow=none;startArrow=none;strokeColor=#334155;" edge="1" parent="draft">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="0" y="46" as="sourcePoint" />
+            <mxPoint x="420" y="46" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="validating" value="" style="html=0;whiteSpace=wrap;fontFamily=Arial;fontSize=17;strokeColor=#334155;fillColor=#ffffff;spacing=10;rounded=1;arcSize=12;" vertex="1" parent="1" assessmentState="Validating">
+          <mxGeometry x="100" y="530" width="420" height="220" as="geometry" />
+        </mxCell>
+        <mxCell id="validating_name" value="Validating" style="text;html=0;whiteSpace=wrap;fontFamily=Arial;fontSize=20;fontStyle=1;align=center;verticalAlign=middle;strokeColor=none;fillColor=none;" vertex="1" parent="validating">
+          <mxGeometry x="0" y="0" width="420" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="validating_body" value="entry / requestValidation()&#10;validationServiceFailed / recordError();&#10;    notifyOperations()&#10;retryRequested / requestValidation()" style="text;html=0;whiteSpace=wrap;fontFamily=Arial;fontSize=16;align=left;verticalAlign=middle;spacing=12;strokeColor=none;fillColor=none;" vertex="1" parent="validating">
+          <mxGeometry x="0" y="46" width="420" height="174" as="geometry" />
+        </mxCell>
+        <mxCell id="validating_divider" value="" style="endArrow=none;startArrow=none;strokeColor=#334155;" edge="1" parent="validating">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="0" y="46" as="sourcePoint" />
+            <mxPoint x="420" y="46" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="infeasible" value="" style="html=0;whiteSpace=wrap;fontFamily=Arial;fontSize=17;strokeColor=#334155;fillColor=#ffffff;spacing=10;rounded=1;arcSize=12;" vertex="1" parent="1" assessmentState="Infeasible">
+          <mxGeometry x="950" y="560" width="420" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="infeasible_name" value="Infeasible" style="text;html=0;whiteSpace=wrap;fontFamily=Arial;fontSize=20;fontStyle=1;align=center;verticalAlign=middle;strokeColor=none;fillColor=none;" vertex="1" parent="infeasible">
+          <mxGeometry x="0" y="0" width="420" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="infeasible_body" value="Validation failed. Reasons and&#10;source evidence retained." style="text;html=0;whiteSpace=wrap;fontFamily=Arial;fontSize=16;align=left;verticalAlign=middle;spacing=12;strokeColor=none;fillColor=none;" vertex="1" parent="infeasible">
+          <mxGeometry x="0" y="46" width="420" height="74" as="geometry" />
+        </mxCell>
+        <mxCell id="infeasible_divider" value="" style="endArrow=none;startArrow=none;strokeColor=#334155;" edge="1" parent="infeasible">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="0" y="46" as="sourcePoint" />
+            <mxPoint x="420" y="46" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="f1" value="" style="html=0;whiteSpace=wrap;fontFamily=Arial;fontSize=17;strokeColor=#334155;fillColor=#ffffff;spacing=10;ellipse;fillColor=#ffffff;" vertex="1" parent="1">
+          <mxGeometry x="1142" y="880" width="36" height="36" as="geometry" />
+        </mxCell>
+        <mxCell id="f1_dot" value="" style="ellipse;fillColor=#172b4d;strokeColor=#172b4d;" vertex="1" parent="f1">
+          <mxGeometry x="7" y="7" width="22" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="feasible" value="" style="html=0;whiteSpace=wrap;fontFamily=Arial;fontSize=17;strokeColor=#334155;fillColor=#ffffff;spacing=10;rounded=1;arcSize=12;" vertex="1" parent="1" assessmentState="Feasible">
+          <mxGeometry x="100" y="960" width="420" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="feasible_name" value="Feasible" style="text;html=0;whiteSpace=wrap;fontFamily=Arial;fontSize=20;fontStyle=1;align=center;verticalAlign=middle;strokeColor=none;fillColor=none;" vertex="1" parent="feasible">
+          <mxGeometry x="0" y="0" width="420" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="feasible_body" value="All applicable hard constraints passed;&#10;candidate eligible for ranking." style="text;html=0;whiteSpace=wrap;fontFamily=Arial;fontSize=16;align=left;verticalAlign=middle;spacing=12;strokeColor=none;fillColor=none;" vertex="1" parent="feasible">
+          <mxGeometry x="0" y="46" width="420" height="74" as="geometry" />
+        </mxCell>
+        <mxCell id="feasible_divider" value="" style="endArrow=none;startArrow=none;strokeColor=#334155;" edge="1" parent="feasible">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="0" y="46" as="sourcePoint" />
+            <mxPoint x="420" y="46" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="review" value="" style="html=0;whiteSpace=wrap;fontFamily=Arial;fontSize=17;strokeColor=#334155;fillColor=#ffffff;spacing=10;rounded=1;arcSize=12;" vertex="1" parent="1" assessmentState="UnderReview">
+          <mxGeometry x="100" y="1260" width="420" height="220" as="geometry" />
+        </mxCell>
+        <mxCell id="review_name" value="UnderReview" style="text;html=0;whiteSpace=wrap;fontFamily=Arial;fontSize=20;fontStyle=1;align=center;verticalAlign=middle;strokeColor=none;fillColor=none;" vertex="1" parent="review">
+          <mxGeometry x="0" y="0" width="420" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="review_body" value="entry / requestReview()&#10;reviewServiceFailed / recordError();&#10;    notifyOperations()&#10;retryRequested / requestReview()" style="text;html=0;whiteSpace=wrap;fontFamily=Arial;fontSize=16;align=left;verticalAlign=middle;spacing=12;strokeColor=none;fillColor=none;" vertex="1" parent="review">
+          <mxGeometry x="0" y="46" width="420" height="174" as="geometry" />
+        </mxCell>
+        <mxCell id="review_divider" value="" style="endArrow=none;startArrow=none;strokeColor=#334155;" edge="1" parent="review">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="0" y="46" as="sourcePoint" />
+            <mxPoint x="420" y="46" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="revision" value="" style="html=0;whiteSpace=wrap;fontFamily=Arial;fontSize=17;strokeColor=#334155;fillColor=#ffffff;spacing=10;rounded=1;arcSize=12;" vertex="1" parent="1" assessmentState="RevisionRequired">
+          <mxGeometry x="950" y="1280" width="420" height="140" as="geometry" />
+        </mxCell>
+        <mxCell id="revision_name" value="RevisionRequired" style="text;html=0;whiteSpace=wrap;fontFamily=Arial;fontSize=20;fontStyle=1;align=center;verticalAlign=middle;strokeColor=none;fillColor=none;" vertex="1" parent="revision">
+          <mxGeometry x="0" y="0" width="420" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="revision_body" value="Release blocked. Revision reasons retained.&#10;Current review / approval cannot authorise&#10;release of this candidate." style="text;html=0;whiteSpace=wrap;fontFamily=Arial;fontSize=16;align=left;verticalAlign=middle;spacing=12;strokeColor=none;fillColor=none;" vertex="1" parent="revision">
+          <mxGeometry x="0" y="46" width="420" height="94" as="geometry" />
+        </mxCell>
+        <mxCell id="revision_divider" value="" style="endArrow=none;startArrow=none;strokeColor=#334155;" edge="1" parent="revision">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="0" y="46" as="sourcePoint" />
+            <mxPoint x="420" y="46" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="f2" value="" style="html=0;whiteSpace=wrap;fontFamily=Arial;fontSize=17;strokeColor=#334155;fillColor=#ffffff;spacing=10;ellipse;fillColor=#ffffff;" vertex="1" parent="1">
+          <mxGeometry x="1142" y="1540" width="36" height="36" as="geometry" />
+        </mxCell>
+        <mxCell id="f2_dot" value="" style="ellipse;fillColor=#172b4d;strokeColor=#172b4d;" vertex="1" parent="f2">
+          <mxGeometry x="7" y="7" width="22" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="awaiting" value="" style="html=0;whiteSpace=wrap;fontFamily=Arial;fontSize=17;strokeColor=#334155;fillColor=#ffffff;spacing=10;rounded=1;arcSize=12;" vertex="1" parent="1" assessmentState="AwaitingHumanReview">
+          <mxGeometry x="80" y="1790" width="460" height="270" as="geometry" />
+        </mxCell>
+        <mxCell id="awaiting_name" value="AwaitingHumanReview" style="text;html=0;whiteSpace=wrap;fontFamily=Arial;fontSize=20;fontStyle=1;align=center;verticalAlign=middle;strokeColor=none;fillColor=none;" vertex="1" parent="awaiting">
+          <mxGeometry x="0" y="0" width="460" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="awaiting_body" value="entry / requestHumanReviewViaOperations()&#10;approvalStatusChecked [no decision recorded]&#10;    / recordPendingCheck()&#10;takeoverRequested / recordTakeover();&#10;    notifyOperations()&#10;No event: remain in this state." style="text;html=0;whiteSpace=wrap;fontFamily=Arial;fontSize=16;align=left;verticalAlign=middle;spacing=12;strokeColor=none;fillColor=none;" vertex="1" parent="awaiting">
+          <mxGeometry x="0" y="46" width="460" height="224" as="geometry" />
+        </mxCell>
+        <mxCell id="awaiting_divider" value="" style="endArrow=none;startArrow=none;strokeColor=#334155;" edge="1" parent="awaiting">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="0" y="46" as="sourcePoint" />
+            <mxPoint x="460" y="46" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="reviewed" value="" style="html=0;whiteSpace=wrap;fontFamily=Arial;fontSize=17;strokeColor=#334155;fillColor=#ffffff;spacing=10;rounded=1;arcSize=12;" vertex="1" parent="1" assessmentState="Reviewed">
+          <mxGeometry x="1860" y="1750" width="580" height="280" as="geometry" />
+        </mxCell>
+        <mxCell id="reviewed_name" value="Reviewed" style="text;html=0;whiteSpace=wrap;fontFamily=Arial;fontSize=20;fontStyle=1;align=center;verticalAlign=middle;strokeColor=none;fillColor=none;" vertex="1" parent="reviewed">
+          <mxGeometry x="0" y="0" width="580" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="reviewed_body" value="entry / requestSave()&#10;saveFailed / recordError(); notifyOperations()&#10;retryRequested [releaseEligible]&#10;    / requestSave()&#10;releaseEligible = checksCurrent and&#10;    (not approvalRequired or scopedApprovalValid)" style="text;html=0;whiteSpace=wrap;fontFamily=Arial;fontSize=16;align=left;verticalAlign=middle;spacing=12;strokeColor=none;fillColor=none;" vertex="1" parent="reviewed">
+          <mxGeometry x="0" y="46" width="580" height="234" as="geometry" />
+        </mxCell>
+        <mxCell id="reviewed_divider" value="" style="endArrow=none;startArrow=none;strokeColor=#334155;" edge="1" parent="reviewed">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="0" y="46" as="sourcePoint" />
+            <mxPoint x="580" y="46" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="rejected" value="" style="html=0;whiteSpace=wrap;fontFamily=Arial;fontSize=17;strokeColor=#334155;fillColor=#ffffff;spacing=10;rounded=1;arcSize=12;" vertex="1" parent="1" assessmentState="Rejected">
+          <mxGeometry x="950" y="1900" width="420" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="rejected_name" value="Rejected" style="text;html=0;whiteSpace=wrap;fontFamily=Arial;fontSize=20;fontStyle=1;align=center;verticalAlign=middle;strokeColor=none;fillColor=none;" vertex="1" parent="rejected">
+          <mxGeometry x="0" y="0" width="420" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="rejected_body" value="Human rejection recorded.&#10;No automated release." style="text;html=0;whiteSpace=wrap;fontFamily=Arial;fontSize=16;align=left;verticalAlign=middle;spacing=12;strokeColor=none;fillColor=none;" vertex="1" parent="rejected">
+          <mxGeometry x="0" y="46" width="420" height="74" as="geometry" />
+        </mxCell>
+        <mxCell id="rejected_divider" value="" style="endArrow=none;startArrow=none;strokeColor=#334155;" edge="1" parent="rejected">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="0" y="46" as="sourcePoint" />
+            <mxPoint x="420" y="46" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="f3" value="" style="html=0;whiteSpace=wrap;fontFamily=Arial;fontSize=17;strokeColor=#334155;fillColor=#ffffff;spacing=10;ellipse;fillColor=#ffffff;" vertex="1" parent="1">
+          <mxGeometry x="1142" y="2280" width="36" height="36" as="geometry" />
+        </mxCell>
+        <mxCell id="f3_dot" value="" style="ellipse;fillColor=#172b4d;strokeColor=#172b4d;" vertex="1" parent="f3">
+          <mxGeometry x="7" y="7" width="22" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="handed" value="" style="html=0;whiteSpace=wrap;fontFamily=Arial;fontSize=17;strokeColor=#334155;fillColor=#ffffff;spacing=10;rounded=1;arcSize=12;" vertex="1" parent="1" assessmentState="HandedOff">
+          <mxGeometry x="1860" y="2240" width="580" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="handed_name" value="HandedOff" style="text;html=0;whiteSpace=wrap;fontFamily=Arial;fontSize=20;fontStyle=1;align=center;verticalAlign=middle;strokeColor=none;fillColor=none;" vertex="1" parent="handed">
+          <mxGeometry x="0" y="0" width="580" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="handed_body" value="Saved reviewed result returned to Operations.&#10;Underlying Case is not closed here." style="text;html=0;whiteSpace=wrap;fontFamily=Arial;fontSize=16;align=left;verticalAlign=middle;spacing=12;strokeColor=none;fillColor=none;" vertex="1" parent="handed">
+          <mxGeometry x="0" y="46" width="580" height="74" as="geometry" />
+        </mxCell>
+        <mxCell id="handed_divider" value="" style="endArrow=none;startArrow=none;strokeColor=#334155;" edge="1" parent="handed">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="0" y="46" as="sourcePoint" />
+            <mxPoint x="580" y="46" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="f4" value="" style="html=0;whiteSpace=wrap;fontFamily=Arial;fontSize=17;strokeColor=#334155;fillColor=#ffffff;spacing=10;ellipse;fillColor=#ffffff;" vertex="1" parent="1">
+          <mxGeometry x="2132" y="2460" width="36" height="36" as="geometry" />
+        </mxCell>
+        <mxCell id="f4_dot" value="" style="ellipse;fillColor=#172b4d;strokeColor=#172b4d;" vertex="1" parent="f4">
+          <mxGeometry x="7" y="7" width="22" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="T1" value="" source="initial" target="draft" edge="1" parent="1" style="edgeStyle=none;rounded=0;html=0;whiteSpace=wrap;fontFamily=Arial;fontSize=15;endArrow=open;endFill=0;strokeColor=#334155;strokeWidth=1.6;jumpStyle=arc;jumpSize=8;exitX=0.5;exitY=1;entryX=0.5;entryY=0;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="T2" value="" source="draft" target="validating" edge="1" parent="1" style="edgeStyle=none;rounded=0;html=0;whiteSpace=wrap;fontFamily=Arial;fontSize=15;endArrow=open;endFill=0;strokeColor=#334155;strokeWidth=1.6;jumpStyle=arc;jumpSize=8;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" trigger="candidateReady" transition="candidateReady">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="T2_label" value="candidateReady" style="text;html=0;whiteSpace=wrap;fontFamily=Arial;fontSize=15;align=center;verticalAlign=middle;strokeColor=none;fillColor=#ffffff;fontColor=#334155;" vertex="1" parent="1" labelFor="T2">
+          <mxGeometry x="190" y="425" width="240" height="36" as="geometry" />
+        </mxCell>
+        <mxCell id="T3" value="" source="validating" target="infeasible" edge="1" parent="1" style="edgeStyle=none;rounded=0;html=0;whiteSpace=wrap;fontFamily=Arial;fontSize=15;endArrow=open;endFill=0;strokeColor=#334155;strokeWidth=1.6;jumpStyle=arc;jumpSize=8;exitX=1;exitY=0.4;entryX=0;entryY=0.65;" trigger="validationReturned" transition="validationReturned [failed]&#10;/ recordValidationReasons()">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="T3_label" value="validationReturned [failed]&#10;/ recordValidationReasons()" style="text;html=0;whiteSpace=wrap;fontFamily=Arial;fontSize=15;align=center;verticalAlign=middle;strokeColor=none;fillColor=#ffffff;fontColor=#334155;" vertex="1" parent="1" labelFor="T3">
+          <mxGeometry x="555" y="570" width="365" height="74" as="geometry" />
+        </mxCell>
+        <mxCell id="T4" value="" source="infeasible" target="f1" edge="1" parent="1" style="edgeStyle=none;rounded=0;html=0;whiteSpace=wrap;fontFamily=Arial;fontSize=15;endArrow=open;endFill=0;strokeColor=#334155;strokeWidth=1.6;jumpStyle=arc;jumpSize=8;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" trigger="issueReturnedToOperations" transition="issueReturnedToOperations&#10;/ retainAssessmentRecord()">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="T4_label" value="issueReturnedToOperations&#10;/ retainAssessmentRecord()" style="text;html=0;whiteSpace=wrap;fontFamily=Arial;fontSize=15;align=center;verticalAlign=middle;strokeColor=none;fillColor=#ffffff;fontColor=#334155;" vertex="1" parent="1" labelFor="T4">
+          <mxGeometry x="965" y="760" width="390" height="62" as="geometry" />
+        </mxCell>
+        <mxCell id="T5" value="" source="validating" target="feasible" edge="1" parent="1" style="edgeStyle=none;rounded=0;html=0;whiteSpace=wrap;fontFamily=Arial;fontSize=15;endArrow=open;endFill=0;strokeColor=#334155;strokeWidth=1.6;jumpStyle=arc;jumpSize=8;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" trigger="validationReturned" transition="validationReturned [all checks pass]&#10;/ recordValidationResult()">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="T5_label" value="validationReturned [all checks pass]&#10;/ recordValidationResult()" style="text;html=0;whiteSpace=wrap;fontFamily=Arial;fontSize=15;align=center;verticalAlign=middle;strokeColor=none;fillColor=#ffffff;fontColor=#334155;" vertex="1" parent="1" labelFor="T5">
+          <mxGeometry x="50" y="825" width="530" height="68" as="geometry" />
+        </mxCell>
+        <mxCell id="T6" value="" source="feasible" target="review" edge="1" parent="1" style="edgeStyle=none;rounded=0;html=0;whiteSpace=wrap;fontFamily=Arial;fontSize=15;endArrow=open;endFill=0;strokeColor=#334155;strokeWidth=1.6;jumpStyle=arc;jumpSize=8;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" trigger="proposalPrepared" transition="proposalPrepared">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="T6_label" value="proposalPrepared" style="text;html=0;whiteSpace=wrap;fontFamily=Arial;fontSize=15;align=center;verticalAlign=middle;strokeColor=none;fillColor=#ffffff;fontColor=#334155;" vertex="1" parent="1" labelFor="T6">
+          <mxGeometry x="155" y="1150" width="310" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="T7" value="" source="review" target="revision" edge="1" parent="1" style="edgeStyle=none;rounded=0;html=0;whiteSpace=wrap;fontFamily=Arial;fontSize=15;endArrow=open;endFill=0;strokeColor=#334155;strokeWidth=1.6;jumpStyle=arc;jumpSize=8;exitX=1;exitY=0.4;entryX=0;entryY=0.4;" trigger="reviewReturned" transition="reviewReturned [failed]&#10;/ recordRevisionReasons()">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="T7_label" value="reviewReturned [failed]&#10;/ recordRevisionReasons()" style="text;html=0;whiteSpace=wrap;fontFamily=Arial;fontSize=15;align=center;verticalAlign=middle;strokeColor=none;fillColor=#ffffff;fontColor=#334155;" vertex="1" parent="1" labelFor="T7">
+          <mxGeometry x="555" y="1280" width="365" height="74" as="geometry" />
+        </mxCell>
+        <mxCell id="T8" value="" source="revision" target="f2" edge="1" parent="1" style="edgeStyle=none;rounded=0;html=0;whiteSpace=wrap;fontFamily=Arial;fontSize=15;endArrow=open;endFill=0;strokeColor=#334155;strokeWidth=1.6;jumpStyle=arc;jumpSize=8;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" trigger="revisionIssuesReturned" transition="revisionIssuesReturned&#10;/ retainAssessmentRecord()">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="T8_label" value="revisionIssuesReturned&#10;/ retainAssessmentRecord()" style="text;html=0;whiteSpace=wrap;fontFamily=Arial;fontSize=15;align=center;verticalAlign=middle;strokeColor=none;fillColor=#ffffff;fontColor=#334155;" vertex="1" parent="1" labelFor="T8">
+          <mxGeometry x="960" y="1455" width="410" height="65" as="geometry" />
+        </mxCell>
+        <mxCell id="T9" value="" source="review" target="awaiting" edge="1" parent="1" style="edgeStyle=none;rounded=0;html=0;whiteSpace=wrap;fontFamily=Arial;fontSize=15;endArrow=open;endFill=0;strokeColor=#334155;strokeWidth=1.6;jumpStyle=arc;jumpSize=8;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" trigger="reviewReturned" transition="reviewReturned&#10;[pass and humanReviewRequired]">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="T9_label" value="reviewReturned&#10;[pass and humanReviewRequired]" style="text;html=0;whiteSpace=wrap;fontFamily=Arial;fontSize=15;align=center;verticalAlign=middle;strokeColor=none;fillColor=#ffffff;fontColor=#334155;" vertex="1" parent="1" labelFor="T9">
+          <mxGeometry x="50" y="1600" width="530" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="T10" value="" source="review" target="reviewed" edge="1" parent="1" style="edgeStyle=none;rounded=0;html=0;whiteSpace=wrap;fontFamily=Arial;fontSize=15;endArrow=open;endFill=0;strokeColor=#334155;strokeWidth=1.6;jumpStyle=arc;jumpSize=8;exitX=1;exitY=0.9;entryX=0.5;entryY=0;" trigger="reviewReturned" transition="reviewReturned [pass and not humanReviewRequired]&#10;/ recordReviewResult()">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="740" y="1458" />
+              <mxPoint x="740" y="1660" />
+              <mxPoint x="2150" y="1660" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="T10_label" value="reviewReturned [pass and not humanReviewRequired]&#10;/ recordReviewResult()" style="text;html=0;whiteSpace=wrap;fontFamily=Arial;fontSize=15;align=center;verticalAlign=middle;strokeColor=none;fillColor=#ffffff;fontColor=#334155;" vertex="1" parent="1" labelFor="T10">
+          <mxGeometry x="830" y="1620" width="780" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="T11" value="" source="awaiting" target="reviewed" edge="1" parent="1" style="edgeStyle=none;rounded=0;html=0;whiteSpace=wrap;fontFamily=Arial;fontSize=15;endArrow=open;endFill=0;strokeColor=#334155;strokeWidth=1.6;jumpStyle=arc;jumpSize=8;exitX=0.5;exitY=1;entryX=0;entryY=0.85;" trigger="decisionRecorded" transition="decisionRecorded&#10;[approved and checksCurrent and scopeMatches and uncertaintyResolved]&#10;/ recordScopedApproval()">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="310" y="2150" />
+              <mxPoint x="1770" y="2150" />
+              <mxPoint x="1770" y="1988" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="T11_label" value="decisionRecorded&#10;[approved and checksCurrent and scopeMatches and uncertaintyResolved]&#10;/ recordScopedApproval()" style="text;html=0;whiteSpace=wrap;fontFamily=Arial;fontSize=15;align=center;verticalAlign=middle;strokeColor=none;fillColor=#ffffff;fontColor=#334155;" vertex="1" parent="1" labelFor="T11">
+          <mxGeometry x="560" y="2100" width="1100" height="86" as="geometry" />
+        </mxCell>
+        <mxCell id="T12" value="" source="awaiting" target="revision" edge="1" parent="1" style="edgeStyle=none;rounded=0;html=0;whiteSpace=wrap;fontFamily=Arial;fontSize=15;endArrow=open;endFill=0;strokeColor=#334155;strokeWidth=1.6;jumpStyle=arc;jumpSize=8;exitX=1;exitY=0.15;entryX=0;entryY=0.83;" trigger="decisionRecorded" transition="decisionRecorded [request revision or material edit]&#10;/ invalidateReleaseAuthorisation()">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="680" y="1830.5" />
+              <mxPoint x="680" y="1396.2" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="T12_label" value="decisionRecorded [request revision or material edit]&#10;/ invalidateReleaseAuthorisation()" style="text;html=0;whiteSpace=wrap;fontFamily=Arial;fontSize=15;align=center;verticalAlign=middle;strokeColor=none;fillColor=#ffffff;fontColor=#334155;" vertex="1" parent="1" labelFor="T12">
+          <mxGeometry x="500" y="1525" width="365" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="T13" value="" source="awaiting" target="rejected" edge="1" parent="1" style="edgeStyle=none;rounded=0;html=0;whiteSpace=wrap;fontFamily=Arial;fontSize=15;endArrow=open;endFill=0;strokeColor=#334155;strokeWidth=1.6;jumpStyle=arc;jumpSize=8;exitX=1;exitY=0.7;entryX=0;entryY=0.65;" trigger="decisionRecorded" transition="decisionRecorded [reject]&#10;/ recordRejection()">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="T13_label" value="decisionRecorded [reject]&#10;/ recordRejection()" style="text;html=0;whiteSpace=wrap;fontFamily=Arial;fontSize=15;align=center;verticalAlign=middle;strokeColor=none;fillColor=#ffffff;fontColor=#334155;" vertex="1" parent="1" labelFor="T13">
+          <mxGeometry x="565" y="1940" width="350" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="T14" value="" source="rejected" target="f3" edge="1" parent="1" style="edgeStyle=none;rounded=0;html=0;whiteSpace=wrap;fontFamily=Arial;fontSize=15;endArrow=open;endFill=0;strokeColor=#334155;strokeWidth=1.6;jumpStyle=arc;jumpSize=8;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" trigger="rejectionReturned" transition="rejectionReturned&#10;/ retainAssessmentRecord()">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="T14_label" value="rejectionReturned&#10;/ retainAssessmentRecord()" style="text;html=0;whiteSpace=wrap;fontFamily=Arial;fontSize=15;align=center;verticalAlign=middle;strokeColor=none;fillColor=#ffffff;fontColor=#334155;" vertex="1" parent="1" labelFor="T14">
+          <mxGeometry x="965" y="2200" width="390" height="62" as="geometry" />
+        </mxCell>
+        <mxCell id="T15" value="" source="reviewed" target="revision" edge="1" parent="1" style="edgeStyle=none;rounded=0;html=0;whiteSpace=wrap;fontFamily=Arial;fontSize=15;endArrow=open;endFill=0;strokeColor=#9a3412;strokeWidth=1.6;jumpStyle=arc;jumpSize=8;exitX=0;exitY=0.25;entryX=1;entryY=0.35;" trigger="evidenceStale" transition="evidenceStale&#10;/ invalidateReleaseAuthorisation()">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1600" y="1820" />
+              <mxPoint x="1600" y="1329" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="T15_label" value="evidenceStale&#10;/ invalidateReleaseAuthorisation()" style="text;html=0;whiteSpace=wrap;fontFamily=Arial;fontSize=15;align=center;verticalAlign=middle;strokeColor=none;fillColor=#ffffff;fontColor=#9a3412;" vertex="1" parent="1" labelFor="T15">
+          <mxGeometry x="1430" y="1440" width="420" height="78" as="geometry" />
+        </mxCell>
+        <mxCell id="T16" value="" source="reviewed" target="revision" edge="1" parent="1" style="edgeStyle=none;rounded=0;html=0;whiteSpace=wrap;fontFamily=Arial;fontSize=15;endArrow=open;endFill=0;strokeColor=#9a3412;strokeWidth=1.6;jumpStyle=arc;jumpSize=8;exitX=0;exitY=0.55;entryX=1;entryY=0.75;" trigger="materialChangeConfirmed" transition="materialChangeConfirmed&#10;/ invalidateReleaseAuthorisation()">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1500" y="1904" />
+              <mxPoint x="1500" y="1385" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="T16_label" value="materialChangeConfirmed&#10;/ invalidateReleaseAuthorisation()" style="text;html=0;whiteSpace=wrap;fontFamily=Arial;fontSize=15;align=center;verticalAlign=middle;strokeColor=none;fillColor=#ffffff;fontColor=#9a3412;" vertex="1" parent="1" labelFor="T16">
+          <mxGeometry x="1385" y="1540" width="450" height="78" as="geometry" />
+        </mxCell>
+        <mxCell id="T17" value="" source="reviewed" target="handed" edge="1" parent="1" style="edgeStyle=none;rounded=0;html=0;whiteSpace=wrap;fontFamily=Arial;fontSize=15;endArrow=open;endFill=0;strokeColor=#334155;strokeWidth=1.6;jumpStyle=arc;jumpSize=8;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" trigger="saveSucceeded" transition="saveSucceeded [releaseEligible]&#10;/ returnResultToOperations(); recordHandoff()">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="T17_label" value="saveSucceeded [releaseEligible]&#10;/ returnResultToOperations(); recordHandoff()" style="text;html=0;whiteSpace=wrap;fontFamily=Arial;fontSize=15;align=center;verticalAlign=middle;strokeColor=none;fillColor=#ffffff;fontColor=#334155;" vertex="1" parent="1" labelFor="T17">
+          <mxGeometry x="1820" y="2110" width="660" height="75" as="geometry" />
+        </mxCell>
+        <mxCell id="T18" value="" source="handed" target="f4" edge="1" parent="1" style="edgeStyle=none;rounded=0;html=0;whiteSpace=wrap;fontFamily=Arial;fontSize=15;endArrow=open;endFill=0;strokeColor=#334155;strokeWidth=1.6;jumpStyle=arc;jumpSize=8;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" trigger="assessmentCompleted" transition="assessmentCompleted">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="T18_label" value="assessmentCompleted" style="text;html=0;whiteSpace=wrap;fontFamily=Arial;fontSize=15;align=center;verticalAlign=middle;strokeColor=none;fillColor=#ffffff;fontColor=#334155;" vertex="1" parent="1" labelFor="T18">
+          <mxGeometry x="1950" y="2390" width="400" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="internalNote" value="INTERNAL TRANSITIONS&#10;The event / effect lines inside a state are UML internal transitions: the state does not exit and entry actions do not repeat.&#10;A service or save failure records the error. Only retryRequested starts another attempt. No successful hand-off is inferred from a failure.&#10;approvalStatusChecked is an explicit check event, not the passage of time. Absence of a decision is never approval. Manual takeover leaves automated release pending." style="html=0;whiteSpace=wrap;fontFamily=Arial;fontSize=17;strokeColor=#334155;fillColor=#ffffff;spacing=10;shape=note;fillColor=#fff9e8;align=left;" vertex="1" parent="1">
+          <mxGeometry x="1720" y="245" width="770" height="330" as="geometry" />
+        </mxCell>
+        <mxCell id="vocabulary" value="ALIGNED CLASS-MODEL VOCABULARY&#10;Companion: G-04_Itinerary_Assessment_Aligned.drawio&#10;ItineraryVersion.assessmentStatus : ItineraryAssessmentStatus&#10;Draft, Validating, Infeasible, Feasible, UnderReview, RevisionRequired, AwaitingHumanReview, Reviewed, Rejected, HandedOff.&#10;The exact same ten literals are used by this state machine and the companion enumeration. TravelPlan.status : PlanStatus is independent.&#10;Alignment is implemented in the companion full class-model copy and its focused vocabulary page." style="html=0;whiteSpace=wrap;fontFamily=Arial;fontSize=17;strokeColor=#334155;fillColor=#ffffff;spacing=10;shape=note;fillColor=#fff9e8;align=left;" vertex="1" parent="1">
+          <mxGeometry x="1720" y="650" width="770" height="370" as="geometry" />
+        </mxCell>
+        <mxCell id="immutability" value="VERSION AND RELEASE RULES&#10;A confirmed material amendment creates a distinct successor; baseline content is not overwritten. Assessment metadata may change while confirmed itinerary content remains frozen.&#10;Invalidation marks previous review / approval as unusable for release; it preserves historical records. A later save result cannot bypass the releaseEligible guard.&#10;RevisionRequired and Infeasible conclude this candidate assessment after issue hand-off. A corrected successor starts a new assessment.&#10;Crossing connectors without a junction dot are not merged flows." style="html=0;whiteSpace=wrap;fontFamily=Arial;fontSize=17;strokeColor=#334155;fillColor=#ffffff;spacing=10;shape=note;fillColor=#fff9e8;align=left;" vertex="1" parent="1">
+          <mxGeometry x="1720" y="1090" width="770" height="340" as="geometry" />
+        </mxCell>
+        <mxCell id="source" value="Notation: Tutorial 7, state / internal behaviour / transition conventions.&#10;Requirements: TripMate AI.md §§3.3, 5.2, 6.2. This model covers candidate assessment and hand-off, not a booked trip lifecycle." style="html=0;whiteSpace=wrap;fontFamily=Arial;fontSize=17;strokeColor=#334155;fillColor=#ffffff;spacing=10;strokeColor=none;fillColor=none;align=left;" vertex="1" parent="1">
+          <mxGeometry x="50" y="2415" width="1550" height="70" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
