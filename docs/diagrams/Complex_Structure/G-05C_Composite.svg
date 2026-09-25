@@ -1,0 +1,83 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1660" height="1430" viewBox="0 0 1660 1430"><rect width="100%" height="100%" fill="white"/>
+<text x="40" y="66.0" font-family="Arial" font-size="30" fill="#19344d" text-anchor="start" font-weight="bold" text-decoration="none">G-05C  |  Supplier assessment internal structure</text>
+<text x="40" y="110.0" font-family="Arial" font-size="18" fill="#19344d" text-anchor="start" font-weight="normal" text-decoration="none">Prepared by Jason | UC-06 | SUP-AH-01, SUP-01, SUP-02 | Runtime refinement of current G-04</text>
+<rect x="35" y="165" width="390" height="95" fill="#f0f5f9" stroke="#56718a" stroke-width="1.5"/>
+<text x="230.0" y="195.0" font-family="Arial" font-size="18" fill="#19344d" text-anchor="middle" font-weight="bold" text-decoration="none">ops : OperationsAgent</text>
+<polyline points="35,213 425,213" fill="none" stroke="#56718a" stroke-width="1.5"/>
+<text x="49" y="242.0" font-family="Arial" font-size="17" fill="#19344d" text-anchor="start" font-weight="normal" text-decoration="none">External to this collaboration</text>
+<rect x="1215" y="165" width="410" height="95" fill="#f0f5f9" stroke="#56718a" stroke-width="1.5"/>
+<text x="1420.0" y="195.0" font-family="Arial" font-size="18" fill="#19344d" text-anchor="middle" font-weight="bold" text-decoration="none">operator : HumanFounderOperator</text>
+<polyline points="1215,213 1625,213" fill="none" stroke="#56718a" stroke-width="1.5"/>
+<text x="1229" y="242.0" font-family="Arial" font-size="17" fill="#19344d" text-anchor="start" font-weight="normal" text-decoration="none">External to this collaboration</text>
+<rect x="50" y="330" width="1560" height="895" fill="white" stroke="#56718a" stroke-width="1.5"/>
+<text x="75" y="375.0" font-family="Arial" font-size="25" fill="#19344d" text-anchor="start" font-weight="bold" text-decoration="none">SupplierAssessmentContext</text>
+<text x="75" y="411.0" font-family="Arial" font-size="18" fill="#19344d" text-anchor="start" font-weight="normal" text-decoration="none">Structured classifier for this runtime collaboration; internal roles are existing G-04 types.</text>
+<rect x="620" y="480" width="430" height="115" fill="#f0f5f9" stroke="#56718a" stroke-width="1.5"/>
+<text x="835.0" y="510.0" font-family="Arial" font-size="18" fill="#19344d" text-anchor="middle" font-weight="bold" text-decoration="none">supplier : SupplierPartnershipAgent [1]</text>
+<polyline points="620,528 1050,528" fill="none" stroke="#56718a" stroke-width="1.5"/>
+<text x="634" y="557.0" font-family="Arial" font-size="17" fill="#19344d" text-anchor="start" font-weight="normal" text-decoration="none">assessOffer(case, evidence)</text>
+<text x="634" y="579.95" font-family="Arial" font-size="17" fill="#19344d" text-anchor="start" font-weight="normal" text-decoration="none">Coordinates checks, review and approval</text>
+<rect x="43" y="528" width="14" height="14" fill="white" stroke="#56718a" stroke-width="1.5"/>
+<rect x="613" y="528" width="14" height="14" fill="white" stroke="#56718a" stroke-width="1.5"/>
+<rect x="1603" y="528" width="14" height="14" fill="white" stroke="#56718a" stroke-width="1.5"/>
+<rect x="1043" y="528" width="14" height="14" fill="white" stroke="#56718a" stroke-width="1.5"/>
+<polyline points="230,260 30,260 30,535 50,535" fill="none" stroke="#56718a" stroke-width="1.5"/>
+<polyline points="50,535 620,535" fill="none" stroke="#56718a" stroke-width="1.5"/>
+<text x="75" y="467.0" font-family="Arial" font-size="17" fill="#19344d" text-anchor="start" font-weight="normal" text-decoration="none">intake port: provides assessOffer</text>
+<text x="75" y="489.95" font-family="Arial" font-size="17" fill="#19344d" text-anchor="start" font-weight="normal" text-decoration="none">Delegation to supplier.assessOffer</text>
+<polyline points="1420,260 1640,260 1640,535 1610,535" fill="none" stroke="#56718a" stroke-width="1.5"/>
+<polyline points="1610,535 1050,535" fill="none" stroke="#56718a" stroke-width="1.5"/>
+<text x="1080" y="467.0" font-family="Arial" font-size="17" fill="#19344d" text-anchor="start" font-weight="normal" text-decoration="none">decision port: requires decide</text>
+<text x="1080" y="489.95" font-family="Arial" font-size="17" fill="#19344d" text-anchor="start" font-weight="normal" text-decoration="none">Delegates requests to the human operator</text>
+<rect x="85" y="920" width="275" height="110" fill="#f0f5f9" stroke="#56718a" stroke-width="1.5"/>
+<text x="222.5" y="950.0" font-family="Arial" font-size="18" fill="#19344d" text-anchor="middle" font-weight="bold" text-decoration="none">llm : LLMAdapter [1]</text>
+<polyline points="85,968 360,968" fill="none" stroke="#56718a" stroke-width="1.5"/>
+<text x="99" y="997.0" font-family="Arial" font-size="17" fill="#19344d" text-anchor="start" font-weight="normal" text-decoration="none">extract / explain</text>
+<rect x="215.5" y="913" width="14" height="14" fill="white" stroke="#56718a" stroke-width="1.5"/>
+<rect x="688" y="588" width="14" height="14" fill="white" stroke="#56718a" stroke-width="1.5"/>
+<polyline points="695,595 695,650 222.5,650 222.5,920" fill="none" stroke="#56718a" stroke-width="1.5"/>
+<text x="85" y="820.0" font-family="Arial" font-size="15" fill="#19344d" text-anchor="start" font-weight="normal" text-decoration="none">service port</text>
+<text x="85" y="840.25" font-family="Arial" font-size="15" fill="#19344d" text-anchor="start" font-weight="normal" text-decoration="none">provides ILLMService</text>
+<text x="85" y="1061.0" font-family="Arial" font-size="15" fill="#19344d" text-anchor="start" font-weight="normal" text-decoration="none">supplier requires</text>
+<text x="85" y="1081.25" font-family="Arial" font-size="15" fill="#19344d" text-anchor="start" font-weight="normal" text-decoration="none">ILLMService</text>
+<rect x="395" y="920" width="370" height="110" fill="#f0f5f9" stroke="#56718a" stroke-width="1.5"/>
+<text x="580.0" y="947.7272727272727" font-family="Arial" font-size="15.727272727272727" fill="#19344d" text-anchor="middle" font-weight="bold" text-decoration="none">checks : ConstraintValidationService [1]</text>
+<polyline points="395,968 765,968" fill="none" stroke="#56718a" stroke-width="1.5"/>
+<text x="409" y="997.0" font-family="Arial" font-size="17" fill="#19344d" text-anchor="start" font-weight="normal" text-decoration="none">validateOffer</text>
+<rect x="573.0" y="913" width="14" height="14" fill="white" stroke="#56718a" stroke-width="1.5"/>
+<rect x="778" y="588" width="14" height="14" fill="white" stroke="#56718a" stroke-width="1.5"/>
+<polyline points="785,595 785,693 580.0,693 580.0,920" fill="none" stroke="#56718a" stroke-width="1.5"/>
+<text x="395" y="820.0" font-family="Arial" font-size="15" fill="#19344d" text-anchor="start" font-weight="normal" text-decoration="none">service port</text>
+<text x="395" y="840.25" font-family="Arial" font-size="15" fill="#19344d" text-anchor="start" font-weight="normal" text-decoration="none">provides IConstraintValidationService</text>
+<text x="395" y="1061.0" font-family="Arial" font-size="15" fill="#19344d" text-anchor="start" font-weight="normal" text-decoration="none">supplier requires</text>
+<text x="395" y="1081.25" font-family="Arial" font-size="15" fill="#19344d" text-anchor="start" font-weight="normal" text-decoration="none">IConstraintValidationService</text>
+<rect x="805" y="920" width="340" height="110" fill="#f0f5f9" stroke="#56718a" stroke-width="1.5"/>
+<text x="975.0" y="950.0" font-family="Arial" font-size="18" fill="#19344d" text-anchor="middle" font-weight="bold" text-decoration="none">pricing : PricingService [1]</text>
+<polyline points="805,968 1145,968" fill="none" stroke="#56718a" stroke-width="1.5"/>
+<text x="819" y="997.0" font-family="Arial" font-size="17" fill="#19344d" text-anchor="start" font-weight="normal" text-decoration="none">calculate / checkMargin</text>
+<rect x="968.0" y="913" width="14" height="14" fill="white" stroke="#56718a" stroke-width="1.5"/>
+<rect x="868" y="588" width="14" height="14" fill="white" stroke="#56718a" stroke-width="1.5"/>
+<polyline points="875,595 875,736 975.0,736 975.0,920" fill="none" stroke="#56718a" stroke-width="1.5"/>
+<text x="805" y="820.0" font-family="Arial" font-size="15" fill="#19344d" text-anchor="start" font-weight="normal" text-decoration="none">service port</text>
+<text x="805" y="840.25" font-family="Arial" font-size="15" fill="#19344d" text-anchor="start" font-weight="normal" text-decoration="none">provides IPricingService</text>
+<text x="805" y="1061.0" font-family="Arial" font-size="15" fill="#19344d" text-anchor="start" font-weight="normal" text-decoration="none">supplier requires</text>
+<text x="805" y="1081.25" font-family="Arial" font-size="15" fill="#19344d" text-anchor="start" font-weight="normal" text-decoration="none">IPricingService</text>
+<rect x="1190" y="920" width="380" height="110" fill="#f0f5f9" stroke="#56718a" stroke-width="1.5"/>
+<text x="1380.0" y="950.0" font-family="Arial" font-size="18" fill="#19344d" text-anchor="middle" font-weight="bold" text-decoration="none">reviewer : ReviewerGuardrail [1]</text>
+<polyline points="1190,968 1570,968" fill="none" stroke="#56718a" stroke-width="1.5"/>
+<text x="1204" y="997.0" font-family="Arial" font-size="17" fill="#19344d" text-anchor="start" font-weight="normal" text-decoration="none">review</text>
+<rect x="1373.0" y="913" width="14" height="14" fill="white" stroke="#56718a" stroke-width="1.5"/>
+<rect x="958" y="588" width="14" height="14" fill="white" stroke="#56718a" stroke-width="1.5"/>
+<polyline points="965,595 965,779 1380.0,779 1380.0,920" fill="none" stroke="#56718a" stroke-width="1.5"/>
+<text x="1190" y="820.0" font-family="Arial" font-size="15" fill="#19344d" text-anchor="start" font-weight="normal" text-decoration="none">service port</text>
+<text x="1190" y="840.25" font-family="Arial" font-size="15" fill="#19344d" text-anchor="start" font-weight="normal" text-decoration="none">provides IReviewService</text>
+<text x="1190" y="1061.0" font-family="Arial" font-size="15" fill="#19344d" text-anchor="start" font-weight="normal" text-decoration="none">supplier requires</text>
+<text x="1190" y="1081.25" font-family="Arial" font-size="15" fill="#19344d" text-anchor="start" font-weight="normal" text-decoration="none">IReviewService</text>
+<text x="90" y="1157.0" font-family="Arial" font-size="17" fill="#19344d" text-anchor="start" font-weight="normal" text-decoration="none">Small squares are ports. Plain lines are connectors, not execution order. Service connectors match required/provided contracts.</text>
+<text x="90" y="1179.95" font-family="Arial" font-size="17" fill="#19344d" text-anchor="start" font-weight="normal" text-decoration="none">Part labels are not underlined: they denote typed roles with multiplicity, not the concrete objects shown in G-05A.</text>
+<text x="40" y="1278.0" font-family="Arial" font-size="18" fill="#19344d" text-anchor="start" font-weight="normal" text-decoration="none">Scope: supplier assessment collaboration inside TripMate AI. Operations and the human are outside this context, not outside all software.</text>
+<text x="40" y="1302.3" font-family="Arial" font-size="18" fill="#19344d" text-anchor="start" font-weight="normal" text-decoration="none">SupplierAssessmentContext and the shown ports are a runtime design refinement; they do not add new business-domain classes.</text>
+<text x="40" y="1326.6" font-family="Arial" font-size="18" fill="#19344d" text-anchor="start" font-weight="normal" text-decoration="none">Persistence uses the existing AgentRun / TraceEntry records and local application storage; repositories and an approval queue are not</text>
+<text x="40" y="1350.9" font-family="Arial" font-size="18" fill="#19344d" text-anchor="start" font-weight="normal" text-decoration="none">expanded into additional services here. Waiting for a human is a stored status, not a new message broker.</text>
+<text x="40" y="1375.2" font-family="Arial" font-size="18" fill="#19344d" text-anchor="start" font-weight="normal" text-decoration="none">The full group runtime model must integrate planning, exception handling and the shared UI/storage around this contribution.</text>
+</svg>

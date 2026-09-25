@@ -1,0 +1,113 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1660" height="1370" viewBox="0 0 1660 1370"><rect width="100%" height="100%" fill="white"/>
+<text x="40" y="66.0" font-family="Arial" font-size="30" fill="#19344d" text-anchor="start" font-weight="bold" text-decoration="none">G-05A  |  Sydney to Melbourne object snapshot</text>
+<text x="40" y="110.0" font-family="Arial" font-size="18" fill="#19344d" text-anchor="start" font-weight="normal" text-decoration="none">Prepared by Jason | Supplier contribution to G-05 | UC-01, UC-05, UC-06, UC-07 | G-04 types</text>
+<text x="40" y="155.0" font-family="Arial" font-size="18" fill="#19344d" text-anchor="start" font-weight="normal" text-decoration="none">Snapshot: 10 Oct 2026, 09:00 AEST. One approved transport offer selected in a DRAFT itinerary.</text>
+<text x="40" y="179.3" font-family="Arial" font-size="18" fill="#19344d" text-anchor="start" font-weight="normal" text-decoration="none">All values are simulated fixtures; this is a partial object view, not a complete feasible itinerary.</text>
+<rect x="40" y="230" width="330" height="145" fill="#f0f5f9" stroke="#56718a" stroke-width="1.5"/>
+<text x="205.0" y="260.0" font-family="Arial" font-size="18" fill="#19344d" text-anchor="middle" font-weight="normal" text-decoration="underline">traveller01 : Traveller</text>
+<polyline points="40,278 370,278" fill="none" stroke="#56718a" stroke-width="1.5"/>
+<text x="54" y="307.0" font-family="Arial" font-size="17" fill="#19344d" text-anchor="start" font-weight="normal" text-decoration="none">travellerId = &quot;T01&quot;</text>
+<text x="54" y="329.95" font-family="Arial" font-size="17" fill="#19344d" text-anchor="start" font-weight="normal" text-decoration="none">displayName = &quot;Demo Traveller&quot;</text>
+<rect x="455" y="230" width="330" height="145" fill="#f0f5f9" stroke="#56718a" stroke-width="1.5"/>
+<text x="620.0" y="260.0" font-family="Arial" font-size="18" fill="#19344d" text-anchor="middle" font-weight="normal" text-decoration="underline">plan01 : TravelPlan</text>
+<polyline points="455,278 785,278" fill="none" stroke="#56718a" stroke-width="1.5"/>
+<text x="469" y="307.0" font-family="Arial" font-size="17" fill="#19344d" text-anchor="start" font-weight="normal" text-decoration="none">planId = &quot;P01&quot;</text>
+<text x="469" y="329.95" font-family="Arial" font-size="17" fill="#19344d" text-anchor="start" font-weight="normal" text-decoration="none">status = DRAFT</text>
+<rect x="870" y="230" width="330" height="145" fill="#f0f5f9" stroke="#56718a" stroke-width="1.5"/>
+<text x="1035.0" y="260.0" font-family="Arial" font-size="18" fill="#19344d" text-anchor="middle" font-weight="normal" text-decoration="underline">version01 : ItineraryVersion</text>
+<polyline points="870,278 1200,278" fill="none" stroke="#56718a" stroke-width="1.5"/>
+<text x="884" y="307.0" font-family="Arial" font-size="17" fill="#19344d" text-anchor="start" font-weight="normal" text-decoration="none">versionNo = 1</text>
+<text x="884" y="329.95" font-family="Arial" font-size="17" fill="#19344d" text-anchor="start" font-weight="normal" text-decoration="none">status = DRAFT</text>
+<text x="884" y="352.9" font-family="Arial" font-size="17" fill="#19344d" text-anchor="start" font-weight="normal" text-decoration="none">totalPrice = AUD 198.00</text>
+<rect x="1285" y="230" width="335" height="145" fill="#f0f5f9" stroke="#56718a" stroke-width="1.5"/>
+<text x="1452.5" y="260.0" font-family="Arial" font-size="18" fill="#19344d" text-anchor="middle" font-weight="normal" text-decoration="underline">leg01 : ItineraryItem</text>
+<polyline points="1285,278 1620,278" fill="none" stroke="#56718a" stroke-width="1.5"/>
+<text x="1299" y="307.0" font-family="Arial" font-size="17" fill="#19344d" text-anchor="start" font-weight="normal" text-decoration="none">kind = TRANSPORT</text>
+<text x="1299" y="329.95" font-family="Arial" font-size="17" fill="#19344d" text-anchor="start" font-weight="normal" text-decoration="none">quotedPrice = AUD 198.00</text>
+<polyline points="370,265 455,265" fill="none" stroke="#56718a" stroke-width="1.5"/>
+<text x="384" y="255.0" font-family="Arial" font-size="17" fill="#19344d" text-anchor="start" font-weight="normal" text-decoration="none">owns</text>
+<polyline points="785,265 870,265" fill="none" stroke="#56718a" stroke-width="1.5"/>
+<text x="790" y="255.0" font-family="Arial" font-size="17" fill="#19344d" text-anchor="start" font-weight="normal" text-decoration="none">contains</text>
+<polyline points="1200,265 1285,265" fill="none" stroke="#56718a" stroke-width="1.5"/>
+<text x="1203" y="255.0" font-family="Arial" font-size="17" fill="#19344d" text-anchor="start" font-weight="normal" text-decoration="none">comprises</text>
+<rect x="40" y="495" width="330" height="145" fill="#f0f5f9" stroke="#56718a" stroke-width="1.5"/>
+<text x="205.0" y="525.0" font-family="Arial" font-size="18" fill="#19344d" text-anchor="middle" font-weight="normal" text-decoration="underline">sub01 : Subscription</text>
+<polyline points="40,543 370,543" fill="none" stroke="#56718a" stroke-width="1.5"/>
+<text x="54" y="572.0" font-family="Arial" font-size="17" fill="#19344d" text-anchor="start" font-weight="normal" text-decoration="none">status = ACTIVE</text>
+<text x="54" y="594.95" font-family="Arial" font-size="17" fill="#19344d" text-anchor="start" font-weight="normal" text-decoration="none">validityPeriod = Oct 2026</text>
+<rect x="40" y="785" width="330" height="145" fill="#f0f5f9" stroke="#56718a" stroke-width="1.5"/>
+<text x="205.0" y="815.0" font-family="Arial" font-size="18" fill="#19344d" text-anchor="middle" font-weight="normal" text-decoration="underline">paid : MembershipPlan</text>
+<polyline points="40,833 370,833" fill="none" stroke="#56718a" stroke-width="1.5"/>
+<text x="54" y="862.0" font-family="Arial" font-size="17" fill="#19344d" text-anchor="start" font-weight="normal" text-decoration="none">planId = &quot;PAID&quot;</text>
+<text x="54" y="884.95" font-family="Arial" font-size="17" fill="#19344d" text-anchor="start" font-weight="normal" text-decoration="none">tier = PAID</text>
+<polyline points="205,375 205,495" fill="none" stroke="#56718a" stroke-width="1.5"/>
+<text x="220" y="442.0" font-family="Arial" font-size="17" fill="#19344d" text-anchor="start" font-weight="normal" text-decoration="none">holds</text>
+<polyline points="205,640 205,785" fill="none" stroke="#56718a" stroke-width="1.5"/>
+<text x="220" y="712.0" font-family="Arial" font-size="17" fill="#19344d" text-anchor="start" font-weight="normal" text-decoration="none">applies</text>
+<rect x="1285" y="495" width="335" height="170" fill="#f0f5f9" stroke="#56718a" stroke-width="1.5"/>
+<text x="1452.5" y="525.0" font-family="Arial" font-size="18" fill="#19344d" text-anchor="middle" font-weight="normal" text-decoration="underline">offer01 : SupplierOffer</text>
+<polyline points="1285,543 1620,543" fill="none" stroke="#56718a" stroke-width="1.5"/>
+<text x="1299" y="572.0" font-family="Arial" font-size="17" fill="#19344d" text-anchor="start" font-weight="normal" text-decoration="none">offerId = &quot;O01&quot;; status = APPROVED</text>
+<text x="1299" y="594.95" font-family="Arial" font-size="17" fill="#19344d" text-anchor="start" font-weight="normal" text-decoration="none">supplierCost = AUD 180.00</text>
+<text x="1299" y="617.9" font-family="Arial" font-size="17" fill="#19344d" text-anchor="start" font-weight="normal" text-decoration="none">availableQuantity = 10</text>
+<text x="1299" y="640.85" font-family="Arial" font-size="17" fill="#19344d" text-anchor="start" font-weight="normal" text-decoration="none">validUntil = 15 Oct 2026</text>
+<polyline points="1450,375 1450,495" fill="none" stroke="#56718a" stroke-width="1.5"/>
+<text x="1465" y="442.0" font-family="Arial" font-size="17" fill="#19344d" text-anchor="start" font-weight="normal" text-decoration="none">selects</text>
+<rect x="870" y="495" width="330" height="170" fill="#f0f5f9" stroke="#56718a" stroke-width="1.5"/>
+<text x="1035.0" y="525.0" font-family="Arial" font-size="18" fill="#19344d" text-anchor="middle" font-weight="normal" text-decoration="underline">base01 : PriceBreakdown</text>
+<polyline points="870,543 1200,543" fill="none" stroke="#56718a" stroke-width="1.5"/>
+<text x="884" y="572.0" font-family="Arial" font-size="17" fill="#19344d" text-anchor="start" font-weight="normal" text-decoration="none">supplierCost = AUD 180.00</text>
+<text x="884" y="594.95" font-family="Arial" font-size="17" fill="#19344d" text-anchor="start" font-weight="normal" text-decoration="none">markupRate = 0.10; discountAmount = 0</text>
+<text x="884" y="617.9" font-family="Arial" font-size="17" fill="#19344d" text-anchor="start" font-weight="normal" text-decoration="none">basePrice = sellingPrice = AUD 198.00</text>
+<text x="884" y="640.85" font-family="Arial" font-size="17" fill="#19344d" text-anchor="start" font-weight="normal" text-decoration="none">marginAmount = AUD 18.00</text>
+<polyline points="1285,585 1200,585" fill="none" stroke="#56718a" stroke-width="1.5"/>
+<text x="1204" y="550.0" font-family="Arial" font-size="17" fill="#19344d" text-anchor="start" font-weight="normal" text-decoration="none">owns</text>
+<text x="1204" y="572.95" font-family="Arial" font-size="17" fill="#19344d" text-anchor="start" font-weight="normal" text-decoration="none">history</text>
+<rect x="455" y="495" width="330" height="170" fill="#f0f5f9" stroke="#56718a" stroke-width="1.5"/>
+<text x="620.0" y="525.0" font-family="Arial" font-size="18" fill="#19344d" text-anchor="middle" font-weight="normal" text-decoration="underline">source01 : Evidence</text>
+<polyline points="455,543 785,543" fill="none" stroke="#56718a" stroke-width="1.5"/>
+<text x="469" y="572.0" font-family="Arial" font-size="17" fill="#19344d" text-anchor="start" font-weight="normal" text-decoration="none">evidenceId = &quot;E01&quot;</text>
+<text x="469" y="594.95" font-family="Arial" font-size="17" fill="#19344d" text-anchor="start" font-weight="normal" text-decoration="none">sourceType = &quot;simulated supplier&quot;</text>
+<text x="469" y="617.9" font-family="Arial" font-size="17" fill="#19344d" text-anchor="start" font-weight="normal" text-decoration="none">sourceReference = &quot;offer-fixture-01&quot;</text>
+<polyline points="1350,495 1350,430 620,430 620,495" fill="none" stroke="#56718a" stroke-width="1.5"/>
+<text x="940" y="419.0" font-family="Arial" font-size="17" fill="#19344d" text-anchor="start" font-weight="normal" text-decoration="none">supported by</text>
+<rect x="1285" y="785" width="335" height="145" fill="#f0f5f9" stroke="#56718a" stroke-width="1.5"/>
+<text x="1452.5" y="815.0" font-family="Arial" font-size="18" fill="#19344d" text-anchor="middle" font-weight="normal" text-decoration="underline">provider01 : Supplier</text>
+<polyline points="1285,833 1620,833" fill="none" stroke="#56718a" stroke-width="1.5"/>
+<text x="1299" y="862.0" font-family="Arial" font-size="17" fill="#19344d" text-anchor="start" font-weight="normal" text-decoration="none">supplierId = &quot;S01&quot;</text>
+<text x="1299" y="884.95" font-family="Arial" font-size="17" fill="#19344d" text-anchor="start" font-weight="normal" text-decoration="none">name = &quot;Demo Transport Supplier&quot;</text>
+<polyline points="1450,785 1450,665" fill="none" stroke="#56718a" stroke-width="1.5"/>
+<text x="1465" y="725.0" font-family="Arial" font-size="17" fill="#19344d" text-anchor="start" font-weight="normal" text-decoration="none">provides</text>
+<rect x="870" y="785" width="330" height="145" fill="#f0f5f9" stroke="#56718a" stroke-width="1.5"/>
+<text x="1035.0" y="815.0" font-family="Arial" font-size="18" fill="#19344d" text-anchor="middle" font-weight="normal" text-decoration="underline">product01 : TravelProduct</text>
+<polyline points="870,833 1200,833" fill="none" stroke="#56718a" stroke-width="1.5"/>
+<text x="884" y="862.0" font-family="Arial" font-size="17" fill="#19344d" text-anchor="start" font-weight="normal" text-decoration="none">productId = &quot;TP01&quot;</text>
+<text x="884" y="884.95" font-family="Arial" font-size="17" fill="#19344d" text-anchor="start" font-weight="normal" text-decoration="none">name = &quot;Sydney to Melbourne&quot;</text>
+<text x="884" y="907.9" font-family="Arial" font-size="17" fill="#19344d" text-anchor="start" font-weight="normal" text-decoration="none">productType = TRANSPORT</text>
+<polyline points="1285,640 1245,640 1245,855 1200,855" fill="none" stroke="#56718a" stroke-width="1.5"/>
+<text x="1252" y="745.0" font-family="Arial" font-size="17" fill="#19344d" text-anchor="start" font-weight="normal" text-decoration="none">offers</text>
+<rect x="455" y="785" width="330" height="145" fill="#f0f5f9" stroke="#56718a" stroke-width="1.5"/>
+<text x="620.0" y="815.0" font-family="Arial" font-size="18" fill="#19344d" text-anchor="middle" font-weight="normal" text-decoration="underline">case01 : SupplierCase</text>
+<polyline points="455,833 785,833" fill="none" stroke="#56718a" stroke-width="1.5"/>
+<text x="469" y="862.0" font-family="Arial" font-size="17" fill="#19344d" text-anchor="start" font-weight="normal" text-decoration="none">caseId = &quot;SC01&quot;</text>
+<text x="469" y="884.95" font-family="Arial" font-size="17" fill="#19344d" text-anchor="start" font-weight="normal" text-decoration="none">status = READY_TO_RESPOND</text>
+<text x="469" y="907.9" font-family="Arial" font-size="17" fill="#19344d" text-anchor="start" font-weight="normal" text-decoration="none">supplierReference = &quot;S01&quot;</text>
+<polyline points="785,855 815,855 815,722 1320,722 1320,665" fill="none" stroke="#56718a" stroke-width="1.5"/>
+<text x="910" y="709.0" font-family="Arial" font-size="17" fill="#19344d" text-anchor="start" font-weight="normal" text-decoration="none">assesses</text>
+<rect x="870" y="1070" width="330" height="160" fill="#f0f5f9" stroke="#56718a" stroke-width="1.5"/>
+<text x="1035.0" y="1100.0" font-family="Arial" font-size="18" fill="#19344d" text-anchor="middle" font-weight="normal" text-decoration="underline">approval01 : HumanApproval</text>
+<polyline points="870,1118 1200,1118" fill="none" stroke="#56718a" stroke-width="1.5"/>
+<text x="884" y="1147.0" font-family="Arial" font-size="17" fill="#19344d" text-anchor="start" font-weight="normal" text-decoration="none">decision = APPROVE</text>
+<text x="884" y="1169.95" font-family="Arial" font-size="17" fill="#19344d" text-anchor="start" font-weight="normal" text-decoration="none">subject = SupplierOffer/O01</text>
+<text x="884" y="1192.9" font-family="Arial" font-size="17" fill="#19344d" text-anchor="start" font-weight="normal" text-decoration="none">scope = &quot;reviewed base offer&quot;</text>
+<rect x="455" y="1070" width="330" height="160" fill="#f0f5f9" stroke="#56718a" stroke-width="1.5"/>
+<text x="620.0" y="1098.8595041322315" font-family="Arial" font-size="16.859504132231404" fill="#19344d" text-anchor="middle" font-weight="normal" text-decoration="underline">operator01 : HumanFounderOperator</text>
+<polyline points="455,1118 785,1118" fill="none" stroke="#56718a" stroke-width="1.5"/>
+<text x="469" y="1147.0" font-family="Arial" font-size="17" fill="#19344d" text-anchor="start" font-weight="normal" text-decoration="none">operatorId = &quot;H01&quot;</text>
+<text x="469" y="1169.95" font-family="Arial" font-size="17" fill="#19344d" text-anchor="start" font-weight="normal" text-decoration="none">authorityScope = {offer approval}</text>
+<polyline points="785,1145 870,1145" fill="none" stroke="#56718a" stroke-width="1.5"/>
+<text x="790" y="1130.0" font-family="Arial" font-size="17" fill="#19344d" text-anchor="start" font-weight="normal" text-decoration="none">decides</text>
+<text x="40" y="1267.0" font-family="Arial" font-size="17" fill="#19344d" text-anchor="start" font-weight="normal" text-decoration="none">Underlined headers denote instances; solid lines denote links. Link names follow G-04 associations.</text>
+<text x="40" y="1289.95" font-family="Arial" font-size="17" fill="#19344d" text-anchor="start" font-weight="normal" text-decoration="none">HumanApproval.subject references offer01; no unmodelled class association is introduced. Minimum-margin fixture: AUD 15.00.</text>
+<text x="40" y="1312.9" font-family="Arial" font-size="17" fill="#19344d" text-anchor="start" font-weight="normal" text-decoration="none">The Paid subscription is planning context; this base offer uses no member discount and sends no commercial advertisement.</text>
+</svg>

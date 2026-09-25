@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1660" height="1430" viewBox="0 0 1660 1430"><rect width="100%" height="100%" fill="white"/>
+<text x="40" y="66.0" font-family="Arial" font-size="30" fill="#19344d" text-anchor="start" font-weight="bold" text-decoration="none">G-05B  |  Supplier assessment collaboration</text>
+<text x="40" y="110.0" font-family="Arial" font-size="18" fill="#19344d" text-anchor="start" font-weight="normal" text-decoration="none">Prepared by Jason | UC-06 successful restricted-offer scenario | SUP-AH-01, SUP-01, SUP-02</text>
+<rect x="40" y="165" width="360" height="100" fill="#f0f5f9" stroke="#56718a" stroke-width="1.5"/>
+<text x="220.0" y="195.0" font-family="Arial" font-size="18" fill="#19344d" text-anchor="middle" font-weight="normal" text-decoration="underline">ops : OperationsAgent</text>
+<polyline points="40,213 400,213" fill="none" stroke="#56718a" stroke-width="1.5"/>
+<text x="54" y="242.0" font-family="Arial" font-size="17" fill="#19344d" text-anchor="start" font-weight="normal" text-decoration="none">Confirmed SupplierCase and Evidence</text>
+<rect x="370" y="465" width="390" height="110" fill="#f0f5f9" stroke="#56718a" stroke-width="1.5"/>
+<text x="565.0" y="495.0" font-family="Arial" font-size="18" fill="#19344d" text-anchor="middle" font-weight="normal" text-decoration="underline">supplier : SupplierPartnershipAgent</text>
+<polyline points="370,513 760,513" fill="none" stroke="#56718a" stroke-width="1.5"/>
+<text x="384" y="542.0" font-family="Arial" font-size="17" fill="#19344d" text-anchor="start" font-weight="normal" text-decoration="none">Coordinates the UC-06 assessment</text>
+<rect x="1100" y="165" width="500" height="100" fill="#f0f5f9" stroke="#56718a" stroke-width="1.5"/>
+<text x="1350.0" y="195.0" font-family="Arial" font-size="18" fill="#19344d" text-anchor="middle" font-weight="normal" text-decoration="underline">llm : LLMAdapter</text>
+<polyline points="1100,213 1600,213" fill="none" stroke="#56718a" stroke-width="1.5"/>
+<text x="1114" y="242.0" font-family="Arial" font-size="17" fill="#19344d" text-anchor="start" font-weight="normal" text-decoration="none">G-04: ILLMService</text>
+<rect x="1100" y="420" width="500" height="100" fill="#f0f5f9" stroke="#56718a" stroke-width="1.5"/>
+<text x="1350.0" y="450.0" font-family="Arial" font-size="18" fill="#19344d" text-anchor="middle" font-weight="normal" text-decoration="underline">checks : ConstraintValidationService</text>
+<polyline points="1100,468 1600,468" fill="none" stroke="#56718a" stroke-width="1.5"/>
+<text x="1114" y="497.0" font-family="Arial" font-size="17" fill="#19344d" text-anchor="start" font-weight="normal" text-decoration="none">G-04: IConstraintValidationService</text>
+<rect x="1100" y="675" width="500" height="100" fill="#f0f5f9" stroke="#56718a" stroke-width="1.5"/>
+<text x="1350.0" y="705.0" font-family="Arial" font-size="18" fill="#19344d" text-anchor="middle" font-weight="normal" text-decoration="underline">pricing : PricingService</text>
+<polyline points="1100,723 1600,723" fill="none" stroke="#56718a" stroke-width="1.5"/>
+<text x="1114" y="752.0" font-family="Arial" font-size="17" fill="#19344d" text-anchor="start" font-weight="normal" text-decoration="none">G-04: IPricingService</text>
+<rect x="1100" y="930" width="500" height="100" fill="#f0f5f9" stroke="#56718a" stroke-width="1.5"/>
+<text x="1350.0" y="960.0" font-family="Arial" font-size="18" fill="#19344d" text-anchor="middle" font-weight="normal" text-decoration="underline">reviewer : ReviewerGuardrail</text>
+<polyline points="1100,978 1600,978" fill="none" stroke="#56718a" stroke-width="1.5"/>
+<text x="1114" y="1007.0" font-family="Arial" font-size="17" fill="#19344d" text-anchor="start" font-weight="normal" text-decoration="none">G-04: IReviewService</text>
+<rect x="370" y="1110" width="390" height="100" fill="#f0f5f9" stroke="#56718a" stroke-width="1.5"/>
+<text x="565.0" y="1140.0" font-family="Arial" font-size="18" fill="#19344d" text-anchor="middle" font-weight="normal" text-decoration="underline">operator : HumanFounderOperator</text>
+<polyline points="370,1158 760,1158" fill="none" stroke="#56718a" stroke-width="1.5"/>
+<text x="384" y="1187.0" font-family="Arial" font-size="17" fill="#19344d" text-anchor="start" font-weight="normal" text-decoration="none">Decision applies only to reviewed offer</text>
+<polyline points="220,265 220,520 370,520" fill="none" stroke="#56718a" stroke-width="1.5"/>
+<polygon points="370,520 358.94726807196537,524.6730201077038 358.94726807196537,515.3269798922962" fill="#56718a"/>
+<text x="240" y="332.0" font-family="Arial" font-size="17" fill="#19344d" text-anchor="start" font-weight="normal" text-decoration="none">1: approvedOffer :=</text>
+<text x="240" y="354.95" font-family="Arial" font-size="17" fill="#19344d" text-anchor="start" font-weight="normal" text-decoration="none">assessOffer(case01, {source01})</text>
+<polyline points="565,465 565,215 1100,215" fill="none" stroke="#56718a" stroke-width="1.5"/>
+<polygon points="1100,215 1088.9472680719655,219.6730201077038 1088.9472680719655,210.3269798922962" fill="#56718a"/>
+<text x="590" y="186.0" font-family="Arial" font-size="17" fill="#19344d" text-anchor="start" font-weight="normal" text-decoration="none">1.1: fields := extract(sourceText, offerSchema)</text>
+<polyline points="760,480 1100,480" fill="none" stroke="#56718a" stroke-width="1.5"/>
+<polygon points="1100,480 1088.9472680719655,484.6730201077038 1088.9472680719655,475.3269798922962" fill="#56718a"/>
+<text x="780" y="429.0" font-family="Arial" font-size="17" fill="#19344d" text-anchor="start" font-weight="normal" text-decoration="none">1.2: validation :=</text>
+<text x="780" y="451.95" font-family="Arial" font-size="17" fill="#19344d" text-anchor="start" font-weight="normal" text-decoration="none">validateOffer(offer01)</text>
+<polyline points="760,520 920,520 920,725 1100,725" fill="none" stroke="#56718a" stroke-width="1.5"/>
+<polygon points="1100,725 1088.9472680719655,729.6730201077038 1088.9472680719655,720.3269798922962" fill="#56718a"/>
+<text x="960" y="617.0" font-family="Arial" font-size="17" fill="#19344d" text-anchor="start" font-weight="normal" text-decoration="none">1.3: base01 := calculate(offer01, AUD 0)</text>
+<text x="960" y="639.95" font-family="Arial" font-size="17" fill="#19344d" text-anchor="start" font-weight="normal" text-decoration="none">1.4: marginOK := checkMargin(base01)</text>
+<polyline points="650,575 650,980 1100,980" fill="none" stroke="#56718a" stroke-width="1.5"/>
+<polygon points="1100,980 1088.9472680719655,984.6730201077038 1088.9472680719655,975.3269798922962" fill="#56718a"/>
+<text x="750" y="935.0" font-family="Arial" font-size="17" fill="#19344d" text-anchor="start" font-weight="normal" text-decoration="none">1.5: reviewResult :=</text>
+<text x="750" y="957.95" font-family="Arial" font-size="17" fill="#19344d" text-anchor="start" font-weight="normal" text-decoration="none">review(offerRef, {source01})</text>
+<polyline points="565,575 565,1110" fill="none" stroke="#56718a" stroke-width="1.5"/>
+<polygon points="565,1110 560.3269798922962,1098.9472680719655 569.6730201077038,1098.9472680719655" fill="#56718a"/>
+<text x="65" y="957.0" font-family="Arial" font-size="17" fill="#19344d" text-anchor="start" font-weight="normal" text-decoration="none">1.6 [review passed and approval required]:</text>
+<text x="65" y="979.95" font-family="Arial" font-size="17" fill="#19344d" text-anchor="start" font-weight="normal" text-decoration="none">approval01 := decide(offerRef, APPROVE)</text>
+<text x="45" y="1253.0" font-family="Arial" font-size="18" fill="#19344d" text-anchor="start" font-weight="normal" text-decoration="none">Read numbered messages, not vertical time. Each solid link carries a directed synchronous call; &quot;:=&quot; names its returned value.</text>
+<text x="45" y="1277.3" font-family="Arial" font-size="18" fill="#19344d" text-anchor="start" font-weight="normal" text-decoration="none">1.2 and 1.4 must pass before 1.5; the depicted human decision is APPROVE. Failure and revision paths remain in SD-04 / UC-06.</text>
+<text x="45" y="1301.6" font-family="Arial" font-size="18" fill="#19344d" text-anchor="start" font-weight="normal" text-decoration="none">After 1.6, the supplier persists the approved result and trace locally, then returns message 1. Operations retains external delivery.</text>
+<text x="45" y="1325.9" font-family="Arial" font-size="18" fill="#19344d" text-anchor="start" font-weight="normal" text-decoration="none">Object and operation names match current G-04. extractFields / validateAndPrice in SD-04 are higher-level responsibility labels,</text>
+<text x="45" y="1350.2" font-family="Arial" font-size="18" fill="#19344d" text-anchor="start" font-weight="normal" text-decoration="none">refined here into extract, validateOffer, calculate and checkMargin. This view adds no advertising or payment integration.</text>
+</svg>
