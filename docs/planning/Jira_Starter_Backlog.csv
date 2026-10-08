@@ -1,0 +1,234 @@
+﻿Planning ID,Issue Type,Summary,Description,Labels,Planned Sprint,Suggested Owner,Epic Alias,Estimate Hours,Dependencies
+B01,Task,共享接口、领域字段与需求映射,"完成条件：JSON 示例、接口、状态、错误、需求映射和 ownership 经四人确认
+测试方法：四个模块用同一示例读写，契约检查
+
+Definition of Done: 统一 DoD（见 Stage2_Week9-12_Plan_and_Jira.zh-CN.md 第9节）
+规划ID: B01
+负责人: Jiaheng
+Sprint: S1
+Epic: E-PLAT
+估计小时: 6
+依赖规划ID: 无",moscow-must shared demo-w11,S1,Jiaheng,E-PLAT,6,无
+B02,Task,一键启动与应用骨架,"完成条件：干净环境按说明启动，前后端和数据存储可用，配置模板不含密钥
+测试方法：另一成员从新目录/干净环境复现
+
+Definition of Done: 统一 DoD（见 Stage2_Week9-12_Plan_and_Jira.zh-CN.md 第9节）
+规划ID: B02
+负责人: Jason
+Sprint: S1
+Epic: E-PLAT
+估计小时: 6
+依赖规划ID: 无",moscow-must shared demo-w11,S1,Jason,E-PLAT,6,无
+B03,Task,统一模拟数据与重置工具,"完成条件：正常、非法报价、两种会员、取消、投诉、审批场景 fixture 可重置
+测试方法：连续重置两次结果一致，引用无断链
+
+Definition of Done: 统一 DoD（见 Stage2_Week9-12_Plan_and_Jira.zh-CN.md 第9节）
+规划ID: B03
+负责人: Jason
+Sprint: S1
+Epic: E-PLAT
+估计小时: 4
+依赖规划ID: B01",moscow-must shared demo-w11,S1,Jason,E-PLAT,4,B01
+B04,Task,确定性约束及计算工具,"完成条件：价格、预算、日历日期、时间冲突、库存、适用硬约束使用共享确定性工具
+测试方法：边界值与失败路径自动测试；记录未支持约束
+
+Definition of Done: 统一 DoD（见 Stage2_Week9-12_Plan_and_Jira.zh-CN.md 第9节）
+规划ID: B04
+负责人: Moore
+Sprint: S1
+Epic: E-PLAT
+估计小时: 6
+依赖规划ID: B01",moscow-must shared demo-w11,S1,Moore,E-PLAT,6,B01
+B05,Task,持久化 trace 与查询,"完成条件：request→agent→tool→plan→review→approval→response 能关联并保存；重启后可查
+测试方法：查询一条完整 case，模拟保存失败，检查日志无密钥
+
+Definition of Done: 统一 DoD（见 Stage2_Week9-12_Plan_and_Jira.zh-CN.md 第9节）
+规划ID: B05
+负责人: wrd
+Sprint: S1
+Epic: E-PLAT
+估计小时: 6
+依赖规划ID: B01、B02",moscow-must shared demo-w11,S1,wrd,E-PLAT,6,B01、B02
+B06,Story,接待、补问、确认与路由,"**As a Traveller or Supplier, I want to confirm a structured request and have it routed to the right agent, so that my request is handled accurately.**
+
+AC：请求缺字段时补问且不路由；确认后保存 Case 和来源，按请求类型分配 specialist；低置信度或 `humanRequestCount >= 2` 进入人工协助；specialist 输出经 Operations review 后才展示；失败不错误关闭 Case。
+
+测试：分类/必填规则自动测试；手工跑 planning、complaint、supplier 三种输入及低置信度输入；截图确认和 routing trace。LLM 输出做结构与行为检查，不断言固定文案。
+
+Definition of Done: 统一 DoD（见 Stage2_Week9-12_Plan_and_Jira.zh-CN.md 第9节）
+规划ID: B06
+负责人: Jiaheng
+Sprint: S2
+Epic: E-OPS
+估计小时: 8
+依赖规划ID: B01、B02、B05",moscow-must agent-ops demo-w11,S2,Jiaheng,E-OPS,8,B01、B02、B05
+B07,Story,行程会员规则与访问控制,"**As a Traveller, I want an explained membership decision, so that I know whether my requested trip is permitted.**
+
+AC：免费会员两条 Planned/Active 行程后拒绝新激活；超过五天拒绝，五天允许；日历天数为 end-start+1；规划前及输出后复查最新会员；无法验证返回 VerificationFailed；其他用户的 case/plan 不可读取，前端隐藏按钮不能代替后端检查。
+
+测试：自动测试 1/2 条行程、5/6 天、会员变化、服务失败和跨用户访问；手工演示拒绝原因。
+
+Definition of Done: 统一 DoD（见 Stage2_Week9-12_Plan_and_Jira.zh-CN.md 第9节）
+规划ID: B07
+负责人: Jiaheng
+Sprint: S2
+Epic: E-OPS
+估计小时: 6
+依赖规划ID: B03、B06",moscow-must agent-ops demo-w11,S2,Jiaheng,E-OPS,6,B03、B06
+B08,Story,报价导入、审查与差价计算,"**As an Operator, I want validated offers with reproducible prices and margins, so that planners use reliable commercial data.**
+
+AC：保留原始来源和提取字段；缺字段、过期、零库存、不支持币种进入 RevisionRequired；按配置与两位小数计算 basePrice、sellingPrice、marginAmount；最低差价失败不能 Approved；仅 Approved 且未过期报价可用于规划；修订清除旧审批；受限条款等待人工决定。
+
+测试：确定性价格/舍入/有效期测试；手工导入正常与非法报价；验证 LLM 不能改成本绕过差价规则。
+
+Definition of Done: 统一 DoD（见 Stage2_Week9-12_Plan_and_Jira.zh-CN.md 第9节）
+规划ID: B08
+负责人: Jason
+Sprint: S2
+Epic: E-SUP
+估计小时: 8
+依赖规划ID: B03、B04、B10",moscow-must agent-sup demo-w11,S2,Jason,E-SUP,8,B03、B04、B10
+B09,Story,生成完整可行行程,"**As a Traveller, I want a complete feasible itinerary, so that transport, stays and activities fit my confirmed constraints.**
+
+AC：交通、住宿、活动串联完整；预算、时间、接驳、库存和请求中适用的其他硬约束全部通过后才标为 feasible；总价等于组件和；每项资源带报价及证据引用；无解时列出失败约束，不自动放宽；经 Reviewer 后由 Operations 返回。
+
+测试：自动检查预算、时间重叠、接驳不足、过期报价、总价；正常和无解场景端到端测试。
+
+Definition of Done: 统一 DoD（见 Stage2_Week9-12_Plan_and_Jira.zh-CN.md 第9节）
+规划ID: B09
+负责人: Moore
+Sprint: S2
+Epic: E-PLAN
+估计小时: 8
+依赖规划ID: B04、B07、B08",moscow-must agent-plan demo-w11,S2,Moore,E-PLAN,8,B04、B07、B08
+B10,Story,共享 Reviewer 与人工审批工作台,"**As an Operator, I want to inspect reviewed proposals and record approval decisions, so that restricted commitments stay under human control.**
+
+AC：规则失败阻止通过；提供 Approve / Request revision / Reject，未决定保持 AwaitingApproval；修改重要字段使旧审批失效并重新检查；保存失败不返回批准结果；待审批/拒绝的承诺不能由 Operations 输出为已批准。
+
+测试：审批状态转换及后端权限自动测试；手工演示拒绝、修改再审和无回应；trace 链接到被审批版本。
+
+Definition of Done: 统一 DoD（见 Stage2_Week9-12_Plan_and_Jira.zh-CN.md 第9节）
+规划ID: B10
+负责人: wrd
+Sprint: S1
+Epic: E-PLAT
+估计小时: 6
+依赖规划ID: B01、B02、B05",moscow-must shared demo-w11,S1,wrd,E-PLAT,6,B01、B02、B05
+B11,Task,四 Agent 联调与统一界面,"完成条件：stub 被实际模块替换，页面和后端跑通新规划及恢复，稳定标签可复现
+测试方法：四人共同从重置数据完成完整演示；不手工改存储
+
+Definition of Done: 统一 DoD（见 Stage2_Week9-12_Plan_and_Jira.zh-CN.md 第9节）
+规划ID: B11
+负责人: Jason
+Sprint: S2
+Epic: E-DEMO
+估计小时: 6
+依赖规划ID: B06–B10、B12",moscow-must shared demo-w11,S2,Jason,E-DEMO,6,B06–B10、B12
+B12,Story,取消事件调查与恢复建议,"**As a Traveller with a disrupted trip, I want a validated recovery proposal, so that I can understand safe and feasible alternatives.**
+
+AC：取消事件关联既有 Active itinerary 与证据；向 Supplier 获取替代资源、向 Planning 请求重规划；保留原约束并解释价格/时间变化；无替代、证据冲突或依赖失败时返回人工处理；受限承诺显式要求审批；仅产生建议，不执行真实改签/付款。
+
+测试：一条取消且有替代、无替代、工具失败及需要审批四个场景；核对四个 Agent 的同一 correlationId。
+
+Definition of Done: 统一 DoD（见 Stage2_Week9-12_Plan_and_Jira.zh-CN.md 第9节）
+规划ID: B12
+负责人: wrd
+Sprint: S2
+Epic: E-EXC
+估计小时: 8
+依赖规划ID: B08、B09、B10",moscow-must agent-exc demo-w11,S2,wrd,E-EXC,8,B08、B09、B10
+B13,Story,三种模式与可行方案比较,"**As a Traveller, I want to compare feasible options in Comfort, Value or Budget mode, so that I can choose using consistent trade-offs.**
+
+AC：至少一套测试数据能产生两条可行方案；三个模式仅改变可行候选排序；成本、时间、便利程度、证据和排除原因采用共同字段；不可行方案不能因模式或广告进入推荐。
+
+测试：固定候选集上的排序/过滤测试；手工切换三种模式并核对差异。
+
+Definition of Done: 统一 DoD（见 Stage2_Week9-12_Plan_and_Jira.zh-CN.md 第9节）
+规划ID: B13
+负责人: Moore
+Sprint: S3
+Epic: E-PLAN
+估计小时: 6
+依赖规划ID: B09",moscow-should agent-plan,S3,Moore,E-PLAN,6,B09
+B14,Story,确认后修改与版本对比,"**As a Traveller, I want to confirm a change and compare a new plan version, so that I understand its effect without losing the original plan.**
+
+AC：未确认修改不发布新版本；成功后生成独立不可变版本，旧版不覆盖；展示资源、时间、价格及约束变化；再次运行会员/库存/价格/时间校验；修改无解时基线仍为当前版本。
+
+测试：成功修改、未确认修改、无解修改；自动验证基线未变、版本 ID 不同与 price delta。
+
+Definition of Done: 统一 DoD（见 Stage2_Week9-12_Plan_and_Jira.zh-CN.md 第9节）
+规划ID: B14
+负责人: Moore
+Sprint: S3
+Epic: E-PLAN
+估计小时: 6
+依赖规划ID: B09、B13",moscow-should agent-plan,S3,Moore,E-PLAN,6,B09、B13
+B15,Story,投诉调查与解决建议,"**As a Traveller, I want an evidence-supported complaint recommendation, so that the operator can decide a fair response.**
+
+AC：收集行程、服务记录、政策和供应商证据；缺证据通过 Operations 补问；法律/安全/低置信度升级；退款/补偿建议须审批；人工转交不标成投诉已解决；最终回复仍经 Operations。
+
+测试：普通投诉、缺证据、补偿请求三个场景；检查审批阻断及案件状态。
+
+Definition of Done: 统一 DoD（见 Stage2_Week9-12_Plan_and_Jira.zh-CN.md 第9节）
+规划ID: B15
+负责人: wrd
+Sprint: S3
+Epic: E-EXC
+估计小时: 6
+依赖规划ID: B06、B08、B10",moscow-should agent-exc,S3,wrd,E-EXC,6,B06、B08、B10
+B16,Story,营销方案、预算检查与人工审批,"**As an Operator, I want an evaluated campaign proposal based on approved offers, so that I can approve a credible plan within budget.**
+
+AC：brief 包含目标、受众、渠道、日期及预算；仅引用合格报价；确定性计算模拟渠道成本；超预算或无证据声明不能通过；Approve/Revision/Reject 与版本绑定；预览不发布、不支出；模拟响应带 campaignId/source 转交 Operations。付费会员商业广告不得通过 review。
+
+测试：预算恰好达标/超标、过期报价、修改后旧审批失效、付费广告目标、模拟响应来源。
+
+Definition of Done: 统一 DoD（见 Stage2_Week9-12_Plan_and_Jira.zh-CN.md 第9节）
+规划ID: B16
+负责人: Jason
+Sprint: S4
+Epic: E-SUP
+估计小时: 8
+依赖规划ID: B08、B10",moscow-should agent-sup,S4,Jason,E-SUP,8,B08、B10
+B17,Story,付费路线图、广告规则与优惠资格,"**As a Paid Traveller, I want entitled route-map access and an ad-free interface, so that my membership benefits are applied consistently.**
+
+AC：后端校验路线地图权限；付费无商业广告；免费广告清晰标注且不影响排序；路线图使用模拟路线点并可交互，无需实时地图 API；已批准优惠由 UC-07 判断资格、UC-06 重算价格和最低差价，不能叠加或改写基础报价。
+
+测试：Free/Paid 两种身份访问；广告与排序检查；优惠过期、资格不符、优惠后差价不足。
+
+Definition of Done: 统一 DoD（见 Stage2_Week9-12_Plan_and_Jira.zh-CN.md 第9节）
+规划ID: B17
+负责人: Jiaheng
+Sprint: S4
+Epic: E-OPS
+估计小时: 6
+依赖规划ID: B07、B09、B16",moscow-should agent-ops,S4,Jiaheng,E-OPS,6,B07、B09、B16
+B18,Task,失败提示、手动重试与重复请求保护,"完成条件：超时/无效 LLM 输出/工具和保存失败可见；手动重试不重复创建审批或覆盖旧版
+测试方法：故障注入与重复请求测试；真实 LLM 与 fixture 模式标识清楚
+
+Definition of Done: 统一 DoD（见 Stage2_Week9-12_Plan_and_Jira.zh-CN.md 第9节）
+规划ID: B18
+负责人: Jason
+Sprint: S4
+Epic: E-PLAT
+估计小时: 6
+依赖规划ID: B11",moscow-should shared,S4,Jason,E-PLAT,6,B11
+B19,Task,演示回归与可追踪验收证据,"完成条件：三套脚本、需求到测试映射、结果与已知缺陷可查；所有 Must 通过
+测试方法：稳定版本连续两次演示，人工核对页面与 trace
+
+Definition of Done: 统一 DoD（见 Stage2_Week9-12_Plan_and_Jira.zh-CN.md 第9节）
+规划ID: B19
+负责人: wrd
+Sprint: S4
+Epic: E-DEMO
+估计小时: 6
+依赖规划ID: B11、B13–B18",moscow-should shared,S4,wrd,E-DEMO,6,B11、B13–B18
+B20,Task,交付说明、模型同步与贡献记录,"完成条件：启动说明、模拟范围、状态/接口变化、模型与实现偏差、个人贡献完整
+测试方法：另一成员复现；四人核对需求映射及贡献证据
+
+Definition of Done: 统一 DoD（见 Stage2_Week9-12_Plan_and_Jira.zh-CN.md 第9节）
+规划ID: B20
+负责人: Moore
+Sprint: S4
+Epic: E-DEMO
+估计小时: 4
+依赖规划ID: B19",moscow-should shared,S4,Moore,E-DEMO,4,B19
