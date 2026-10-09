@@ -1,234 +1,595 @@
-﻿Planning ID,Issue Type,Summary,Description,Labels,Planned Sprint,Suggested Owner,Epic Alias,Estimate Hours,Dependencies
-B01,Task,共享接口、领域字段与需求映射,"完成条件：JSON 示例、接口、状态、错误、需求映射和 ownership 经四人确认
-测试方法：四个模块用同一示例读写，契约检查
+﻿Planning ID,Issue Type,Summary,Description,User Story,Due Date,Assignee,Reviewer,Dependencies,Labels,Planned Sprint,Epic Alias,Estimate Hours
+B01,Task,"Define shared agent contracts, domain schemas, and requirement mappings","Description
+Agree the inputs, outputs, required fields, business states, error codes, evidence references, and approval flags used by all four agents. Deliver a versioned contract document and representative JSON examples. Reconcile the older PLAN identifiers with the current TP identifiers without silently renumbering requirements.
 
-Definition of Done: 统一 DoD（见 Stage2_Week9-12_Plan_and_Jira.zh-CN.md 第9节）
-规划ID: B01
-负责人: Jiaheng
+User story
+As a developer integrating an agent, I want a shared contract and domain schema, so that my module can exchange validated data with the other agents.
+
+Acceptance criteria
+1. All four members approve the Case, TravelRequest, SupplierOffer, PriceBreakdown, ItineraryVersion, AgentResult, Approval, and TraceEvent schemas.
+2. Examples include caseId, correlationId, source references, validation results, errors, and requiresApproval.
+3. A documented mapping identifies confirmed and unresolved PLAN/TP references; each agent has a named owner.
+
+Test method
+Review the contracts together and validate representative success, failure, and approval-pending JSON messages against the agreed schemas.
+
+Definition of Done
+All card acceptance criteria pass; implementation or documentation is reviewed by another member and integrated into the shared project; applicable success/failure tests and evidence are attached; relevant trace, permission, approval, and error rules are respected; affected contracts/models are updated; the result is reproducible without a card-introduced blocking defect.
+
+Requirement / use case
+Shared architecture; UC-01–UC-08
+
+Planning ID: B01
+Assignee: Jiaheng
+Reviewer: wrd
+Deadline: 2026-10-10 (Australia/Sydney)
+Prerequisites: None
 Sprint: S1
 Epic: E-PLAT
-估计小时: 6
-依赖规划ID: 无",moscow-must shared demo-w11,S1,Jiaheng,E-PLAT,6,无
-B02,Task,一键启动与应用骨架,"完成条件：干净环境按说明启动，前后端和数据存储可用，配置模板不含密钥
-测试方法：另一成员从新目录/干净环境复现
+Estimate: 6 hours
+Evidence: attach commit/PR, test results, screenshots, or trace records as applicable.","As a developer integrating an agent, I want a shared contract and domain schema, so that my module can exchange validated data with the other agents.",2026-10-10,Jiaheng,wrd,None,moscow-must shared demo-w11,S1,E-PLAT,6
+B02,Task,Set up the runnable web application and local database,"Description
+Create the shared application skeleton, configuration template, local persistence, agent module boundaries, and startup instructions. Verify one real LLM call and provide an explicitly labelled fixture mode. Use one application and database rather than four independently deployed services.
 
-Definition of Done: 统一 DoD（见 Stage2_Week9-12_Plan_and_Jira.zh-CN.md 第9节）
-规划ID: B02
-负责人: Jason
+User story
+As a team member, I want a reproducible application setup, so that I can develop and demonstrate my agent in the shared environment.
+
+Acceptance criteria
+1. Another member can start the application from a clean checkout using the documented steps.
+2. The web interface, backend, and local database are reachable; configuration templates contain no secrets.
+3. A real LLM smoke call succeeds or its blocker is recorded; fixture mode is visibly distinguishable from real model execution.
+
+Test method
+Have another member reproduce startup, check persistence connectivity, and run the LLM/fixture smoke checks.
+
+Definition of Done
+All card acceptance criteria pass; implementation or documentation is reviewed by another member and integrated into the shared project; applicable success/failure tests and evidence are attached; relevant trace, permission, approval, and error rules are respected; affected contracts/models are updated; the result is reproducible without a card-introduced blocking defect.
+
+Requirement / use case
+Shared platform
+
+Planning ID: B02
+Assignee: Jason
+Reviewer: Moore
+Deadline: 2026-10-10 (Australia/Sydney)
+Prerequisites: None
 Sprint: S1
 Epic: E-PLAT
-估计小时: 6
-依赖规划ID: 无",moscow-must shared demo-w11,S1,Jason,E-PLAT,6,无
-B03,Task,统一模拟数据与重置工具,"完成条件：正常、非法报价、两种会员、取消、投诉、审批场景 fixture 可重置
-测试方法：连续重置两次结果一致，引用无断链
+Estimate: 6 hours
+Evidence: attach commit/PR, test results, screenshots, or trace records as applicable.","As a team member, I want a reproducible application setup, so that I can develop and demonstrate my agent in the shared environment.",2026-10-10,Jason,Moore,None,moscow-must shared demo-w11,S1,E-PLAT,6
+B03,Task,"Create resettable supplier, traveller, and disruption fixtures","Description
+Build one controlled Sydney-to-Melbourne dataset in AUD, with transport, accommodation, activities, Free/Paid travellers, active plans, invalid offers, complaints, and cancellation events. Include expected outcomes and a reset operation. Mark all provider and transaction data as simulated.
 
-Definition of Done: 统一 DoD（见 Stage2_Week9-12_Plan_and_Jira.zh-CN.md 第9节）
-规划ID: B03
-负责人: Jason
+User story
+As a developer and demo presenter, I want repeatable test fixtures, so that I can reproduce normal and failure scenarios without editing the database manually.
+
+Acceptance criteria
+1. Fixtures cover valid and expired offers, missing fields, zero stock, membership limits, cancellation, complaint, and approval cases.
+2. Entity references remain valid after reset.
+3. Two consecutive resets restore identical baseline data without retaining earlier approvals or plan revisions.
+
+Test method
+Reset twice, compare baseline records, check referential integrity, and inspect the expected-outcome scenario list.
+
+Definition of Done
+All card acceptance criteria pass; implementation or documentation is reviewed by another member and integrated into the shared project; applicable success/failure tests and evidence are attached; relevant trace, permission, approval, and error rules are respected; affected contracts/models are updated; the result is reproducible without a card-introduced blocking defect.
+
+Requirement / use case
+Shared data; UC-01–UC-08
+
+Planning ID: B03
+Assignee: Jason
+Reviewer: Moore
+Deadline: 2026-10-11 (Australia/Sydney)
+Prerequisites: B01, B02
 Sprint: S1
 Epic: E-PLAT
-估计小时: 4
-依赖规划ID: B01",moscow-must shared demo-w11,S1,Jason,E-PLAT,4,B01
-B04,Task,确定性约束及计算工具,"完成条件：价格、预算、日历日期、时间冲突、库存、适用硬约束使用共享确定性工具
-测试方法：边界值与失败路径自动测试；记录未支持约束
+Estimate: 4 hours
+Evidence: attach commit/PR, test results, screenshots, or trace records as applicable.","As a developer and demo presenter, I want repeatable test fixtures, so that I can reproduce normal and failure scenarios without editing the database manually.",2026-10-11,Jason,Moore,"B01, B02",moscow-must shared demo-w11,S1,E-PLAT,4
+B04,Task,Implement deterministic pricing and itinerary constraint validators,"Description
+Implement reusable functions for price rounding, margins, budget, inclusive calendar duration, schedule conflicts, transfer time, availability, and other applicable confirmed hard constraints. Return structured pass/fail results with rule identifiers. LLM suggestions must not override failed rules.
 
-Definition of Done: 统一 DoD（见 Stage2_Week9-12_Plan_and_Jira.zh-CN.md 第9节）
-规划ID: B04
-负责人: Moore
+User story
+As a Traveller, I want my itinerary checked by reproducible rules, so that recommendations respect my budget, timing, and other confirmed constraints.
+
+Acceptance criteria
+1. Shared validators return pass/fail, applied rule, and reason rather than unstructured text alone.
+2. Prices use a consistent AUD basis and two-decimal rounding; duration is end date minus start date plus one.
+3. Unsupported constraints are recorded and block an unqualified feasible claim instead of being silently ignored.
+
+Test method
+Use automated boundary tests for rounding, minimum margin, five/six days, exact/exceeded budget, overlapping times, transfers, and unavailable inventory.
+
+Definition of Done
+All card acceptance criteria pass; implementation or documentation is reviewed by another member and integrated into the shared project; applicable success/failure tests and evidence are attached; relevant trace, permission, approval, and error rules are respected; affected contracts/models are updated; the result is reproducible without a card-introduced blocking defect.
+
+Requirement / use case
+TP-01; SUP-02; OPS-03
+
+Planning ID: B04
+Assignee: Moore
+Reviewer: Jason
+Deadline: 2026-10-12 (Australia/Sydney)
+Prerequisites: B01, B03
 Sprint: S1
 Epic: E-PLAT
-估计小时: 6
-依赖规划ID: B01",moscow-must shared demo-w11,S1,Moore,E-PLAT,6,B01
-B05,Task,持久化 trace 与查询,"完成条件：request→agent→tool→plan→review→approval→response 能关联并保存；重启后可查
-测试方法：查询一条完整 case，模拟保存失败，检查日志无密钥
+Estimate: 6 hours
+Evidence: attach commit/PR, test results, screenshots, or trace records as applicable.","As a Traveller, I want my itinerary checked by reproducible rules, so that recommendations respect my budget, timing, and other confirmed constraints.",2026-10-12,Moore,Jason,"B01, B03",moscow-must shared demo-w11,S1,E-PLAT,6
+B05,Task,Persist and display linked agent execution traces,"Description
+Store and retrieve trace events linking requests, agent handoffs, tool results, plan versions, review outcomes, approval decisions, and responses. Provide a case-level trace view that survives application restarts. Exclude secrets from recorded content.
 
-Definition of Done: 统一 DoD（见 Stage2_Week9-12_Plan_and_Jira.zh-CN.md 第9节）
-规划ID: B05
-负责人: wrd
+User story
+As an Operator, I want a linked history of agent decisions and evidence, so that I can explain outcomes and investigate failures.
+
+Acceptance criteria
+1. Events share a caseId/correlationId and retain source, timestamp, actor, result, and relevant version references.
+2. A case trace remains queryable after restart.
+3. A failed save is reported and cannot be presented as a successfully recorded approval or completed action.
+
+Test method
+Execute and query a representative case, restart the application, inject a save failure, and manually inspect the trace for missing links and secrets.
+
+Definition of Done
+All card acceptance criteria pass; implementation or documentation is reviewed by another member and integrated into the shared project; applicable success/failure tests and evidence are attached; relevant trace, permission, approval, and error rules are respected; affected contracts/models are updated; the result is reproducible without a card-introduced blocking defect.
+
+Requirement / use case
+Shared trace; UC-05
+
+Planning ID: B05
+Assignee: wrd
+Reviewer: Jiaheng
+Deadline: 2026-10-12 (Australia/Sydney)
+Prerequisites: B01, B02
 Sprint: S1
 Epic: E-PLAT
-估计小时: 6
-依赖规划ID: B01、B02",moscow-must shared demo-w11,S1,wrd,E-PLAT,6,B01、B02
-B06,Story,接待、补问、确认与路由,"**As a Traveller or Supplier, I want to confirm a structured request and have it routed to the right agent, so that my request is handled accurately.**
+Estimate: 6 hours
+Evidence: attach commit/PR, test results, screenshots, or trace records as applicable.","As an Operator, I want a linked history of agent decisions and evidence, so that I can explain outcomes and investigate failures.",2026-10-12,wrd,Jiaheng,"B01, B02",moscow-must shared demo-w11,S1,E-PLAT,6
+B06,Story,"Capture, confirm, and route traveller and supplier requests","Description
+Implement the Operations intake flow: identify requester/source, check simulated identity and access, use structured LLM extraction, ask for missing information, obtain confirmation, and route cases. Prepare the final response through the controlled Operations gateway. Start the intake and confirmation portion during S1 so S2 remains manageable.
 
-AC：请求缺字段时补问且不路由；确认后保存 Case 和来源，按请求类型分配 specialist；低置信度或 `humanRequestCount >= 2` 进入人工协助；specialist 输出经 Operations review 后才展示；失败不错误关闭 Case。
+User story
+As a Traveller or Supplier, I want to confirm a structured request and have it routed to the appropriate agent, so that my request is handled accurately.
 
-测试：分类/必填规则自动测试；手工跑 planning、complaint、supplier 三种输入及低置信度输入；截图确认和 routing trace。LLM 输出做结构与行为检查，不断言固定文案。
+Acceptance criteria
+1. Missing required information or unconfirmed changes prevent specialist routing.
+2. Confirmed requests preserve their source and route planning, exceptions, and supplier cases to the correct owner.
+3. Unresolved classification uncertainty or humanRequestCount >= 2 leads to human assistance.
+4. Only a reviewed and appropriately approved response is delivered; failed processing or delivery does not incorrectly close the case.
 
-Definition of Done: 统一 DoD（见 Stage2_Week9-12_Plan_and_Jira.zh-CN.md 第9节）
-规划ID: B06
-负责人: Jiaheng
+Test method
+Automate required-field/routing checks; manually exercise planning, complaint, supplier, and low-confidence inputs and inspect confirmation and handoff traces. Check LLM structure and behaviour rather than exact wording.
+
+Definition of Done
+All card acceptance criteria pass; implementation or documentation is reviewed by another member and integrated into the shared project; applicable success/failure tests and evidence are attached; relevant trace, permission, approval, and error rules are respected; affected contracts/models are updated; the result is reproducible without a card-introduced blocking defect.
+
+Requirement / use case
+UC-05; OPS-02
+
+Planning ID: B06
+Assignee: Jiaheng
+Reviewer: wrd
+Deadline: 2026-10-15 (Australia/Sydney)
+Prerequisites: B01, B02, B03, B05
 Sprint: S2
 Epic: E-OPS
-估计小时: 8
-依赖规划ID: B01、B02、B05",moscow-must agent-ops demo-w11,S2,Jiaheng,E-OPS,8,B01、B02、B05
-B07,Story,行程会员规则与访问控制,"**As a Traveller, I want an explained membership decision, so that I know whether my requested trip is permitted.**
+Estimate: 8 hours
+Evidence: attach commit/PR, test results, screenshots, or trace records as applicable.","As a Traveller or Supplier, I want to confirm a structured request and have it routed to the appropriate agent, so that my request is handled accurately.",2026-10-15,Jiaheng,wrd,"B01, B02, B03, B05",moscow-must agent-ops demo-w11,S2,E-OPS,8
+B07,Story,Enforce membership limits and protected case access,"Description
+Implement backend entitlement decisions and ownership checks using verified simulated membership data. Check entitlements before planning and again against the returned plan. Explain Allowed, Denied, and VerificationFailed outcomes without modifying an itinerary to satisfy a rule.
 
-AC：免费会员两条 Planned/Active 行程后拒绝新激活；超过五天拒绝，五天允许；日历天数为 end-start+1；规划前及输出后复查最新会员；无法验证返回 VerificationFailed；其他用户的 case/plan 不可读取，前端隐藏按钮不能代替后端检查。
+User story
+As a Traveller, I want an explained membership decision, so that I know whether my requested trip is permitted.
 
-测试：自动测试 1/2 条行程、5/6 天、会员变化、服务失败和跨用户访问；手工演示拒绝原因。
+Acceptance criteria
+1. A Free Member with two Planned/Active trips cannot activate another; five calendar days pass and six fail.
+2. Post-planning checks use the latest verified membership and trip facts; Paid Members do not inherit Free-tier limits.
+3. Unavailable membership evidence returns VerificationFailed and blocks protected actions.
+4. A traveller cannot read or modify another traveller’s cases or plans; checks run on the backend.
 
-Definition of Done: 统一 DoD（见 Stage2_Week9-12_Plan_and_Jira.zh-CN.md 第9节）
-规划ID: B07
-负责人: Jiaheng
+Test method
+Automate trip-count and duration boundaries, membership changes, verification failure, and cross-user access; demonstrate the rejection reason in the UI.
+
+Definition of Done
+All card acceptance criteria pass; implementation or documentation is reviewed by another member and integrated into the shared project; applicable success/failure tests and evidence are attached; relevant trace, permission, approval, and error rules are respected; affected contracts/models are updated; the result is reproducible without a card-introduced blocking defect.
+
+Requirement / use case
+UC-07; OPS-03
+
+Planning ID: B07
+Assignee: Jiaheng
+Reviewer: wrd
+Deadline: 2026-10-16 (Australia/Sydney)
+Prerequisites: B03, B04, B06
 Sprint: S2
 Epic: E-OPS
-估计小时: 6
-依赖规划ID: B03、B06",moscow-must agent-ops demo-w11,S2,Jiaheng,E-OPS,6,B03、B06
-B08,Story,报价导入、审查与差价计算,"**As an Operator, I want validated offers with reproducible prices and margins, so that planners use reliable commercial data.**
+Estimate: 6 hours
+Evidence: attach commit/PR, test results, screenshots, or trace records as applicable.","As a Traveller, I want an explained membership decision, so that I know whether my requested trip is permitted.",2026-10-16,Jiaheng,wrd,"B03, B04, B06",moscow-must agent-ops demo-w11,S2,E-OPS,6
+B08,Story,Validate supplier offers and calculate approved selling prices,"Description
+Implement Supplier offer extraction with source references, deterministic validity checks, configured pricing, margin assessment, review, and conditional human approval. Provide approved offers to Planning through a reusable lookup that rechecks expiry. Corrections must trigger renewed assessment.
 
-AC：保留原始来源和提取字段；缺字段、过期、零库存、不支持币种进入 RevisionRequired；按配置与两位小数计算 basePrice、sellingPrice、marginAmount；最低差价失败不能 Approved；仅 Approved 且未过期报价可用于规划；修订清除旧审批；受限条款等待人工决定。
+User story
+As an Operator, I want validated offers with reproducible prices and margins, so that planners use reliable commercial data.
 
-测试：确定性价格/舍入/有效期测试；手工导入正常与非法报价；验证 LLM 不能改成本绕过差价规则。
+Acceptance criteria
+1. Missing fields, expired validity, zero stock, unsupported currency, or invalid terms prevent approval and record a reason.
+2. basePrice, sellingPrice, and marginAmount follow the configured formulas and rounding; minimum margin must pass.
+3. Only Approved, unexpired offers can be selected by Planning.
+4. Material revisions clear earlier approval; restricted terms remain pending until an authorised human decision; source costs cannot be altered to bypass margin rules.
 
-Definition of Done: 统一 DoD（见 Stage2_Week9-12_Plan_and_Jira.zh-CN.md 第9节）
-规划ID: B08
-负责人: Jason
+Test method
+Automate extraction schema, validity, pricing, rounding, and margin cases; manually import valid/invalid offers and check approval/revision traces.
+
+Definition of Done
+All card acceptance criteria pass; implementation or documentation is reviewed by another member and integrated into the shared project; applicable success/failure tests and evidence are attached; relevant trace, permission, approval, and error rules are respected; affected contracts/models are updated; the result is reproducible without a card-introduced blocking defect.
+
+Requirement / use case
+UC-06; SUP-01; SUP-02
+
+Planning ID: B08
+Assignee: Jason
+Reviewer: Moore
+Deadline: 2026-10-16 (Australia/Sydney)
+Prerequisites: B03, B04, B05, B10
 Sprint: S2
 Epic: E-SUP
-估计小时: 8
-依赖规划ID: B03、B04、B10",moscow-must agent-sup demo-w11,S2,Jason,E-SUP,8,B03、B04、B10
-B09,Story,生成完整可行行程,"**As a Traveller, I want a complete feasible itinerary, so that transport, stays and activities fit my confirmed constraints.**
+Estimate: 8 hours
+Evidence: attach commit/PR, test results, screenshots, or trace records as applicable.","As an Operator, I want validated offers with reproducible prices and margins, so that planners use reliable commercial data.",2026-10-16,Jason,Moore,"B03, B04, B05, B10",moscow-must agent-sup demo-w11,S2,E-SUP,8
+B09,Story,Generate a complete itinerary from approved supplier offers,"Description
+Implement Travel Planning for the controlled Sydney-to-Melbourne scenario. Assemble transport, stays, and activities from eligible offers, run applicable hard-constraint checks, compute itemised costs, and return a reviewed itinerary through Operations. Record evidence and explain infeasibility without relaxing constraints.
 
-AC：交通、住宿、活动串联完整；预算、时间、接驳、库存和请求中适用的其他硬约束全部通过后才标为 feasible；总价等于组件和；每项资源带报价及证据引用；无解时列出失败约束，不自动放宽；经 Reviewer 后由 Operations 返回。
+User story
+As a Traveller, I want a complete feasible itinerary, so that transport, stays, and activities fit my confirmed constraints.
 
-测试：自动检查预算、时间重叠、接驳不足、过期报价、总价；正常和无解场景端到端测试。
+Acceptance criteria
+1. A feasible itinerary contains the required connected travel legs, accommodation, and selected activities.
+2. Every applicable hard constraint passes before feasibility is claimed; total cost reconciles to components.
+3. Selected resources include offer IDs, source references, retrieval/validity information, and validation results.
+4. No-solution cases identify unmet constraints and next actions without silent relaxation; output passes shared review and post-planning membership checks.
 
-Definition of Done: 统一 DoD（见 Stage2_Week9-12_Plan_and_Jira.zh-CN.md 第9节）
-规划ID: B09
-负责人: Moore
+Test method
+Automate budget, overlap, transfer, expiry, and price reconciliation cases; run feasible and infeasible requests end to end.
+
+Definition of Done
+All card acceptance criteria pass; implementation or documentation is reviewed by another member and integrated into the shared project; applicable success/failure tests and evidence are attached; relevant trace, permission, approval, and error rules are respected; affected contracts/models are updated; the result is reproducible without a card-introduced blocking defect.
+
+Requirement / use case
+UC-01; TP-01; legacy PLAN mapping in B01
+
+Planning ID: B09
+Assignee: Moore
+Reviewer: Jason
+Deadline: 2026-10-18 (Australia/Sydney)
+Prerequisites: B04, B05, B07, B08, B10
 Sprint: S2
 Epic: E-PLAN
-估计小时: 8
-依赖规划ID: B04、B07、B08",moscow-must agent-plan demo-w11,S2,Moore,E-PLAN,8,B04、B07、B08
-B10,Story,共享 Reviewer 与人工审批工作台,"**As an Operator, I want to inspect reviewed proposals and record approval decisions, so that restricted commitments stay under human control.**
+Estimate: 8 hours
+Evidence: attach commit/PR, test results, screenshots, or trace records as applicable.","As a Traveller, I want a complete feasible itinerary, so that transport, stays, and activities fit my confirmed constraints.",2026-10-18,Moore,Jason,"B04, B05, B07, B08, B10",moscow-must agent-plan demo-w11,S2,E-PLAN,8
+B10,Story,Build proposal review and human approval controls,"Description
+Create a shared review service and Operator approval workspace for offers, plans, recovery recommendations, and campaign proposals. Bind decisions to the reviewed version and enforce the same approval checks on backend actions and Operations responses.
 
-AC：规则失败阻止通过；提供 Approve / Request revision / Reject，未决定保持 AwaitingApproval；修改重要字段使旧审批失效并重新检查；保存失败不返回批准结果；待审批/拒绝的承诺不能由 Operations 输出为已批准。
+User story
+As an Operator, I want to inspect reviewed proposals and record approval decisions, so that restricted commitments remain under human control.
 
-测试：审批状态转换及后端权限自动测试；手工演示拒绝、修改再审和无回应；trace 链接到被审批版本。
+Acceptance criteria
+1. Failed evidence, calculation, or policy checks prevent a proposal from passing review.
+2. Approve, Request revision, and Reject are recorded with actor, reason where applicable, timestamp, and version; no decision remains AwaitingApproval.
+3. A material proposal change invalidates earlier approval and repeats checks.
+4. Save failures and unauthorised users cannot produce an approved result; pending/rejected commitments cannot be communicated as approved.
 
-Definition of Done: 统一 DoD（见 Stage2_Week9-12_Plan_and_Jira.zh-CN.md 第9节）
-规划ID: B10
-负责人: wrd
+Test method
+Automate approval transitions, version invalidation, save failure, and backend permissions; manually demonstrate rejection, revision, and no-response states.
+
+Definition of Done
+All card acceptance criteria pass; implementation or documentation is reviewed by another member and integrated into the shared project; applicable success/failure tests and evidence are attached; relevant trace, permission, approval, and error rules are respected; affected contracts/models are updated; the result is reproducible without a card-introduced blocking defect.
+
+Requirement / use case
+Shared guardrails; UC-05; UC-06; UC-08
+
+Planning ID: B10
+Assignee: wrd
+Reviewer: Jiaheng
+Deadline: 2026-10-14 (Australia/Sydney)
+Prerequisites: B01, B02, B04, B05
 Sprint: S1
 Epic: E-PLAT
-估计小时: 6
-依赖规划ID: B01、B02、B05",moscow-must shared demo-w11,S1,wrd,E-PLAT,6,B01、B02、B05
-B11,Task,四 Agent 联调与统一界面,"完成条件：stub 被实际模块替换，页面和后端跑通新规划及恢复，稳定标签可复现
-测试方法：四人共同从重置数据完成完整演示；不手工改存储
+Estimate: 6 hours
+Evidence: attach commit/PR, test results, screenshots, or trace records as applicable.","As an Operator, I want to inspect reviewed proposals and record approval decisions, so that restricted commitments remain under human control.",2026-10-14,wrd,Jiaheng,"B01, B02, B04, B05",moscow-must shared demo-w11,S1,E-PLAT,6
+B11,Task,Integrate the four-agent workflow and freeze the Week 11 demo,"Description
+Integrate the request entry, itinerary result, Operator workspace, and trace view into one application. Replace demo-path specialist stubs with real implementations. Complete the planning-to-cancellation-recovery flow and save a reproducible w11-prototype tag. Jiaheng supports approximately three hours of UI integration.
 
-Definition of Done: 统一 DoD（见 Stage2_Week9-12_Plan_and_Jira.zh-CN.md 第9节）
-规划ID: B11
-负责人: Jason
+User story
+As a demo presenter, I want one integrated four-agent workflow, so that I can demonstrate the complete service from request to recovery.
+
+Acceptance criteria
+1. A reset dataset supports intake, membership, supplier assessment, planning, cancellation recovery, review, and controlled response without manual database edits.
+2. The trace shows all four agents participating in the same case with linked handoffs.
+3. A membership/constraint rejection and an approval-pending case are demonstrable.
+4. The stable tagged version can be restarted and demonstrated before the 22 October lab.
+
+Test method
+Have all four members run the full workflow from reset data, inspect page and trace consistency, and reproduce the tagged version.
+
+Definition of Done
+All card acceptance criteria pass; implementation or documentation is reviewed by another member and integrated into the shared project; applicable success/failure tests and evidence are attached; relevant trace, permission, approval, and error rules are respected; affected contracts/models are updated; the result is reproducible without a card-introduced blocking defect.
+
+Requirement / use case
+W11 release; UC-01; UC-03; UC-05; UC-06; UC-07
+
+Planning ID: B11
+Assignee: Jason
+Reviewer: Moore
+Deadline: 2026-10-21 (Australia/Sydney)
+Prerequisites: B06, B07, B08, B09, B10, B12
 Sprint: S2
 Epic: E-DEMO
-估计小时: 6
-依赖规划ID: B06–B10、B12",moscow-must shared demo-w11,S2,Jason,E-DEMO,6,B06–B10、B12
-B12,Story,取消事件调查与恢复建议,"**As a Traveller with a disrupted trip, I want a validated recovery proposal, so that I can understand safe and feasible alternatives.**
+Estimate: 6 hours
+Evidence: attach commit/PR, test results, screenshots, or trace records as applicable.","As a demo presenter, I want one integrated four-agent workflow, so that I can demonstrate the complete service from request to recovery.",2026-10-21,Jason,Moore,"B06, B07, B08, B09, B10, B12",moscow-must shared demo-w11,S2,E-DEMO,6
+B12,Story,Investigate a cancellation and propose a validated recovery,"Description
+Handle one simulated transport cancellation affecting an Active itinerary. Gather evidence, ask Supplier for eligible alternatives, coordinate Planning revalidation, and return a consolidated recovery recommendation through Operations. Preserve the original plan and approval boundaries.
 
-AC：取消事件关联既有 Active itinerary 与证据；向 Supplier 获取替代资源、向 Planning 请求重规划；保留原约束并解释价格/时间变化；无替代、证据冲突或依赖失败时返回人工处理；受限承诺显式要求审批；仅产生建议，不执行真实改签/付款。
+User story
+As a Traveller with a disrupted trip, I want a validated recovery proposal, so that I can understand feasible alternatives and their consequences.
 
-测试：一条取消且有替代、无替代、工具失败及需要审批四个场景；核对四个 Agent 的同一 correlationId。
+Acceptance criteria
+1. The cancellation references the affected itinerary item and supporting evidence.
+2. Supplier and Planning contribute to the recovery proposal while existing confirmed constraints are preserved.
+3. The proposal explains price and timing changes and records passed validation/review checks.
+4. No alternative, conflicting evidence, or unavailable dependencies trigger clarification or human handling; restricted commitments require approval and no real rebooking/payment occurs.
 
-Definition of Done: 统一 DoD（见 Stage2_Week9-12_Plan_and_Jira.zh-CN.md 第9节）
-规划ID: B12
-负责人: wrd
+Test method
+Exercise cancellation with an alternative, no alternative, dependency failure, and approval-required outcomes; inspect all four agents’ linked trace events.
+
+Definition of Done
+All card acceptance criteria pass; implementation or documentation is reviewed by another member and integrated into the shared project; applicable success/failure tests and evidence are attached; relevant trace, permission, approval, and error rules are respected; affected contracts/models are updated; the result is reproducible without a card-introduced blocking defect.
+
+Requirement / use case
+UC-03; EXC-01
+
+Planning ID: B12
+Assignee: wrd
+Reviewer: Jiaheng
+Deadline: 2026-10-20 (Australia/Sydney)
+Prerequisites: B06, B08, B09, B10
 Sprint: S2
 Epic: E-EXC
-估计小时: 8
-依赖规划ID: B08、B09、B10",moscow-must agent-exc demo-w11,S2,wrd,E-EXC,8,B08、B09、B10
-B13,Story,三种模式与可行方案比较,"**As a Traveller, I want to compare feasible options in Comfort, Value or Budget mode, so that I can choose using consistent trade-offs.**
+Estimate: 8 hours
+Evidence: attach commit/PR, test results, screenshots, or trace records as applicable.","As a Traveller with a disrupted trip, I want a validated recovery proposal, so that I can understand feasible alternatives and their consequences.",2026-10-20,wrd,Jiaheng,"B06, B08, B09, B10",moscow-must agent-exc demo-w11,S2,E-EXC,8
+B13,Story,"Compare feasible itineraries in Comfort, Value, and Budget modes","Description
+Add common comparison fields and ranking rules for the three travel modes. Explain the selected plan, eligible alternatives, and reasons excluded candidates failed. Keep hard-constraint filtering separate from preference ranking and advertising.
 
-AC：至少一套测试数据能产生两条可行方案；三个模式仅改变可行候选排序；成本、时间、便利程度、证据和排除原因采用共同字段；不可行方案不能因模式或广告进入推荐。
+User story
+As a Traveller, I want to compare feasible options in Comfort, Value, or Budget mode, so that I can choose using consistent trade-offs.
 
-测试：固定候选集上的排序/过滤测试；手工切换三种模式并核对差异。
+Acceptance criteria
+1. At least one fixture yields two or more feasible alternatives.
+2. Each mode ranks only candidates that already passed the same hard-constraint checks.
+3. Comparisons show cost, timing, convenience, evidence, and trade-offs using common fields.
+4. Advertising cannot alter eligibility or recommendation ranking.
 
-Definition of Done: 统一 DoD（见 Stage2_Week9-12_Plan_and_Jira.zh-CN.md 第9节）
-规划ID: B13
-负责人: Moore
+Test method
+Automate filtering/ranking with a fixed candidate set and manually compare all three modes and exclusion explanations.
+
+Definition of Done
+All card acceptance criteria pass; implementation or documentation is reviewed by another member and integrated into the shared project; applicable success/failure tests and evidence are attached; relevant trace, permission, approval, and error rules are respected; affected contracts/models are updated; the result is reproducible without a card-introduced blocking defect.
+
+Requirement / use case
+UC-01; TP-01
+
+Planning ID: B13
+Assignee: Moore
+Reviewer: Jason
+Deadline: 2026-10-23 (Australia/Sydney)
+Prerequisites: B09
 Sprint: S3
 Epic: E-PLAN
-估计小时: 6
-依赖规划ID: B09",moscow-should agent-plan,S3,Moore,E-PLAN,6,B09
-B14,Story,确认后修改与版本对比,"**As a Traveller, I want to confirm a change and compare a new plan version, so that I understand its effect without losing the original plan.**
+Estimate: 6 hours
+Evidence: attach commit/PR, test results, screenshots, or trace records as applicable.","As a Traveller, I want to compare feasible options in Comfort, Value, or Budget mode, so that I can choose using consistent trade-offs.",2026-10-23,Moore,Jason,B09,moscow-should agent-plan,S3,E-PLAN,6
+B14,Story,Create confirmed plan revisions and compare immutable versions,"Description
+Accept a confirmed amendment through Operations, preserve the baseline, generate a separately identified successor version, rerun applicable checks, and display field-level differences. Keep the baseline current when an amendment is unconfirmed or infeasible.
 
-AC：未确认修改不发布新版本；成功后生成独立不可变版本，旧版不覆盖；展示资源、时间、价格及约束变化；再次运行会员/库存/价格/时间校验；修改无解时基线仍为当前版本。
+User story
+As a Traveller, I want to confirm a change and compare a new plan version, so that I understand its effect without losing the original plan.
 
-测试：成功修改、未确认修改、无解修改；自动验证基线未变、版本 ID 不同与 price delta。
+Acceptance criteria
+1. Unconfirmed amendments cannot release a revised plan.
+2. A valid revision has a distinct ID and does not overwrite baseline content.
+3. The comparison identifies changed requirements, resources, schedule, cost delta, constraints, and evidence.
+4. The revision passes renewed membership, price, availability, and schedule checks; infeasible revisions explain failures and leave the baseline current.
 
-Definition of Done: 统一 DoD（见 Stage2_Week9-12_Plan_and_Jira.zh-CN.md 第9节）
-规划ID: B14
-负责人: Moore
+Test method
+Exercise successful, unconfirmed, and infeasible amendments; automate baseline preservation, unique version IDs, and comparison calculations.
+
+Definition of Done
+All card acceptance criteria pass; implementation or documentation is reviewed by another member and integrated into the shared project; applicable success/failure tests and evidence are attached; relevant trace, permission, approval, and error rules are respected; affected contracts/models are updated; the result is reproducible without a card-introduced blocking defect.
+
+Requirement / use case
+UC-02; TP-02
+
+Planning ID: B14
+Assignee: Moore
+Reviewer: Jason
+Deadline: 2026-10-25 (Australia/Sydney)
+Prerequisites: B06, B07, B09, B13
 Sprint: S3
 Epic: E-PLAN
-估计小时: 6
-依赖规划ID: B09、B13",moscow-should agent-plan,S3,Moore,E-PLAN,6,B09、B13
-B15,Story,投诉调查与解决建议,"**As a Traveller, I want an evidence-supported complaint recommendation, so that the operator can decide a fair response.**
+Estimate: 6 hours
+Evidence: attach commit/PR, test results, screenshots, or trace records as applicable.","As a Traveller, I want to confirm a change and compare a new plan version, so that I understand its effect without losing the original plan.",2026-10-25,Moore,Jason,"B06, B07, B09, B13",moscow-should agent-plan,S3,E-PLAN,6
+B15,Story,Investigate complaints and prepare reviewed resolution recommendations,"Description
+Investigate Operations-routed complaints using trip records, service evidence, applicable policies, and supplier terms. Request missing information through Operations and consult specialist findings. Return a reviewed recommendation or documented human referral.
 
-AC：收集行程、服务记录、政策和供应商证据；缺证据通过 Operations 补问；法律/安全/低置信度升级；退款/补偿建议须审批；人工转交不标成投诉已解决；最终回复仍经 Operations。
+User story
+As a Traveller, I want an evidence-supported complaint recommendation, so that the operator can decide a fair response.
 
-测试：普通投诉、缺证据、补偿请求三个场景；检查审批阻断及案件状态。
+Acceptance criteria
+1. Findings and recommendations reference available evidence and applicable terms.
+2. Missing evidence leads to clarification; legal/safety concerns and unresolved low confidence lead to human handling.
+3. Refund or compensation commitments remain blocked without recorded human approval.
+4. Human referral is not recorded as resolution of the underlying complaint; final communication remains with Operations.
 
-Definition of Done: 统一 DoD（见 Stage2_Week9-12_Plan_and_Jira.zh-CN.md 第9节）
-规划ID: B15
-负责人: wrd
+Test method
+Run a routine complaint, an evidence-incomplete complaint, and a compensation request; inspect approval blocking, handoff, and case status.
+
+Definition of Done
+All card acceptance criteria pass; implementation or documentation is reviewed by another member and integrated into the shared project; applicable success/failure tests and evidence are attached; relevant trace, permission, approval, and error rules are respected; affected contracts/models are updated; the result is reproducible without a card-introduced blocking defect.
+
+Requirement / use case
+UC-04; EXC-02
+
+Planning ID: B15
+Assignee: wrd
+Reviewer: Jiaheng
+Deadline: 2026-10-26 (Australia/Sydney)
+Prerequisites: B06, B08, B09, B10
 Sprint: S3
 Epic: E-EXC
-估计小时: 6
-依赖规划ID: B06、B08、B10",moscow-should agent-exc,S3,wrd,E-EXC,6,B06、B08、B10
-B16,Story,营销方案、预算检查与人工审批,"**As an Operator, I want an evaluated campaign proposal based on approved offers, so that I can approve a credible plan within budget.**
+Estimate: 6 hours
+Evidence: attach commit/PR, test results, screenshots, or trace records as applicable.","As a Traveller, I want an evidence-supported complaint recommendation, so that the operator can decide a fair response.",2026-10-26,wrd,Jiaheng,"B06, B08, B09, B10",moscow-should agent-exc,S3,E-EXC,6
+B16,Story,Evaluate supplier-based campaigns and record human approval,"Description
+Use an Operator brief and Approved, unexpired offers to draft a simulated campaign, calculate channel costs, check budget and claims, and request approval. Store campaign/member-offer rules for later entitlement/pricing checks. Preview only; simulated responses must retain campaign and source references.
 
-AC：brief 包含目标、受众、渠道、日期及预算；仅引用合格报价；确定性计算模拟渠道成本；超预算或无证据声明不能通过；Approve/Revision/Reject 与版本绑定；预览不发布、不支出；模拟响应带 campaignId/source 转交 Operations。付费会员商业广告不得通过 review。
+User story
+As an Operator, I want an evaluated campaign proposal based on approved offers, so that I can approve a credible plan within budget.
 
-测试：预算恰好达标/超标、过期报价、修改后旧审批失效、付费广告目标、模拟响应来源。
+Acceptance criteria
+1. The brief specifies objective, audience, channel, dates, budget ceiling, and restrictions; selected offers retain evidence.
+2. Deterministic costs and budget checks pass before review; unsupported claims or commercial advertising targeted at Paid Members fail.
+3. Approve, Request revision, and Reject are version-linked; material changes invalidate earlier approval.
+4. Approved member offers record eligible tiers, offers, fixed AUD discount, and validity; preview performs no publication/spending; simulated responses go to Operations with campaignId/source.
 
-Definition of Done: 统一 DoD（见 Stage2_Week9-12_Plan_and_Jira.zh-CN.md 第9节）
-规划ID: B16
-负责人: Jason
-Sprint: S4
+Test method
+Test exact/over-budget costs, expired offers, unsupported claims, Paid advertising, revised approvals, and source-tagged simulated responses.
+
+Definition of Done
+All card acceptance criteria pass; implementation or documentation is reviewed by another member and integrated into the shared project; applicable success/failure tests and evidence are attached; relevant trace, permission, approval, and error rules are respected; affected contracts/models are updated; the result is reproducible without a card-introduced blocking defect.
+
+Requirement / use case
+UC-08; SUP-03
+
+Planning ID: B16
+Assignee: Jason
+Reviewer: Moore
+Deadline: 2026-10-27 (Australia/Sydney)
+Prerequisites: B08, B10
+Sprint: S3
 Epic: E-SUP
-估计小时: 8
-依赖规划ID: B08、B10",moscow-should agent-sup,S4,Jason,E-SUP,8,B08、B10
-B17,Story,付费路线图、广告规则与优惠资格,"**As a Paid Traveller, I want entitled route-map access and an ad-free interface, so that my membership benefits are applied consistently.**
+Estimate: 8 hours
+Evidence: attach commit/PR, test results, screenshots, or trace records as applicable.","As an Operator, I want an evaluated campaign proposal based on approved offers, so that I can approve a credible plan within budget.",2026-10-27,Jason,Moore,"B08, B10",moscow-should agent-sup,S3,E-SUP,8
+B17,Story,"Apply paid route-map access, advertising rules, and member-offer eligibility","Description
+Complete membership benefits in the shared UI and backend. Add an interactive map of simulated route points for entitled Paid Members, an ad-free Paid interface, and clearly labelled Free advertisements. Connect approved campaign discounts to entitlement and supplier price checks without live map/payment integration.
 
-AC：后端校验路线地图权限；付费无商业广告；免费广告清晰标注且不影响排序；路线图使用模拟路线点并可交互，无需实时地图 API；已批准优惠由 UC-07 判断资格、UC-06 重算价格和最低差价，不能叠加或改写基础报价。
+User story
+As a Paid Traveller, I want entitled route-map access and an ad-free interface, so that my membership benefits are applied consistently.
 
-测试：Free/Paid 两种身份访问；广告与排序检查；优惠过期、资格不符、优惠后差价不足。
+Acceptance criteria
+1. Backend entitlement checks permit the route map for active Paid Members and reject unauthorised access.
+2. Paid Members see no commercial advertising; Free advertisements are labelled and do not affect rankings.
+3. The map displays the plan’s simulated route points and supports basic interaction.
+4. UC-07 checks approved member-offer eligibility and UC-06 recalculates final price/margin; discounts cannot stack, survive expiry, or overwrite reusable base prices.
 
-Definition of Done: 统一 DoD（见 Stage2_Week9-12_Plan_and_Jira.zh-CN.md 第9节）
-规划ID: B17
-负责人: Jiaheng
-Sprint: S4
+Test method
+Test Free/Paid backend access and UI behaviour; inspect map points; exercise expired/ineligible discounts and discounts that violate minimum margin.
+
+Definition of Done
+All card acceptance criteria pass; implementation or documentation is reviewed by another member and integrated into the shared project; applicable success/failure tests and evidence are attached; relevant trace, permission, approval, and error rules are respected; affected contracts/models are updated; the result is reproducible without a card-introduced blocking defect.
+
+Requirement / use case
+UC-07; OPS-03; UC-08/UC-06 integration
+
+Planning ID: B17
+Assignee: Jiaheng
+Reviewer: wrd
+Deadline: 2026-10-28 (Australia/Sydney)
+Prerequisites: B07, B08, B09, B16
+Sprint: S3
 Epic: E-OPS
-估计小时: 6
-依赖规划ID: B07、B09、B16",moscow-should agent-ops,S4,Jiaheng,E-OPS,6,B07、B09、B16
-B18,Task,失败提示、手动重试与重复请求保护,"完成条件：超时/无效 LLM 输出/工具和保存失败可见；手动重试不重复创建审批或覆盖旧版
-测试方法：故障注入与重复请求测试；真实 LLM 与 fixture 模式标识清楚
+Estimate: 6 hours
+Evidence: attach commit/PR, test results, screenshots, or trace records as applicable.","As a Paid Traveller, I want entitled route-map access and an ad-free interface, so that my membership benefits are applied consistently.",2026-10-28,Jiaheng,wrd,"B07, B08, B09, B16",moscow-should agent-ops,S3,E-OPS,6
+B18,Task,Handle dependency failures and make manual retries safe,"Description
+Add visible failure states for LLM timeouts/invalid output, unavailable tools, and failed persistence. Support deliberate manual retry with duplicate-request protection and preserve existing versions/approvals. Jiaheng supports approximately three hours of permission and request-protection work.
 
-Definition of Done: 统一 DoD（见 Stage2_Week9-12_Plan_and_Jira.zh-CN.md 第9节）
-规划ID: B18
-负责人: Jason
+User story
+As an Operator, I want clear failure information and safe retries, so that transient problems do not create duplicate or misleading outcomes.
+
+Acceptance criteria
+1. Timeouts, malformed outputs, tool failures, and save failures report the failed step and a permitted next action.
+2. Retry does not create duplicate approval decisions, release blocked results, or overwrite the baseline plan.
+3. Real model execution and fixture mode remain distinguishable in the interface and evidence.
+
+Test method
+Inject each failure, repeat the same request/retry, and verify stored entities, approval records, case states, and trace events.
+
+Definition of Done
+All card acceptance criteria pass; implementation or documentation is reviewed by another member and integrated into the shared project; applicable success/failure tests and evidence are attached; relevant trace, permission, approval, and error rules are respected; affected contracts/models are updated; the result is reproducible without a card-introduced blocking defect.
+
+Requirement / use case
+Shared reliability; UC-05
+
+Planning ID: B18
+Assignee: Jason
+Reviewer: Moore
+Deadline: 2026-10-30 (Australia/Sydney)
+Prerequisites: B11
 Sprint: S4
 Epic: E-PLAT
-估计小时: 6
-依赖规划ID: B11",moscow-should shared,S4,Jason,E-PLAT,6,B11
-B19,Task,演示回归与可追踪验收证据,"完成条件：三套脚本、需求到测试映射、结果与已知缺陷可查；所有 Must 通过
-测试方法：稳定版本连续两次演示，人工核对页面与 trace
+Estimate: 6 hours
+Evidence: attach commit/PR, test results, screenshots, or trace records as applicable.","As an Operator, I want clear failure information and safe retries, so that transient problems do not create duplicate or misleading outcomes.",2026-10-30,Jason,Moore,B11,moscow-should shared,S4,E-PLAT,6
+B19,Task,Run release regression scenarios and record acceptance evidence,"Description
+Consolidate existing card-level tests into three release scenario sets: planning/membership, disruption/complaint, and supplier/campaign. Map requirements to test evidence, repeat demonstrations from reset data, and report incomplete or failed acceptance criteria. Each member supplies evidence for their own module.
 
-Definition of Done: 统一 DoD（见 Stage2_Week9-12_Plan_and_Jira.zh-CN.md 第9节）
-规划ID: B19
-负责人: wrd
+User story
+As an Operator and assessor, I want reproducible acceptance evidence, so that I can verify which core capabilities actually work.
+
+Acceptance criteria
+1. All three scenario sets include successful and meaningful failure/approval-waiting paths.
+2. Each scoped requirement links to a test result, trace, screenshot, or demonstration record and a responsible contributor.
+3. All Must acceptance criteria pass; unresolved Should items and defects are explicitly listed.
+4. The stable release completes two consecutive demonstrations from reset data without a blocking defect.
+
+Test method
+Run the scenario matrix, inspect automated/manual results and trace links, and reproduce the demo twice; record actual results rather than assumed passes.
+
+Definition of Done
+All card acceptance criteria pass; implementation or documentation is reviewed by another member and integrated into the shared project; applicable success/failure tests and evidence are attached; relevant trace, permission, approval, and error rules are respected; affected contracts/models are updated; the result is reproducible without a card-introduced blocking defect.
+
+Requirement / use case
+W12 release evaluation; UC-01–UC-08
+
+Planning ID: B19
+Assignee: wrd
+Reviewer: Jiaheng
+Deadline: 2026-11-02 (Australia/Sydney)
+Prerequisites: B11, B13, B14, B15, B16, B17, B18
 Sprint: S4
 Epic: E-DEMO
-估计小时: 6
-依赖规划ID: B11、B13–B18",moscow-should shared,S4,wrd,E-DEMO,6,B11、B13–B18
-B20,Task,交付说明、模型同步与贡献记录,"完成条件：启动说明、模拟范围、状态/接口变化、模型与实现偏差、个人贡献完整
-测试方法：另一成员复现；四人核对需求映射及贡献证据
+Estimate: 6 hours
+Evidence: attach commit/PR, test results, screenshots, or trace records as applicable.","As an Operator and assessor, I want reproducible acceptance evidence, so that I can verify which core capabilities actually work.",2026-11-02,wrd,Jiaheng,"B11, B13, B14, B15, B16, B17, B18",moscow-should shared,S4,E-DEMO,6
+B20,Task,"Finalize setup instructions, model alignment, and contribution records","Description
+Prepare the final runbook, simulation boundaries, supported functionality, known limitations, requirement-to-implementation mapping, model updates, and individual contribution record. Start documentation alongside implementation and finalize it against the accepted release.
 
-Definition of Done: 统一 DoD（见 Stage2_Week9-12_Plan_and_Jira.zh-CN.md 第9节）
-规划ID: B20
-负责人: Moore
+User story
+As an assessor or new team member, I want accurate setup and contribution documentation, so that I can reproduce the prototype and understand its design and ownership.
+
+Acceptance criteria
+1. Another member can start and reset the accepted release using the runbook.
+2. Documentation states which data/actions are simulated, which features pass acceptance, and which remain incomplete.
+3. Model/interface changes and unresolved requirement mappings are documented consistently with the implementation.
+4. All four members confirm contribution evidence; documentation links to the accepted version and test results.
+
+Test method
+Have another member reproduce setup and a demo scenario; cross-check the final documents, models, requirement mapping, and contributions against the accepted release.
+
+Definition of Done
+All card acceptance criteria pass; implementation or documentation is reviewed by another member and integrated into the shared project; applicable success/failure tests and evidence are attached; relevant trace, permission, approval, and error rules are respected; affected contracts/models are updated; the result is reproducible without a card-introduced blocking defect.
+
+Requirement / use case
+Shared delivery; Stage 1–Stage 2 traceability
+
+Planning ID: B20
+Assignee: Moore
+Reviewer: Jason
+Deadline: 2026-11-04 (Australia/Sydney)
+Prerequisites: B19
 Sprint: S4
 Epic: E-DEMO
-估计小时: 4
-依赖规划ID: B19",moscow-should shared,S4,Moore,E-DEMO,4,B19
+Estimate: 4 hours
+Evidence: attach commit/PR, test results, screenshots, or trace records as applicable.","As an assessor or new team member, I want accurate setup and contribution documentation, so that I can reproduce the prototype and understand its design and ownership.",2026-11-04,Moore,Jason,B19,moscow-should shared,S4,E-DEMO,4

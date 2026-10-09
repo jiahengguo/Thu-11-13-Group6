@@ -72,8 +72,8 @@ Should-have 仍属于 W12 核心目标，不能因为标签就宣称无需实现
 | --- | --- | --- | --- |
 | S1 / W9 Foundation | 10/8–10/14 | 可启动应用、共享数据和接口、基础规则 | 固定请求能沿接口走通至结果；允许 specialist stub，明确标注；trace 和审批基础可用 |
 | S2 / W10 Demo Flow | 10/15–10/21 | 接入真实 Agent 逻辑，打通四 Agent 闭环 | 新请求→会员→报价→完整行程→模拟取消→恢复建议→受控回复；不依赖手工编辑数据库 |
-| S3 / W11 Core Expansion | 10/22–10/28 | 展示 prototype，补齐比较/修改/投诉 | 10/22 lab 展示稳定版本；新修改保留旧版；投诉有证据及人工升级 |
-| S4 / W12 Core Completion | 10/29–11/4 | 营销/付费功能、失败处理、评估和交付 | 核心 AC 清单、三套演示、已知问题及贡献记录；未完成项单列 |
+| S3 / W11 Core Expansion | 10/22–10/28 | 展示 prototype，补齐比较/修改/投诉/营销/付费权益 | 10/22 lab 展示稳定版本；10/28 前完成核心功能扩展 |
+| S4 / W12 Core Completion | 10/29–11/4 | 失败处理、回归评估和交付 | 核心 AC 清单、三套演示、已知问题及贡献记录；未完成项单列 |
 
 **W11 可演示版本应在 10/21 晚前准备好，10/22 展示。W12 大部分核心功能应在 10/29 Review 可见，11/4 前完成该 sprint 的验收和修复。** 营销和付费功能需在 W11 就开始接口/数据准备，避免把 S4 全变成新开发。若要求 W12 lab 当天全部完成，将 S4 功能实现提前到 S3，S4 只做验收；按实际容量重新排期。
 
@@ -130,7 +130,7 @@ Blocked 用 flag 保留原列，同时评论原因、依赖卡、解阻负责人
 
 ### 卡片字段、标签与视图
 
-必填：Summary、Description、Issue Type、Epic、Assignee、Sprint、MoSCoW label、Estimate、Acceptance Criteria、Test method、Req/UC IDs、Dependencies、Evidence。Jira 未提供的字段放进 Description 模板，不强求自定义字段。
+必填：Summary、Description、Due Date、User Story、Issue Type、Epic、Assignee、Sprint、MoSCoW label、Estimate、Acceptance Criteria、Test method、Req/UC IDs、Dependencies、Evidence。Jira 未提供的字段放进 Description 模板，不强求自定义字段。
 
 - 标签：`moscow-must`、`moscow-should`、`moscow-could`、`moscow-would`，四选一；另加 `agent-ops` / `agent-plan` / `agent-exc` / `agent-sup` / `shared`；演示卡加 `demo-w11`。
 - Jira Priority 表达处理紧急程度；MoSCoW 表达范围承诺。临近演示的阻塞 Bug 可以高优先级，不应自动把所有 Must 卡都标最高。
@@ -139,142 +139,40 @@ Blocked 用 flag 保留原列，同时评论原因、依赖卡、解阻负责人
 - 推荐过滤：我的任务、Must、W11 demo、Blocked、Shared。若支持 JQL，分别使用 `assignee = currentUser()`、`labels = moscow-must`、`labels = demo-w11`、`Flagged = Impediment`、`labels = shared`，在当前项目范围内应用。
 - 发布版本：`v0.1-w11-prototype` 与 `v0.2-w12-core`；若无版本字段，用标签替代。每个 sprint review 保存看板状态、演示记录及测试证据。
 
-## 6. 初始 Backlog：20 张可录入卡片
+## 6. Updated backlog — English cards
 
-下列编号是规划 ID，不是假称已经创建的 Jira key。Estimate 为初估小时；跨周 story 可拆分为各自可验收的小 story，不只为清空 sprint 而拆卡。Reviewer 按分工表默认安排。
+Updated on 2026-10-09. The authoritative card descriptions, user stories, deadlines, assignees, prerequisites, acceptance criteria, and test methods are in [Jira Cards B01–B20](Jira_Cards_B01-B20.en.md). The [CSV](Jira_Starter_Backlog.csv) contains matching content for import.
 
-| ID | Type / Epic | Summary | Owner | Sprint | MoSCoW | 小时 | 前置 |
-| --- | --- | --- | --- | --- | --- | ---: | --- |
-| B01 | Task / PLAT | 共享接口、领域字段与需求映射 | Jiaheng | S1 | Must | 6 | 无 |
-| B02 | Task / PLAT | 一键启动与应用骨架 | Jason | S1 | Must | 6 | 无 |
-| B03 | Task / PLAT | 统一模拟数据与重置工具 | Jason | S1 | Must | 4 | B01 |
-| B04 | Task / PLAT | 确定性约束及计算工具 | Moore | S1 | Must | 6 | B01 |
-| B05 | Task / PLAT | 持久化 trace 与查询 | wrd | S1 | Must | 6 | B01、B02 |
-| B06 | Story / OPS | 接待、补问、确认与路由 | Jiaheng | S2 | Must | 8 | B01、B02、B05 |
-| B07 | Story / OPS | 行程会员规则与访问控制 | Jiaheng | S2 | Must | 6 | B03、B06 |
-| B08 | Story / SUP | 报价导入、审查与差价计算 | Jason | S2 | Must | 8 | B03、B04、B10 |
-| B09 | Story / PLAN | 生成完整可行行程 | Moore | S2 | Must | 8 | B04、B07、B08 |
-| B10 | Story / PLAT | 共享 Reviewer 与人工审批工作台 | wrd | S1 | Must | 6 | B01、B02、B05 |
-| B11 | Task / DEMO | 四 Agent 联调与统一界面 | Jason | S2 | Must | 6 | B06–B10、B12 |
-| B12 | Story / EXC | 取消事件调查与恢复建议 | wrd | S2 | Must | 8 | B08、B09、B10 |
-| B13 | Story / PLAN | 三种模式与可行方案比较 | Moore | S3 | Should | 6 | B09 |
-| B14 | Story / PLAN | 确认后修改与版本对比 | Moore | S3 | Should | 6 | B09、B13 |
-| B15 | Story / EXC | 投诉调查与解决建议 | wrd | S3 | Should | 6 | B06、B08、B10 |
-| B16 | Story / SUP | 营销方案、预算检查与人工审批 | Jason | S4 | Should | 8 | B08、B10 |
-| B17 | Story / OPS | 付费路线图、广告规则与优惠资格 | Jiaheng | S4 | Should | 6 | B07、B09、B16 |
-| B18 | Task / PLAT | 失败提示、手动重试与重复请求保护 | Jason | S4 | Should | 6 | B11 |
-| B19 | Task / DEMO | 演示回归与可追踪验收证据 | wrd | S4 | Should | 6 | B11、B13–B18 |
-| B20 | Task / DEMO | 交付说明、模型同步与贡献记录 | Moore | S4 | Should | 4 | B19 |
+| ID | Title | Assignee | Deadline | Sprint | Prerequisites |
+| --- | --- | --- | --- | --- | --- |
+| B01 | Define shared agent contracts, domain schemas, and requirement mappings | Jiaheng | 2026-10-10 | S1 | None |
+| B02 | Set up the runnable web application and local database | Jason | 2026-10-10 | S1 | None |
+| B03 | Create resettable supplier, traveller, and disruption fixtures | Jason | 2026-10-11 | S1 | B01, B02 |
+| B04 | Implement deterministic pricing and itinerary constraint validators | Moore | 2026-10-12 | S1 | B01, B03 |
+| B05 | Persist and display linked agent execution traces | wrd | 2026-10-12 | S1 | B01, B02 |
+| B06 | Capture, confirm, and route traveller and supplier requests | Jiaheng | 2026-10-15 | S2 | B01, B02, B03, B05 |
+| B07 | Enforce membership limits and protected case access | Jiaheng | 2026-10-16 | S2 | B03, B04, B06 |
+| B08 | Validate supplier offers and calculate approved selling prices | Jason | 2026-10-16 | S2 | B03, B04, B05, B10 |
+| B09 | Generate a complete itinerary from approved supplier offers | Moore | 2026-10-18 | S2 | B04, B05, B07, B08, B10 |
+| B10 | Build proposal review and human approval controls | wrd | 2026-10-14 | S1 | B01, B02, B04, B05 |
+| B11 | Integrate the four-agent workflow and freeze the Week 11 demo | Jason | 2026-10-21 | S2 | B06, B07, B08, B09, B10, B12 |
+| B12 | Investigate a cancellation and propose a validated recovery | wrd | 2026-10-20 | S2 | B06, B08, B09, B10 |
+| B13 | Compare feasible itineraries in Comfort, Value, and Budget modes | Moore | 2026-10-23 | S3 | B09 |
+| B14 | Create confirmed plan revisions and compare immutable versions | Moore | 2026-10-25 | S3 | B06, B07, B09, B13 |
+| B15 | Investigate complaints and prepare reviewed resolution recommendations | wrd | 2026-10-26 | S3 | B06, B08, B09, B10 |
+| B16 | Evaluate supplier-based campaigns and record human approval | Jason | 2026-10-27 | S3 | B08, B10 |
+| B17 | Apply paid route-map access, advertising rules, and member-offer eligibility | Jiaheng | 2026-10-28 | S3 | B07, B08, B09, B16 |
+| B18 | Handle dependency failures and make manual retries safe | Jason | 2026-10-30 | S4 | B11 |
+| B19 | Run release regression scenarios and record acceptance evidence | wrd | 2026-11-02 | S4 | B11, B13, B14, B15, B16, B17, B18 |
+| B20 | Finalize setup instructions, model alignment, and contribution records | Moore | 2026-11-04 | S4 | B19 |
 
-初估合计 **126 小时**：Jiaheng 26、Moore 30、wrd 32、Jason 38。Jason 负担较高：建议 B11 的界面子任务由 Jiaheng 承担约 3 小时，B18 的权限/请求保护子任务由 Jiaheng 承担约 3 小时，主卡 assignee 仍负责整体验收。调整后约为 Jiaheng 32、Jason 32、Moore 30、wrd 32。S2 Operations 两张卡合计 14 小时；当周可用时间不足时，把 B06 的接待与确认部分提前到 S1，以可独立验收的 story 记录。
+## 7. Acceptance and user stories
 
-S1 34 小时、S2 44 小时、S3 18 小时、S4 30 小时。S3 留出的容量用于 W11 演示修复以及提前开发 B16/B17，明确纳入当周 planning，避免隐藏工作。B11 先用 stub 联调，Done 时必须 B12 等真实实现接入。B19 是最终回归汇总，不能替代每张功能卡自身的测试。
+All 20 cards, including engineering Tasks, now include an English user story and explicit acceptance criteria. See the detailed card document rather than maintaining duplicate descriptions here.
 
-## 7. Story 文本、验收与测试
+## 8. Revised schedule and capacity
 
-以下每张 Story 都继承统一 DoD，并附有自己的完成条件和测试方法。Task 的验收列在下一节。
-
-### B06 — 接待、确认与路由（UC-05 / OPS-02）
-
-**As a Traveller or Supplier, I want to confirm a structured request and have it routed to the right agent, so that my request is handled accurately.**
-
-AC：请求缺字段时补问且不路由；确认后保存 Case 和来源，按请求类型分配 specialist；低置信度或 `humanRequestCount >= 2` 进入人工协助；specialist 输出经 Operations review 后才展示；失败不错误关闭 Case。
-
-测试：分类/必填规则自动测试；手工跑 planning、complaint、supplier 三种输入及低置信度输入；截图确认和 routing trace。LLM 输出做结构与行为检查，不断言固定文案。
-
-### B07 — 会员与权限（UC-07 / OPS-03）
-
-**As a Traveller, I want an explained membership decision, so that I know whether my requested trip is permitted.**
-
-AC：免费会员两条 Planned/Active 行程后拒绝新激活；超过五天拒绝，五天允许；日历天数为 end-start+1；规划前及输出后复查最新会员；无法验证返回 VerificationFailed；其他用户的 case/plan 不可读取，前端隐藏按钮不能代替后端检查。
-
-测试：自动测试 1/2 条行程、5/6 天、会员变化、服务失败和跨用户访问；手工演示拒绝原因。
-
-### B08 — 供应商报价（UC-06 / SUP-01、SUP-02）
-
-**As an Operator, I want validated offers with reproducible prices and margins, so that planners use reliable commercial data.**
-
-AC：保留原始来源和提取字段；缺字段、过期、零库存、不支持币种进入 RevisionRequired；按配置与两位小数计算 basePrice、sellingPrice、marginAmount；最低差价失败不能 Approved；仅 Approved 且未过期报价可用于规划；修订清除旧审批；受限条款等待人工决定。
-
-测试：确定性价格/舍入/有效期测试；手工导入正常与非法报价；验证 LLM 不能改成本绕过差价规则。
-
-### B09 — 完整行程（UC-01 / TP-01，旧 PLAN 编号待映射）
-
-**As a Traveller, I want a complete feasible itinerary, so that transport, stays and activities fit my confirmed constraints.**
-
-AC：交通、住宿、活动串联完整；预算、时间、接驳、库存和请求中适用的其他硬约束全部通过后才标为 feasible；总价等于组件和；每项资源带报价及证据引用；无解时列出失败约束，不自动放宽；经 Reviewer 后由 Operations 返回。
-
-测试：自动检查预算、时间重叠、接驳不足、过期报价、总价；正常和无解场景端到端测试。
-
-### B10 — Review 与审批（共享控制）
-
-**As an Operator, I want to inspect reviewed proposals and record approval decisions, so that restricted commitments stay under human control.**
-
-AC：规则失败阻止通过；提供 Approve / Request revision / Reject，未决定保持 AwaitingApproval；修改重要字段使旧审批失效并重新检查；保存失败不返回批准结果；待审批/拒绝的承诺不能由 Operations 输出为已批准。
-
-测试：审批状态转换及后端权限自动测试；手工演示拒绝、修改再审和无回应；trace 链接到被审批版本。
-
-### B12 — 异常恢复（UC-03 / EXC-01）
-
-**As a Traveller with a disrupted trip, I want a validated recovery proposal, so that I can understand safe and feasible alternatives.**
-
-AC：取消事件关联既有 Active itinerary 与证据；向 Supplier 获取替代资源、向 Planning 请求重规划；保留原约束并解释价格/时间变化；无替代、证据冲突或依赖失败时返回人工处理；受限承诺显式要求审批；仅产生建议，不执行真实改签/付款。
-
-测试：一条取消且有替代、无替代、工具失败及需要审批四个场景；核对四个 Agent 的同一 correlationId。
-
-### B13 — 比较模式（UC-01 / TP-01）
-
-**As a Traveller, I want to compare feasible options in Comfort, Value or Budget mode, so that I can choose using consistent trade-offs.**
-
-AC：至少一套测试数据能产生两条可行方案；三个模式仅改变可行候选排序；成本、时间、便利程度、证据和排除原因采用共同字段；不可行方案不能因模式或广告进入推荐。
-
-测试：固定候选集上的排序/过滤测试；手工切换三种模式并核对差异。
-
-### B14 — 修改和版本（UC-02 / TP-02）
-
-**As a Traveller, I want to confirm a change and compare a new plan version, so that I understand its effect without losing the original plan.**
-
-AC：未确认修改不发布新版本；成功后生成独立不可变版本，旧版不覆盖；展示资源、时间、价格及约束变化；再次运行会员/库存/价格/时间校验；修改无解时基线仍为当前版本。
-
-测试：成功修改、未确认修改、无解修改；自动验证基线未变、版本 ID 不同与 price delta。
-
-### B15 — 投诉（UC-04 / EXC-02）
-
-**As a Traveller, I want an evidence-supported complaint recommendation, so that the operator can decide a fair response.**
-
-AC：收集行程、服务记录、政策和供应商证据；缺证据通过 Operations 补问；法律/安全/低置信度升级；退款/补偿建议须审批；人工转交不标成投诉已解决；最终回复仍经 Operations。
-
-测试：普通投诉、缺证据、补偿请求三个场景；检查审批阻断及案件状态。
-
-### B16 — 营销（UC-08 / SUP-03）
-
-**As an Operator, I want an evaluated campaign proposal based on approved offers, so that I can approve a credible plan within budget.**
-
-AC：brief 包含目标、受众、渠道、日期及预算；仅引用合格报价；确定性计算模拟渠道成本；超预算或无证据声明不能通过；Approve/Revision/Reject 与版本绑定；预览不发布、不支出；模拟响应带 campaignId/source 转交 Operations。付费会员商业广告不得通过 review。
-
-测试：预算恰好达标/超标、过期报价、修改后旧审批失效、付费广告目标、模拟响应来源。
-
-### B17 — 付费权益（UC-07；UC-08/UC-06 联动）
-
-**As a Paid Traveller, I want entitled route-map access and an ad-free interface, so that my membership benefits are applied consistently.**
-
-AC：后端校验路线地图权限；付费无商业广告；免费广告清晰标注且不影响排序；路线图使用模拟路线点并可交互，无需实时地图 API；已批准优惠由 UC-07 判断资格、UC-06 重算价格和最低差价，不能叠加或改写基础报价。
-
-测试：Free/Paid 两种身份访问；广告与排序检查；优惠过期、资格不符、优惠后差价不足。
-
-## 8. 工程 Task 的完成条件与验证
-
-| ID | 完成条件 | 验证方式 |
-| --- | --- | --- |
-| B01 | JSON 示例、接口、状态、错误、需求映射和 ownership 经四人确认 | 四个模块用同一示例读写，契约检查 |
-| B02 | 干净环境按说明启动，前后端和数据存储可用，配置模板不含密钥 | 另一成员从新目录/干净环境复现 |
-| B03 | 正常、非法报价、两种会员、取消、投诉、审批场景 fixture 可重置 | 连续重置两次结果一致，引用无断链 |
-| B04 | 价格、预算、日历日期、时间冲突、库存、适用硬约束使用共享确定性工具 | 边界值与失败路径自动测试；记录未支持约束 |
-| B05 | request→agent→tool→plan→review→approval→response 能关联并保存；重启后可查 | 查询一条完整 case，模拟保存失败，检查日志无密钥 |
-| B11 | stub 被实际模块替换，页面和后端跑通新规划及恢复，稳定标签可复现 | 四人共同从重置数据完成完整演示；不手工改存储 |
-| B18 | 超时/无效 LLM 输出/工具和保存失败可见；手动重试不重复创建审批或覆盖旧版 | 故障注入与重复请求测试；真实 LLM 与 fixture 模式标识清楚 |
-| B19 | 三套脚本、需求到测试映射、结果与已知缺陷可查；所有 Must 通过 | 稳定版本连续两次演示，人工核对页面与 trace |
-| B20 | 启动说明、模拟范围、状态/接口变化、模型与实现偏差、个人贡献完整 | 另一成员复现；四人核对需求映射及贡献证据 |
+B16 and B17 move from S4 to S3 and finish on 27 and 28 October, respectively. S4 focuses on reliability, regression, and delivery. Estimates remain 126 hours: S1 34, S2 44, S3 32, S4 16. Assignee totals remain Jiaheng 26, Moore 30, wrd 32, Jason 38 before the existing six-hour support allocation to Jiaheng; effective totals are 32, 30, 32, and 32 hours. B06 intake preparation starts during S1. Prerequisites are explicit planning IDs, not actual Jira keys.
 
 ## 9. Ready、Done 与卡片模板
 
@@ -354,9 +252,9 @@ Evidence: PR / commit / test result / screenshot / trace
 - [ ] W9 Review 展示集成骨架；记录 tutor 反馈。
 - [ ] W11 稳定原型和 W12 核心验收分别保存证据。
 
-## CSV 使用说明
+## CSV import notes
 
-配套 `Jira_Starter_Backlog.csv` 是录入素材，不代表已在 Jira 创建。先建立 Epic 和 sprint；导入时将 Issue Type、Summary、Description、Labels 映射至对应字段。Suggested Owner 是显示名，必须映射到实际 Jira 账号；Planned Sprint、Epic Alias、Dependencies 和 Estimate Hours 为规划信息，可保留在描述或映射合适字段。不要把 B01 等规划 ID 当作现有 Jira issue key；导入后按实际 key 建立依赖。CSV 只含 20 张卡，Epic 另建。
+All 20 CSV cards are now written in English. Fields include Summary (title), Description, User Story, Due Date, Assignee, Reviewer, and Dependencies. Due dates use `yyyy-MM-dd` in Australia/Sydney. Map displayed assignee names to verified Jira accounts; map planning IDs to actual issue keys before creating dependency links. The CSV includes user stories and prerequisites in Description as well as separate columns. It does not indicate that any Jira issues have been created. See the English card document for full mapping guidance.
 
 ## Sources
 
