@@ -1,5 +1,5 @@
-﻿Planning ID,Issue Type,Summary,Description,User Story,Due Date,Assignee,Reviewer,Dependencies,Labels,Planned Sprint,Epic Alias,Estimate Hours
-B01,Task,"Define shared agent contracts, domain schemas, and requirement mappings","Description
+﻿"Planning ID","Issue Type","Summary","Description","User Story","Due Date","Assignee","Reviewer","Dependencies","Labels","Planned Sprint","Epic Alias","Estimate Hours","更改内容","交接内容"
+"B01","Task","Define shared agent contracts, domain schemas, and requirement mappings","Description
 Agree the inputs, outputs, required fields, business states, error codes, evidence references, and approval flags used by all four agents. Deliver a versioned contract document and representative JSON examples. Reconcile the older PLAN identifiers with the current TP identifiers without silently renumbering requirements.
 
 User story
@@ -27,8 +27,32 @@ Prerequisites: None
 Sprint: S1
 Epic: E-PLAT
 Estimate: 6 hours
-Evidence: attach commit/PR, test results, screenshots, or trace records as applicable.","As a developer integrating an agent, I want a shared contract and domain schema, so that my module can exchange validated data with the other agents.",2026-10-10,Jiaheng,wrd,None,moscow-must shared demo-w11,S1,E-PLAT,6
-B02,Task,Set up the runnable web application and local database,"Description
+Evidence: attach commit/PR, test results, screenshots, or trace records as applicable.","As a developer integrating an agent, I want a shared contract and domain schema, so that my module can exchange validated data with the other agents.","2026-10-10","Jiaheng","wrd","None","moscow-must shared demo-w11","S1","E-PLAT","6","2026-10-10（Australia/Sydney）：B01 代码与文档已交付，待四位成员审核，尚未达到 Done。
+
+依据 Stage 1 报告搭建单一 Python 应用、四个内部 Agent 模块及共享服务边界。Operations/Jiaheng、Planning/Moore、Exception/wrd、Supplier/Jason。
+
+新增 v1.0.0 的 Case、TravelRequest、SupplierOffer、PriceBreakdown、ItineraryVersion、AgentResult、Approval、TraceEvent 八个 Schema。统一 caseId、correlationId、来源、校验结果、错误码、审批标志、版本引用、AUD 小数字符串及带时区时间戳。
+
+新增 20 份 JSON 示例，覆盖四 Agent 的成功、失败、审批等待和全部八个 Schema。新增 13 项契约测试，全部通过。项目安装、CLI 启动和仓库外 Schema 加载检查通过。
+
+明确确认后创建 Case、版本评估状态与旅行生命周期分离、审批绑定对象版本。记录旧 PLAN 与当前 TP 的语义映射及未决项，不重编号。
+
+提供 LLM、会员、权限、约束、价格、Review、合格报价查询、Trace 和审批存储接口及无密钥配置模板。Agent 当前为 STUB，返回 FAILURE/NOT_IMPLEMENTED，未接入 Web、数据库或真实 LLM。
+
+架构、目录、安装检查和成员交接已整合到 README.md / README.zh-CN.md。详细契约：docs/contracts/v1/CONTRACTS.md；机器 Schema：src/tripmate/contracts/v1/schemas.json；需求映射：docs/contracts/v1/REQUIREMENT_MAPPING.md；验收证据：docs/contracts/v1/B01_ACCEPTANCE.md。","共同审核：Jiaheng、Moore、wrd、Jason 核对八个 Schema、输入输出、状态、PLAN/TP 映射及 Python 骨架选择。wrd 负责 B01 peer review。将确认或修改意见及 commit/PR 引用记录到 docs/contracts/v1/B01_ACCEPTANCE.md。四人确认和共享集成完成后才能标记 B01 Done。
+
+Jason：B02 接入统一 Web/API、一个数据库和 LLM 适配器，记录真实 smoke call 或阻碍，并清楚区分 STUB/FIXTURE/REAL。B03 建立可重置的模拟数据。B08 实现合格报价、价格与差价评估；B16 扩展 CampaignBrief/CampaignProposal/MemberOfferRule 契约。
+
+Moore：B04 实现预算、时间、库存、约束、AUD 价格与差价的确定性校验，并明确 rounding tie 规则。B09 生成完整行程，B13/B14 接比较和确认后的不可变版本修改。会员计数读取 TravelPlan 的 PLANNED/ACTIVE，不把 FEASIBLE 版本算成活动旅行。
+
+wrd：B05 实现 TraceEvent 持久化和 Case 查询；B10 实现共享 Reviewer 与人工审批队列，核对 subjectId/materialVersion/scope。B12/B15 扩展恢复和投诉记录。保存失败不得返回成功，审批历史不得覆盖。
+
+Jiaheng：B06 完成身份核验、请求提取与确认、Case 创建、路由和统一对外回复；B07 接会员、访问权限和所有权检查；B17 接付费权益和会员优惠资格。
+
+集成约定：保留 caseId/correlationId/sourceReferences，校验每次输入输出。Schema 通过不代表业务可行、审批完成或回复已送达。修改对象后重新审核审批；受限结果需当前版本的审批，实际交易和发布不在原型范围。
+
+从 README 本地检查步骤启动。契约验证：.venv/bin/python -m tripmate --validate-examples docs/contracts/v1/examples；测试：.venv/bin/python -m unittest discover -s tests -v。JSON 示例为契约样本，不是 B03 运行数据或实际业务成功证据。"
+"B02","Task","Set up the runnable web application and local database","Description
 Create the shared application skeleton, configuration template, local persistence, agent module boundaries, and startup instructions. Verify one real LLM call and provide an explicitly labelled fixture mode. Use one application and database rather than four independently deployed services.
 
 User story
@@ -56,8 +80,8 @@ Prerequisites: None
 Sprint: S1
 Epic: E-PLAT
 Estimate: 6 hours
-Evidence: attach commit/PR, test results, screenshots, or trace records as applicable.","As a team member, I want a reproducible application setup, so that I can develop and demonstrate my agent in the shared environment.",2026-10-10,Jason,Moore,None,moscow-must shared demo-w11,S1,E-PLAT,6
-B03,Task,"Create resettable supplier, traveller, and disruption fixtures","Description
+Evidence: attach commit/PR, test results, screenshots, or trace records as applicable.","As a team member, I want a reproducible application setup, so that I can develop and demonstrate my agent in the shared environment.","2026-10-10","Jason","Moore","None","moscow-must shared demo-w11","S1","E-PLAT","6","",""
+"B03","Task","Create resettable supplier, traveller, and disruption fixtures","Description
 Build one controlled Sydney-to-Melbourne dataset in AUD, with transport, accommodation, activities, Free/Paid travellers, active plans, invalid offers, complaints, and cancellation events. Include expected outcomes and a reset operation. Mark all provider and transaction data as simulated.
 
 User story
@@ -85,8 +109,8 @@ Prerequisites: B01, B02
 Sprint: S1
 Epic: E-PLAT
 Estimate: 4 hours
-Evidence: attach commit/PR, test results, screenshots, or trace records as applicable.","As a developer and demo presenter, I want repeatable test fixtures, so that I can reproduce normal and failure scenarios without editing the database manually.",2026-10-11,Jason,Moore,"B01, B02",moscow-must shared demo-w11,S1,E-PLAT,4
-B04,Task,Implement deterministic pricing and itinerary constraint validators,"Description
+Evidence: attach commit/PR, test results, screenshots, or trace records as applicable.","As a developer and demo presenter, I want repeatable test fixtures, so that I can reproduce normal and failure scenarios without editing the database manually.","2026-10-11","Jason","Moore","B01, B02","moscow-must shared demo-w11","S1","E-PLAT","4","",""
+"B04","Task","Implement deterministic pricing and itinerary constraint validators","Description
 Implement reusable functions for price rounding, margins, budget, inclusive calendar duration, schedule conflicts, transfer time, availability, and other applicable confirmed hard constraints. Return structured pass/fail results with rule identifiers. LLM suggestions must not override failed rules.
 
 User story
@@ -114,8 +138,8 @@ Prerequisites: B01, B03
 Sprint: S1
 Epic: E-PLAT
 Estimate: 6 hours
-Evidence: attach commit/PR, test results, screenshots, or trace records as applicable.","As a Traveller, I want my itinerary checked by reproducible rules, so that recommendations respect my budget, timing, and other confirmed constraints.",2026-10-12,Moore,Jason,"B01, B03",moscow-must shared demo-w11,S1,E-PLAT,6
-B05,Task,Persist and display linked agent execution traces,"Description
+Evidence: attach commit/PR, test results, screenshots, or trace records as applicable.","As a Traveller, I want my itinerary checked by reproducible rules, so that recommendations respect my budget, timing, and other confirmed constraints.","2026-10-12","Moore","Jason","B01, B03","moscow-must shared demo-w11","S1","E-PLAT","6","",""
+"B05","Task","Persist and display linked agent execution traces","Description
 Store and retrieve trace events linking requests, agent handoffs, tool results, plan versions, review outcomes, approval decisions, and responses. Provide a case-level trace view that survives application restarts. Exclude secrets from recorded content.
 
 User story
@@ -143,8 +167,8 @@ Prerequisites: B01, B02
 Sprint: S1
 Epic: E-PLAT
 Estimate: 6 hours
-Evidence: attach commit/PR, test results, screenshots, or trace records as applicable.","As an Operator, I want a linked history of agent decisions and evidence, so that I can explain outcomes and investigate failures.",2026-10-12,wrd,Jiaheng,"B01, B02",moscow-must shared demo-w11,S1,E-PLAT,6
-B06,Story,"Capture, confirm, and route traveller and supplier requests","Description
+Evidence: attach commit/PR, test results, screenshots, or trace records as applicable.","As an Operator, I want a linked history of agent decisions and evidence, so that I can explain outcomes and investigate failures.","2026-10-12","wrd","Jiaheng","B01, B02","moscow-must shared demo-w11","S1","E-PLAT","6","",""
+"B06","Story","Capture, confirm, and route traveller and supplier requests","Description
 Implement the Operations intake flow: identify requester/source, check simulated identity and access, use structured LLM extraction, ask for missing information, obtain confirmation, and route cases. Prepare the final response through the controlled Operations gateway. Start the intake and confirmation portion during S1 so S2 remains manageable.
 
 User story
@@ -173,8 +197,8 @@ Prerequisites: B01, B02, B03, B05
 Sprint: S2
 Epic: E-OPS
 Estimate: 8 hours
-Evidence: attach commit/PR, test results, screenshots, or trace records as applicable.","As a Traveller or Supplier, I want to confirm a structured request and have it routed to the appropriate agent, so that my request is handled accurately.",2026-10-15,Jiaheng,wrd,"B01, B02, B03, B05",moscow-must agent-ops demo-w11,S2,E-OPS,8
-B07,Story,Enforce membership limits and protected case access,"Description
+Evidence: attach commit/PR, test results, screenshots, or trace records as applicable.","As a Traveller or Supplier, I want to confirm a structured request and have it routed to the appropriate agent, so that my request is handled accurately.","2026-10-15","Jiaheng","wrd","B01, B02, B03, B05","moscow-must agent-ops demo-w11","S2","E-OPS","8","",""
+"B07","Story","Enforce membership limits and protected case access","Description
 Implement backend entitlement decisions and ownership checks using verified simulated membership data. Check entitlements before planning and again against the returned plan. Explain Allowed, Denied, and VerificationFailed outcomes without modifying an itinerary to satisfy a rule.
 
 User story
@@ -203,8 +227,8 @@ Prerequisites: B03, B04, B06
 Sprint: S2
 Epic: E-OPS
 Estimate: 6 hours
-Evidence: attach commit/PR, test results, screenshots, or trace records as applicable.","As a Traveller, I want an explained membership decision, so that I know whether my requested trip is permitted.",2026-10-16,Jiaheng,wrd,"B03, B04, B06",moscow-must agent-ops demo-w11,S2,E-OPS,6
-B08,Story,Validate supplier offers and calculate approved selling prices,"Description
+Evidence: attach commit/PR, test results, screenshots, or trace records as applicable.","As a Traveller, I want an explained membership decision, so that I know whether my requested trip is permitted.","2026-10-16","Jiaheng","wrd","B03, B04, B06","moscow-must agent-ops demo-w11","S2","E-OPS","6","",""
+"B08","Story","Validate supplier offers and calculate approved selling prices","Description
 Implement Supplier offer extraction with source references, deterministic validity checks, configured pricing, margin assessment, review, and conditional human approval. Provide approved offers to Planning through a reusable lookup that rechecks expiry. Corrections must trigger renewed assessment.
 
 User story
@@ -233,8 +257,8 @@ Prerequisites: B03, B04, B05, B10
 Sprint: S2
 Epic: E-SUP
 Estimate: 8 hours
-Evidence: attach commit/PR, test results, screenshots, or trace records as applicable.","As an Operator, I want validated offers with reproducible prices and margins, so that planners use reliable commercial data.",2026-10-16,Jason,Moore,"B03, B04, B05, B10",moscow-must agent-sup demo-w11,S2,E-SUP,8
-B09,Story,Generate a complete itinerary from approved supplier offers,"Description
+Evidence: attach commit/PR, test results, screenshots, or trace records as applicable.","As an Operator, I want validated offers with reproducible prices and margins, so that planners use reliable commercial data.","2026-10-16","Jason","Moore","B03, B04, B05, B10","moscow-must agent-sup demo-w11","S2","E-SUP","8","",""
+"B09","Story","Generate a complete itinerary from approved supplier offers","Description
 Implement Travel Planning for the controlled Sydney-to-Melbourne scenario. Assemble transport, stays, and activities from eligible offers, run applicable hard-constraint checks, compute itemised costs, and return a reviewed itinerary through Operations. Record evidence and explain infeasibility without relaxing constraints.
 
 User story
@@ -263,8 +287,8 @@ Prerequisites: B04, B05, B07, B08, B10
 Sprint: S2
 Epic: E-PLAN
 Estimate: 8 hours
-Evidence: attach commit/PR, test results, screenshots, or trace records as applicable.","As a Traveller, I want a complete feasible itinerary, so that transport, stays, and activities fit my confirmed constraints.",2026-10-18,Moore,Jason,"B04, B05, B07, B08, B10",moscow-must agent-plan demo-w11,S2,E-PLAN,8
-B10,Story,Build proposal review and human approval controls,"Description
+Evidence: attach commit/PR, test results, screenshots, or trace records as applicable.","As a Traveller, I want a complete feasible itinerary, so that transport, stays, and activities fit my confirmed constraints.","2026-10-18","Moore","Jason","B04, B05, B07, B08, B10","moscow-must agent-plan demo-w11","S2","E-PLAN","8","",""
+"B10","Story","Build proposal review and human approval controls","Description
 Create a shared review service and Operator approval workspace for offers, plans, recovery recommendations, and campaign proposals. Bind decisions to the reviewed version and enforce the same approval checks on backend actions and Operations responses.
 
 User story
@@ -293,8 +317,8 @@ Prerequisites: B01, B02, B04, B05
 Sprint: S1
 Epic: E-PLAT
 Estimate: 6 hours
-Evidence: attach commit/PR, test results, screenshots, or trace records as applicable.","As an Operator, I want to inspect reviewed proposals and record approval decisions, so that restricted commitments remain under human control.",2026-10-14,wrd,Jiaheng,"B01, B02, B04, B05",moscow-must shared demo-w11,S1,E-PLAT,6
-B11,Task,Integrate the four-agent workflow and freeze the Week 11 demo,"Description
+Evidence: attach commit/PR, test results, screenshots, or trace records as applicable.","As an Operator, I want to inspect reviewed proposals and record approval decisions, so that restricted commitments remain under human control.","2026-10-14","wrd","Jiaheng","B01, B02, B04, B05","moscow-must shared demo-w11","S1","E-PLAT","6","",""
+"B11","Task","Integrate the four-agent workflow and freeze the Week 11 demo","Description
 Integrate the request entry, itinerary result, Operator workspace, and trace view into one application. Replace demo-path specialist stubs with real implementations. Complete the planning-to-cancellation-recovery flow and save a reproducible w11-prototype tag. Jiaheng supports approximately three hours of UI integration.
 
 User story
@@ -323,8 +347,8 @@ Prerequisites: B06, B07, B08, B09, B10, B12
 Sprint: S2
 Epic: E-DEMO
 Estimate: 6 hours
-Evidence: attach commit/PR, test results, screenshots, or trace records as applicable.","As a demo presenter, I want one integrated four-agent workflow, so that I can demonstrate the complete service from request to recovery.",2026-10-21,Jason,Moore,"B06, B07, B08, B09, B10, B12",moscow-must shared demo-w11,S2,E-DEMO,6
-B12,Story,Investigate a cancellation and propose a validated recovery,"Description
+Evidence: attach commit/PR, test results, screenshots, or trace records as applicable.","As a demo presenter, I want one integrated four-agent workflow, so that I can demonstrate the complete service from request to recovery.","2026-10-21","Jason","Moore","B06, B07, B08, B09, B10, B12","moscow-must shared demo-w11","S2","E-DEMO","6","",""
+"B12","Story","Investigate a cancellation and propose a validated recovery","Description
 Handle one simulated transport cancellation affecting an Active itinerary. Gather evidence, ask Supplier for eligible alternatives, coordinate Planning revalidation, and return a consolidated recovery recommendation through Operations. Preserve the original plan and approval boundaries.
 
 User story
@@ -353,8 +377,8 @@ Prerequisites: B06, B08, B09, B10
 Sprint: S2
 Epic: E-EXC
 Estimate: 8 hours
-Evidence: attach commit/PR, test results, screenshots, or trace records as applicable.","As a Traveller with a disrupted trip, I want a validated recovery proposal, so that I can understand feasible alternatives and their consequences.",2026-10-20,wrd,Jiaheng,"B06, B08, B09, B10",moscow-must agent-exc demo-w11,S2,E-EXC,8
-B13,Story,"Compare feasible itineraries in Comfort, Value, and Budget modes","Description
+Evidence: attach commit/PR, test results, screenshots, or trace records as applicable.","As a Traveller with a disrupted trip, I want a validated recovery proposal, so that I can understand feasible alternatives and their consequences.","2026-10-20","wrd","Jiaheng","B06, B08, B09, B10","moscow-must agent-exc demo-w11","S2","E-EXC","8","",""
+"B13","Story","Compare feasible itineraries in Comfort, Value, and Budget modes","Description
 Add common comparison fields and ranking rules for the three travel modes. Explain the selected plan, eligible alternatives, and reasons excluded candidates failed. Keep hard-constraint filtering separate from preference ranking and advertising.
 
 User story
@@ -383,8 +407,8 @@ Prerequisites: B09
 Sprint: S3
 Epic: E-PLAN
 Estimate: 6 hours
-Evidence: attach commit/PR, test results, screenshots, or trace records as applicable.","As a Traveller, I want to compare feasible options in Comfort, Value, or Budget mode, so that I can choose using consistent trade-offs.",2026-10-23,Moore,Jason,B09,moscow-should agent-plan,S3,E-PLAN,6
-B14,Story,Create confirmed plan revisions and compare immutable versions,"Description
+Evidence: attach commit/PR, test results, screenshots, or trace records as applicable.","As a Traveller, I want to compare feasible options in Comfort, Value, or Budget mode, so that I can choose using consistent trade-offs.","2026-10-23","Moore","Jason","B09","moscow-should agent-plan","S3","E-PLAN","6","",""
+"B14","Story","Create confirmed plan revisions and compare immutable versions","Description
 Accept a confirmed amendment through Operations, preserve the baseline, generate a separately identified successor version, rerun applicable checks, and display field-level differences. Keep the baseline current when an amendment is unconfirmed or infeasible.
 
 User story
@@ -413,8 +437,8 @@ Prerequisites: B06, B07, B09, B13
 Sprint: S3
 Epic: E-PLAN
 Estimate: 6 hours
-Evidence: attach commit/PR, test results, screenshots, or trace records as applicable.","As a Traveller, I want to confirm a change and compare a new plan version, so that I understand its effect without losing the original plan.",2026-10-25,Moore,Jason,"B06, B07, B09, B13",moscow-should agent-plan,S3,E-PLAN,6
-B15,Story,Investigate complaints and prepare reviewed resolution recommendations,"Description
+Evidence: attach commit/PR, test results, screenshots, or trace records as applicable.","As a Traveller, I want to confirm a change and compare a new plan version, so that I understand its effect without losing the original plan.","2026-10-25","Moore","Jason","B06, B07, B09, B13","moscow-should agent-plan","S3","E-PLAN","6","",""
+"B15","Story","Investigate complaints and prepare reviewed resolution recommendations","Description
 Investigate Operations-routed complaints using trip records, service evidence, applicable policies, and supplier terms. Request missing information through Operations and consult specialist findings. Return a reviewed recommendation or documented human referral.
 
 User story
@@ -443,8 +467,8 @@ Prerequisites: B06, B08, B09, B10
 Sprint: S3
 Epic: E-EXC
 Estimate: 6 hours
-Evidence: attach commit/PR, test results, screenshots, or trace records as applicable.","As a Traveller, I want an evidence-supported complaint recommendation, so that the operator can decide a fair response.",2026-10-26,wrd,Jiaheng,"B06, B08, B09, B10",moscow-should agent-exc,S3,E-EXC,6
-B16,Story,Evaluate supplier-based campaigns and record human approval,"Description
+Evidence: attach commit/PR, test results, screenshots, or trace records as applicable.","As a Traveller, I want an evidence-supported complaint recommendation, so that the operator can decide a fair response.","2026-10-26","wrd","Jiaheng","B06, B08, B09, B10","moscow-should agent-exc","S3","E-EXC","6","",""
+"B16","Story","Evaluate supplier-based campaigns and record human approval","Description
 Use an Operator brief and Approved, unexpired offers to draft a simulated campaign, calculate channel costs, check budget and claims, and request approval. Store campaign/member-offer rules for later entitlement/pricing checks. Preview only; simulated responses must retain campaign and source references.
 
 User story
@@ -473,8 +497,8 @@ Prerequisites: B08, B10
 Sprint: S3
 Epic: E-SUP
 Estimate: 8 hours
-Evidence: attach commit/PR, test results, screenshots, or trace records as applicable.","As an Operator, I want an evaluated campaign proposal based on approved offers, so that I can approve a credible plan within budget.",2026-10-27,Jason,Moore,"B08, B10",moscow-should agent-sup,S3,E-SUP,8
-B17,Story,"Apply paid route-map access, advertising rules, and member-offer eligibility","Description
+Evidence: attach commit/PR, test results, screenshots, or trace records as applicable.","As an Operator, I want an evaluated campaign proposal based on approved offers, so that I can approve a credible plan within budget.","2026-10-27","Jason","Moore","B08, B10","moscow-should agent-sup","S3","E-SUP","8","",""
+"B17","Story","Apply paid route-map access, advertising rules, and member-offer eligibility","Description
 Complete membership benefits in the shared UI and backend. Add an interactive map of simulated route points for entitled Paid Members, an ad-free Paid interface, and clearly labelled Free advertisements. Connect approved campaign discounts to entitlement and supplier price checks without live map/payment integration.
 
 User story
@@ -503,8 +527,8 @@ Prerequisites: B07, B08, B09, B16
 Sprint: S3
 Epic: E-OPS
 Estimate: 6 hours
-Evidence: attach commit/PR, test results, screenshots, or trace records as applicable.","As a Paid Traveller, I want entitled route-map access and an ad-free interface, so that my membership benefits are applied consistently.",2026-10-28,Jiaheng,wrd,"B07, B08, B09, B16",moscow-should agent-ops,S3,E-OPS,6
-B18,Task,Handle dependency failures and make manual retries safe,"Description
+Evidence: attach commit/PR, test results, screenshots, or trace records as applicable.","As a Paid Traveller, I want entitled route-map access and an ad-free interface, so that my membership benefits are applied consistently.","2026-10-28","Jiaheng","wrd","B07, B08, B09, B16","moscow-should agent-ops","S3","E-OPS","6","",""
+"B18","Task","Handle dependency failures and make manual retries safe","Description
 Add visible failure states for LLM timeouts/invalid output, unavailable tools, and failed persistence. Support deliberate manual retry with duplicate-request protection and preserve existing versions/approvals. Jiaheng supports approximately three hours of permission and request-protection work.
 
 User story
@@ -532,8 +556,8 @@ Prerequisites: B11
 Sprint: S4
 Epic: E-PLAT
 Estimate: 6 hours
-Evidence: attach commit/PR, test results, screenshots, or trace records as applicable.","As an Operator, I want clear failure information and safe retries, so that transient problems do not create duplicate or misleading outcomes.",2026-10-30,Jason,Moore,B11,moscow-should shared,S4,E-PLAT,6
-B19,Task,Run release regression scenarios and record acceptance evidence,"Description
+Evidence: attach commit/PR, test results, screenshots, or trace records as applicable.","As an Operator, I want clear failure information and safe retries, so that transient problems do not create duplicate or misleading outcomes.","2026-10-30","Jason","Moore","B11","moscow-should shared","S4","E-PLAT","6","",""
+"B19","Task","Run release regression scenarios and record acceptance evidence","Description
 Consolidate existing card-level tests into three release scenario sets: planning/membership, disruption/complaint, and supplier/campaign. Map requirements to test evidence, repeat demonstrations from reset data, and report incomplete or failed acceptance criteria. Each member supplies evidence for their own module.
 
 User story
@@ -562,8 +586,8 @@ Prerequisites: B11, B13, B14, B15, B16, B17, B18
 Sprint: S4
 Epic: E-DEMO
 Estimate: 6 hours
-Evidence: attach commit/PR, test results, screenshots, or trace records as applicable.","As an Operator and assessor, I want reproducible acceptance evidence, so that I can verify which core capabilities actually work.",2026-11-02,wrd,Jiaheng,"B11, B13, B14, B15, B16, B17, B18",moscow-should shared,S4,E-DEMO,6
-B20,Task,"Finalize setup instructions, model alignment, and contribution records","Description
+Evidence: attach commit/PR, test results, screenshots, or trace records as applicable.","As an Operator and assessor, I want reproducible acceptance evidence, so that I can verify which core capabilities actually work.","2026-11-02","wrd","Jiaheng","B11, B13, B14, B15, B16, B17, B18","moscow-should shared","S4","E-DEMO","6","",""
+"B20","Task","Finalize setup instructions, model alignment, and contribution records","Description
 Prepare the final runbook, simulation boundaries, supported functionality, known limitations, requirement-to-implementation mapping, model updates, and individual contribution record. Start documentation alongside implementation and finalize it against the accepted release.
 
 User story
@@ -592,4 +616,4 @@ Prerequisites: B19
 Sprint: S4
 Epic: E-DEMO
 Estimate: 4 hours
-Evidence: attach commit/PR, test results, screenshots, or trace records as applicable.","As an assessor or new team member, I want accurate setup and contribution documentation, so that I can reproduce the prototype and understand its design and ownership.",2026-11-04,Moore,Jason,B19,moscow-should shared,S4,E-DEMO,4
+Evidence: attach commit/PR, test results, screenshots, or trace records as applicable.","As an assessor or new team member, I want accurate setup and contribution documentation, so that I can reproduce the prototype and understand its design and ownership.","2026-11-04","Moore","Jason","B19","moscow-should shared","S4","E-DEMO","4","",""

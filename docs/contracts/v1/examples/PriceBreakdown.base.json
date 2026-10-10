@@ -1,0 +1,63 @@
+{
+  "schemaVersion": "1.0.0",
+  "caseId": "case-001",
+  "correlationId": "correlation-001",
+  "sourceReferences": [
+    {
+      "sourceId": "evidence-001",
+      "sourceType": "FIXTURE",
+      "sourceReference": "fixture://b01/supplier-offer-001",
+      "capturedAt": "2026-10-10T10:00:00+11:00",
+      "freshness": "FRESH",
+      "simulated": true
+    }
+  ],
+  "validationResults": [
+    {
+      "ruleId": "STRUCTURAL_EXAMPLE",
+      "ruleVersion": "1.0.0",
+      "outcome": "NOT_EVALUATED",
+      "reason": "Contract illustration only; no business tool was executed.",
+      "checkedAt": "2026-10-10T10:00:00+11:00",
+      "sourceIds": [
+        "evidence-001"
+      ]
+    }
+  ],
+  "errors": [],
+  "requiresApproval": false,
+  "priceBreakdownId": "price-001",
+  "offerId": "offer-001",
+  "offerVersion": 1,
+  "supplierCost": {
+    "amount": "180.00",
+    "currency": "AUD"
+  },
+  "markupRate": "0.10",
+  "basePrice": {
+    "amount": "198.00",
+    "currency": "AUD"
+  },
+  "discountAmount": {
+    "amount": "0.00",
+    "currency": "AUD"
+  },
+  "sellingPrice": {
+    "amount": "198.00",
+    "currency": "AUD"
+  },
+  "marginAmount": {
+    "amount": "18.00",
+    "currency": "AUD"
+  },
+  "minimumMargin": {
+    "amount": "15.00",
+    "currency": "AUD"
+  },
+  "quotedQuantity": 1,
+  "unitBasis": "one adult one-way transport including mandatory charges",
+  "pricingConfigVersion": "fixture-1",
+  "calculatedAt": "2026-10-10T10:00:00+11:00",
+  "memberOfferRuleId": null,
+  "entitlementDecisionId": null
+}

@@ -1,0 +1,59 @@
+{
+  "schemaVersion": "1.0.0",
+  "caseId": "case-001",
+  "correlationId": "correlation-001",
+  "sourceReferences": [
+    {
+      "sourceId": "evidence-001",
+      "sourceType": "FIXTURE",
+      "sourceReference": "fixture://b01/supplier-offer-001",
+      "capturedAt": "2026-10-10T10:00:00+11:00",
+      "freshness": "FRESH",
+      "simulated": true
+    }
+  ],
+  "validationResults": [
+    {
+      "ruleId": "STRUCTURAL_EXAMPLE",
+      "ruleVersion": "1.0.0",
+      "outcome": "NOT_EVALUATED",
+      "reason": "Contract illustration only; no business tool was executed.",
+      "checkedAt": "2026-10-10T10:00:00+11:00",
+      "sourceIds": [
+        "evidence-001"
+      ]
+    }
+  ],
+  "errors": [],
+  "requiresApproval": false,
+  "requestId": "request-001",
+  "travellerId": "traveller-001",
+  "origin": "Sydney",
+  "destination": "Melbourne",
+  "partySize": 1,
+  "budgetCeiling": {
+    "amount": "900.00",
+    "currency": "AUD"
+  },
+  "travelDates": {
+    "startDate": "2026-10-20",
+    "endDate": "2026-10-22"
+  },
+  "rankingMode": "VALUE",
+  "confirmedAt": "2026-10-10T10:00:00+11:00",
+  "constraintSetId": "constraints-001",
+  "constraintSetVersion": 1,
+  "hardConstraints": [
+    {
+      "constraintId": "budget-001",
+      "kind": "BUDGET",
+      "description": "Total price at most AUD 900.00",
+      "confirmed": true
+    }
+  ],
+  "preferences": [
+    "Prefer morning travel"
+  ],
+  "baselineVersionId": null,
+  "confirmedChangedFields": []
+}

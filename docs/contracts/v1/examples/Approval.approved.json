@@ -1,0 +1,43 @@
+{
+  "schemaVersion": "1.0.0",
+  "caseId": "case-001",
+  "correlationId": "correlation-001",
+  "sourceReferences": [
+    {
+      "sourceId": "evidence-001",
+      "sourceType": "FIXTURE",
+      "sourceReference": "fixture://b01/supplier-offer-001",
+      "capturedAt": "2026-10-10T10:00:00+11:00",
+      "freshness": "FRESH",
+      "simulated": true
+    }
+  ],
+  "validationResults": [
+    {
+      "ruleId": "STRUCTURAL_EXAMPLE",
+      "ruleVersion": "1.0.0",
+      "outcome": "NOT_EVALUATED",
+      "reason": "Contract illustration only; no business tool was executed.",
+      "checkedAt": "2026-10-10T10:00:00+11:00",
+      "sourceIds": [
+        "evidence-001"
+      ]
+    }
+  ],
+  "errors": [],
+  "requiresApproval": true,
+  "approvalId": "approval-001",
+  "subject": {
+    "subjectType": "SupplierOffer",
+    "subjectId": "offer-001",
+    "materialVersion": 1
+  },
+  "scope": "restricted_supplier_terms",
+  "status": "DECIDED",
+  "decision": "APPROVE",
+  "requestedAt": "2026-10-10T10:00:00+11:00",
+  "decidedAt": "2026-10-10T10:00:00+11:00",
+  "operatorId": "operator-001",
+  "reason": "Simulated human decision for version 1 only.",
+  "reviewId": "review-001"
+}

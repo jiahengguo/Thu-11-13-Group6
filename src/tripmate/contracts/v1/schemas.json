@@ -1,0 +1,2072 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:tripmate:contracts:1.0.0",
+  "title": "TripMate AI shared contracts v1.0.0",
+  "$defs": {
+    "Money": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "amount": {
+          "type": "string",
+          "pattern": "^-?(0|[1-9][0-9]*)\\.[0-9]{2}$"
+        },
+        "currency": {
+          "const": "AUD"
+        }
+      },
+      "required": [
+        "amount",
+        "currency"
+      ]
+    },
+    "SourceReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "sourceId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sourceType": {
+          "type": "string",
+          "enum": [
+            "REQUESTER",
+            "SUPPLIER",
+            "POLICY",
+            "FIXTURE",
+            "TOOL"
+          ]
+        },
+        "sourceReference": {
+          "type": "string",
+          "minLength": 1
+        },
+        "capturedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "freshness": {
+          "type": "string",
+          "enum": [
+            "FRESH",
+            "STALE",
+            "UNKNOWN"
+          ]
+        },
+        "simulated": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "sourceId",
+        "sourceType",
+        "sourceReference",
+        "capturedAt",
+        "freshness",
+        "simulated"
+      ]
+    },
+    "SubjectRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "subjectType": {
+          "type": "string",
+          "enum": [
+            "Case",
+            "SupplierOffer",
+            "ItineraryVersion",
+            "CampaignProposal",
+            "RecoveryProposal",
+            "ResolutionRecommendation",
+            "ExternalRequest"
+          ]
+        },
+        "subjectId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "materialVersion": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      "required": [
+        "subjectType",
+        "subjectId",
+        "materialVersion"
+      ]
+    },
+    "ValidationResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "ruleId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "ruleVersion": {
+          "type": "string",
+          "minLength": 1
+        },
+        "outcome": {
+          "type": "string",
+          "enum": [
+            "PASS",
+            "FAIL",
+            "UNSUPPORTED",
+            "NOT_EVALUATED"
+          ]
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1
+        },
+        "checkedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "sourceIds": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 0
+        }
+      },
+      "required": [
+        "ruleId",
+        "ruleVersion",
+        "outcome",
+        "reason",
+        "checkedAt",
+        "sourceIds"
+      ]
+    },
+    "Error": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "code": {
+          "type": "string",
+          "enum": [
+            "NOT_IMPLEMENTED",
+            "INVALID_CONTRACT",
+            "MISSING_REQUIRED_FIELDS",
+            "UNCONFIRMED_REQUEST",
+            "ACCESS_DENIED",
+            "VERIFICATION_FAILED",
+            "ENTITLEMENT_DENIED",
+            "NO_FEASIBLE_ITINERARY",
+            "UNSUPPORTED_CONSTRAINT",
+            "STALE_EVIDENCE",
+            "OFFER_INVALID",
+            "OFFER_EXPIRED",
+            "MARGIN_FAILED",
+            "REVIEW_FAILED",
+            "APPROVAL_REQUIRED",
+            "APPROVAL_REJECTED",
+            "LOW_CONFIDENCE",
+            "HUMAN_ASSISTANCE_REQUIRED",
+            "LLM_TIMEOUT",
+            "LLM_INVALID_OUTPUT",
+            "TOOL_UNAVAILABLE",
+            "PERSISTENCE_FAILED",
+            "DELIVERY_FAILED"
+          ]
+        },
+        "message": {
+          "type": "string",
+          "minLength": 1
+        },
+        "step": {
+          "type": "string",
+          "minLength": 1
+        },
+        "retryable": {
+          "type": "boolean"
+        },
+        "sourceIds": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 0
+        }
+      },
+      "required": [
+        "code",
+        "message",
+        "step",
+        "retryable",
+        "sourceIds"
+      ]
+    },
+    "ReviewResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "reviewId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "subject": {
+          "$ref": "#/$defs/SubjectRef"
+        },
+        "outcome": {
+          "type": "string",
+          "enum": [
+            "PASS",
+            "REVISION_REQUIRED"
+          ]
+        },
+        "reasons": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 0
+        },
+        "reviewedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "policyVersion": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sourceIds": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1
+        }
+      },
+      "required": [
+        "reviewId",
+        "subject",
+        "outcome",
+        "reasons",
+        "reviewedAt",
+        "policyVersion",
+        "sourceIds"
+      ]
+    },
+    "EntitlementDecision": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "decisionId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "travellerId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "action": {
+          "type": "string",
+          "minLength": 1
+        },
+        "outcome": {
+          "type": "string",
+          "enum": [
+            "ALLOWED",
+            "DENIED",
+            "VERIFICATION_FAILED"
+          ]
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1
+        },
+        "decidedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "ruleVersion": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sourceIds": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1
+        }
+      },
+      "required": [
+        "decisionId",
+        "travellerId",
+        "action",
+        "outcome",
+        "reason",
+        "decidedAt",
+        "ruleVersion",
+        "sourceIds"
+      ]
+    },
+    "Constraint": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "constraintId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "BUDGET",
+            "DATES",
+            "BAGGAGE",
+            "ACCESSIBILITY",
+            "ARRIVAL_TIME",
+            "TRANSFER_LIMIT",
+            "AVAILABILITY",
+            "CANCELLATION_STATUS",
+            "OTHER"
+          ]
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1
+        },
+        "confirmed": {
+          "const": true
+        }
+      },
+      "required": [
+        "constraintId",
+        "kind",
+        "description",
+        "confirmed"
+      ]
+    },
+    "DateRange": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "startDate": {
+          "type": "string",
+          "format": "date"
+        },
+        "endDate": {
+          "type": "string",
+          "format": "date"
+        }
+      },
+      "required": [
+        "startDate",
+        "endDate"
+      ]
+    },
+    "Case": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schemaVersion": {
+          "const": "1.0.0"
+        },
+        "caseId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "correlationId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sourceReferences": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/SourceReference"
+          },
+          "minItems": 1
+        },
+        "validationResults": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ValidationResult"
+          },
+          "minItems": 0
+        },
+        "errors": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Error"
+          },
+          "minItems": 0
+        },
+        "requiresApproval": {
+          "type": "boolean"
+        },
+        "caseKind": {
+          "type": "string",
+          "enum": [
+            "CUSTOMER",
+            "SUPPLIER"
+          ]
+        },
+        "caseType": {
+          "type": "string",
+          "enum": [
+            "TRAVEL_PLANNING",
+            "PLAN_REVISION",
+            "DISRUPTION",
+            "COMPLAINT",
+            "MEMBERSHIP",
+            "ROUTINE_ENQUIRY",
+            "SUPPLIER_COOPERATION",
+            "INVENTORY",
+            "OFFER",
+            "PRICE_NEGOTIATION"
+          ]
+        },
+        "externalRequestId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "requesterId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "requesterType": {
+          "type": "string",
+          "enum": [
+            "TRAVELLER",
+            "SUPPLIER"
+          ]
+        },
+        "confirmedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "CONFIRMED",
+            "ASSIGNED",
+            "IN_PROGRESS",
+            "AWAITING_PLAN_ACCESS_DECISION",
+            "AWAITING_REQUESTER",
+            "AWAITING_VERIFICATION",
+            "UNDER_REVIEW",
+            "AWAITING_HUMAN_APPROVAL",
+            "READY_TO_RESPOND",
+            "HUMAN_ASSISTANCE",
+            "CLOSED",
+            "WITHDRAWN"
+          ]
+        },
+        "coordinator": {
+          "const": "operations"
+        },
+        "primaryHandler": {
+          "anyOf": [
+            {
+              "type": "string",
+              "enum": [
+                "operations",
+                "planning",
+                "exception",
+                "supplier"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "relatedCaseIds": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 0
+        },
+        "humanRequestCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "confirmedRequest": {
+          "type": "string",
+          "minLength": 1
+        },
+        "unresolvedQuestions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 0
+        },
+        "entitlementDecision": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/EntitlementDecision"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "schemaVersion",
+        "caseId",
+        "correlationId",
+        "sourceReferences",
+        "validationResults",
+        "errors",
+        "requiresApproval",
+        "caseKind",
+        "caseType",
+        "externalRequestId",
+        "requesterId",
+        "requesterType",
+        "confirmedAt",
+        "createdAt",
+        "status",
+        "coordinator",
+        "primaryHandler",
+        "relatedCaseIds",
+        "humanRequestCount",
+        "confirmedRequest",
+        "unresolvedQuestions",
+        "entitlementDecision"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "caseKind": {
+                "const": "CUSTOMER"
+              }
+            },
+            "required": [
+              "caseKind"
+            ]
+          },
+          "then": {
+            "properties": {
+              "requesterType": {
+                "const": "TRAVELLER"
+              },
+              "caseType": {
+                "type": "string",
+                "enum": [
+                  "TRAVEL_PLANNING",
+                  "PLAN_REVISION",
+                  "DISRUPTION",
+                  "COMPLAINT",
+                  "MEMBERSHIP",
+                  "ROUTINE_ENQUIRY"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "caseKind": {
+                "const": "SUPPLIER"
+              }
+            },
+            "required": [
+              "caseKind"
+            ]
+          },
+          "then": {
+            "properties": {
+              "requesterType": {
+                "const": "SUPPLIER"
+              },
+              "caseType": {
+                "type": "string",
+                "enum": [
+                  "SUPPLIER_COOPERATION",
+                  "INVENTORY",
+                  "OFFER",
+                  "PRICE_NEGOTIATION"
+                ]
+              }
+            }
+          }
+        }
+      ]
+    },
+    "TravelRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schemaVersion": {
+          "const": "1.0.0"
+        },
+        "caseId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "correlationId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sourceReferences": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/SourceReference"
+          },
+          "minItems": 1
+        },
+        "validationResults": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ValidationResult"
+          },
+          "minItems": 0
+        },
+        "errors": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Error"
+          },
+          "minItems": 0
+        },
+        "requiresApproval": {
+          "type": "boolean"
+        },
+        "requestId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "travellerId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "origin": {
+          "type": "string",
+          "minLength": 1
+        },
+        "destination": {
+          "type": "string",
+          "minLength": 1
+        },
+        "partySize": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "budgetCeiling": {
+          "$ref": "#/$defs/Money"
+        },
+        "travelDates": {
+          "$ref": "#/$defs/DateRange"
+        },
+        "rankingMode": {
+          "type": "string",
+          "enum": [
+            "COMFORT",
+            "VALUE",
+            "BUDGET"
+          ]
+        },
+        "confirmedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "constraintSetId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "constraintSetVersion": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "hardConstraints": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Constraint"
+          },
+          "minItems": 0
+        },
+        "preferences": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 0
+        },
+        "baselineVersionId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "confirmedChangedFields": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 0
+        }
+      },
+      "required": [
+        "schemaVersion",
+        "caseId",
+        "correlationId",
+        "sourceReferences",
+        "validationResults",
+        "errors",
+        "requiresApproval",
+        "requestId",
+        "travellerId",
+        "origin",
+        "destination",
+        "partySize",
+        "budgetCeiling",
+        "travelDates",
+        "rankingMode",
+        "confirmedAt",
+        "constraintSetId",
+        "constraintSetVersion",
+        "hardConstraints",
+        "preferences",
+        "baselineVersionId",
+        "confirmedChangedFields"
+      ]
+    },
+    "PriceBreakdown": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schemaVersion": {
+          "const": "1.0.0"
+        },
+        "caseId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "correlationId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sourceReferences": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/SourceReference"
+          },
+          "minItems": 1
+        },
+        "validationResults": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ValidationResult"
+          },
+          "minItems": 0
+        },
+        "errors": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Error"
+          },
+          "minItems": 0
+        },
+        "requiresApproval": {
+          "type": "boolean"
+        },
+        "priceBreakdownId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "offerId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "offerVersion": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "supplierCost": {
+          "$ref": "#/$defs/Money"
+        },
+        "markupRate": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]*)(\\.[0-9]+)?$"
+        },
+        "basePrice": {
+          "$ref": "#/$defs/Money"
+        },
+        "discountAmount": {
+          "$ref": "#/$defs/Money"
+        },
+        "sellingPrice": {
+          "$ref": "#/$defs/Money"
+        },
+        "marginAmount": {
+          "$ref": "#/$defs/Money"
+        },
+        "minimumMargin": {
+          "$ref": "#/$defs/Money"
+        },
+        "quotedQuantity": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "unitBasis": {
+          "type": "string",
+          "minLength": 1
+        },
+        "pricingConfigVersion": {
+          "type": "string",
+          "minLength": 1
+        },
+        "calculatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "memberOfferRuleId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "entitlementDecisionId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "schemaVersion",
+        "caseId",
+        "correlationId",
+        "sourceReferences",
+        "validationResults",
+        "errors",
+        "requiresApproval",
+        "priceBreakdownId",
+        "offerId",
+        "offerVersion",
+        "supplierCost",
+        "markupRate",
+        "basePrice",
+        "discountAmount",
+        "sellingPrice",
+        "marginAmount",
+        "minimumMargin",
+        "quotedQuantity",
+        "unitBasis",
+        "pricingConfigVersion",
+        "calculatedAt",
+        "memberOfferRuleId",
+        "entitlementDecisionId"
+      ]
+    },
+    "SupplierOffer": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schemaVersion": {
+          "const": "1.0.0"
+        },
+        "caseId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "correlationId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sourceReferences": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/SourceReference"
+          },
+          "minItems": 1
+        },
+        "validationResults": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ValidationResult"
+          },
+          "minItems": 0
+        },
+        "errors": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Error"
+          },
+          "minItems": 0
+        },
+        "requiresApproval": {
+          "type": "boolean"
+        },
+        "offerId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "materialVersion": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "supplierId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "productId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "productType": {
+          "type": "string",
+          "enum": [
+            "TRANSPORT",
+            "ACCOMMODATION",
+            "ACTIVITY"
+          ]
+        },
+        "availableQuantity": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "quotedQuantity": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "unitBasis": {
+          "type": "string",
+          "minLength": 1
+        },
+        "supplierCost": {
+          "$ref": "#/$defs/Money"
+        },
+        "mandatoryChargesIncluded": {
+          "type": "boolean"
+        },
+        "validFrom": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "validUntil": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "cancellationTerms": {
+          "type": "string",
+          "minLength": 1
+        },
+        "commercialTerms": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 0
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "DRAFT",
+            "REVISION_REQUIRED",
+            "UNDER_REVIEW",
+            "AWAITING_APPROVAL",
+            "APPROVED",
+            "REJECTED",
+            "EXPIRED"
+          ]
+        },
+        "priceBreakdownId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "review": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ReviewResult"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "approvalId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "schemaVersion",
+        "caseId",
+        "correlationId",
+        "sourceReferences",
+        "validationResults",
+        "errors",
+        "requiresApproval",
+        "offerId",
+        "materialVersion",
+        "supplierId",
+        "productId",
+        "productType",
+        "availableQuantity",
+        "quotedQuantity",
+        "unitBasis",
+        "supplierCost",
+        "mandatoryChargesIncluded",
+        "validFrom",
+        "validUntil",
+        "cancellationTerms",
+        "commercialTerms",
+        "status",
+        "priceBreakdownId",
+        "review",
+        "approvalId"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "APPROVED"
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "then": {
+            "properties": {
+              "availableQuantity": {
+                "minimum": 1
+              },
+              "mandatoryChargesIncluded": {
+                "const": true
+              },
+              "priceBreakdownId": {
+                "type": "string",
+                "minLength": 1
+              },
+              "review": {
+                "$ref": "#/$defs/ReviewResult"
+              },
+              "errors": {
+                "maxItems": 0
+              }
+            }
+          }
+        }
+      ]
+    },
+    "ItineraryItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "itemId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "productType": {
+          "type": "string",
+          "enum": [
+            "TRANSPORT",
+            "ACCOMMODATION",
+            "ACTIVITY"
+          ]
+        },
+        "offerId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "offerVersion": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "priceBreakdownId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "startAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "endAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "origin": {
+          "type": "string",
+          "minLength": 1
+        },
+        "destination": {
+          "type": "string",
+          "minLength": 1
+        },
+        "quantity": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "quotedPrice": {
+          "$ref": "#/$defs/Money"
+        },
+        "sourceIds": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1
+        }
+      },
+      "required": [
+        "itemId",
+        "productType",
+        "offerId",
+        "offerVersion",
+        "priceBreakdownId",
+        "startAt",
+        "endAt",
+        "origin",
+        "destination",
+        "quantity",
+        "quotedPrice",
+        "sourceIds"
+      ]
+    },
+    "ItineraryVersion": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schemaVersion": {
+          "const": "1.0.0"
+        },
+        "caseId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "correlationId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sourceReferences": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/SourceReference"
+          },
+          "minItems": 1
+        },
+        "validationResults": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ValidationResult"
+          },
+          "minItems": 0
+        },
+        "errors": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Error"
+          },
+          "minItems": 0
+        },
+        "requiresApproval": {
+          "type": "boolean"
+        },
+        "planId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "travellerId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "versionId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "versionNo": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "baselineVersionId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "assessmentState": {
+          "type": "string",
+          "enum": [
+            "DRAFT",
+            "VALIDATING",
+            "INFEASIBLE",
+            "FEASIBLE",
+            "UNDER_REVIEW",
+            "REVISION_REQUIRED",
+            "AWAITING_HUMAN_REVIEW",
+            "REVIEWED",
+            "REJECTED",
+            "HANDED_OFF"
+          ]
+        },
+        "planStatus": {
+          "type": "string",
+          "enum": [
+            "DRAFT",
+            "PLANNED",
+            "ACTIVE",
+            "COMPLETED"
+          ]
+        },
+        "rankingMode": {
+          "type": "string",
+          "enum": [
+            "COMFORT",
+            "VALUE",
+            "BUDGET"
+          ]
+        },
+        "requestId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "constraintSetId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "constraintSetVersion": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "travelDates": {
+          "$ref": "#/$defs/DateRange"
+        },
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ItineraryItem"
+          },
+          "minItems": 0
+        },
+        "totalPrice": {
+          "$ref": "#/$defs/Money"
+        },
+        "assumptions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 0
+        },
+        "tradeOffs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 0
+        },
+        "exclusionReasons": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 0
+        },
+        "review": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ReviewResult"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "approvalId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "schemaVersion",
+        "caseId",
+        "correlationId",
+        "sourceReferences",
+        "validationResults",
+        "errors",
+        "requiresApproval",
+        "planId",
+        "travellerId",
+        "versionId",
+        "versionNo",
+        "baselineVersionId",
+        "createdAt",
+        "assessmentState",
+        "planStatus",
+        "rankingMode",
+        "requestId",
+        "constraintSetId",
+        "constraintSetVersion",
+        "travelDates",
+        "items",
+        "totalPrice",
+        "assumptions",
+        "tradeOffs",
+        "exclusionReasons",
+        "review",
+        "approvalId"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "assessmentState": {
+                "const": "FEASIBLE"
+              }
+            },
+            "required": [
+              "assessmentState"
+            ]
+          },
+          "then": {
+            "properties": {
+              "items": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/ItineraryItem"
+                },
+                "minItems": 3
+              },
+              "errors": {
+                "maxItems": 0
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "assessmentState": {
+                "const": "REVIEWED"
+              }
+            },
+            "required": [
+              "assessmentState"
+            ]
+          },
+          "then": {
+            "properties": {
+              "items": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/ItineraryItem"
+                },
+                "minItems": 3
+              },
+              "errors": {
+                "maxItems": 0
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "assessmentState": {
+                "const": "HANDED_OFF"
+              }
+            },
+            "required": [
+              "assessmentState"
+            ]
+          },
+          "then": {
+            "properties": {
+              "items": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/ItineraryItem"
+                },
+                "minItems": 3
+              },
+              "errors": {
+                "maxItems": 0
+              }
+            }
+          }
+        }
+      ]
+    },
+    "Approval": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schemaVersion": {
+          "const": "1.0.0"
+        },
+        "caseId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "correlationId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sourceReferences": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/SourceReference"
+          },
+          "minItems": 1
+        },
+        "validationResults": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ValidationResult"
+          },
+          "minItems": 0
+        },
+        "errors": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Error"
+          },
+          "minItems": 0
+        },
+        "requiresApproval": {
+          "const": true
+        },
+        "approvalId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "subject": {
+          "$ref": "#/$defs/SubjectRef"
+        },
+        "scope": {
+          "type": "string",
+          "minLength": 1
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "PENDING",
+            "DECIDED"
+          ]
+        },
+        "decision": {
+          "anyOf": [
+            {
+              "type": "string",
+              "enum": [
+                "APPROVE",
+                "REQUEST_REVISION",
+                "REJECT"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "requestedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "decidedAt": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date-time"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "operatorId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "reason": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "reviewId": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "schemaVersion",
+        "caseId",
+        "correlationId",
+        "sourceReferences",
+        "validationResults",
+        "errors",
+        "requiresApproval",
+        "approvalId",
+        "subject",
+        "scope",
+        "status",
+        "decision",
+        "requestedAt",
+        "decidedAt",
+        "operatorId",
+        "reason",
+        "reviewId"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "PENDING"
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "then": {
+            "properties": {
+              "decision": {
+                "type": "null"
+              },
+              "decidedAt": {
+                "type": "null"
+              },
+              "operatorId": {
+                "type": "null"
+              },
+              "reason": {
+                "type": "null"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "DECIDED"
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "then": {
+            "properties": {
+              "decision": {
+                "type": "string",
+                "enum": [
+                  "APPROVE",
+                  "REQUEST_REVISION",
+                  "REJECT"
+                ]
+              },
+              "decidedAt": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "operatorId": {
+                "type": "string",
+                "minLength": 1
+              },
+              "reason": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        }
+      ]
+    },
+    "AgentResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schemaVersion": {
+          "const": "1.0.0"
+        },
+        "caseId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "correlationId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sourceReferences": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/SourceReference"
+          },
+          "minItems": 1
+        },
+        "validationResults": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ValidationResult"
+          },
+          "minItems": 0
+        },
+        "errors": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Error"
+          },
+          "minItems": 0
+        },
+        "requiresApproval": {
+          "type": "boolean"
+        },
+        "runId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "agent": {
+          "type": "string",
+          "enum": [
+            "operations",
+            "planning",
+            "exception",
+            "supplier"
+          ]
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "SUCCESS",
+            "FAILURE",
+            "APPROVAL_PENDING",
+            "REVISION_REQUIRED",
+            "HUMAN_ASSISTANCE"
+          ]
+        },
+        "executionMode": {
+          "type": "string",
+          "enum": [
+            "STUB",
+            "FIXTURE",
+            "REAL"
+          ]
+        },
+        "findings": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 0
+        },
+        "proposedResponse": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "subjects": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/SubjectRef"
+          },
+          "minItems": 0
+        },
+        "review": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ReviewResult"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "approvalIds": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 0
+        },
+        "nextAction": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "schemaVersion",
+        "caseId",
+        "correlationId",
+        "sourceReferences",
+        "validationResults",
+        "errors",
+        "requiresApproval",
+        "runId",
+        "agent",
+        "status",
+        "executionMode",
+        "findings",
+        "proposedResponse",
+        "subjects",
+        "review",
+        "approvalIds",
+        "nextAction"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "FAILURE"
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "then": {
+            "properties": {
+              "errors": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/Error"
+                },
+                "minItems": 1
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "APPROVAL_PENDING"
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "then": {
+            "properties": {
+              "requiresApproval": {
+                "const": true
+              },
+              "approvalIds": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "minItems": 1
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "SUCCESS"
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "then": {
+            "properties": {
+              "errors": {
+                "maxItems": 0
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "executionMode": {
+                "const": "STUB"
+              }
+            },
+            "required": [
+              "executionMode"
+            ]
+          },
+          "then": {
+            "properties": {
+              "status": {
+                "const": "FAILURE"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "TraceEvent": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schemaVersion": {
+          "const": "1.0.0"
+        },
+        "caseId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "correlationId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sourceReferences": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/SourceReference"
+          },
+          "minItems": 1
+        },
+        "validationResults": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ValidationResult"
+          },
+          "minItems": 0
+        },
+        "errors": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Error"
+          },
+          "minItems": 0
+        },
+        "requiresApproval": {
+          "type": "boolean"
+        },
+        "eventId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "runId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "actor": {
+          "type": "string",
+          "minLength": 1
+        },
+        "eventType": {
+          "type": "string",
+          "enum": [
+            "INTAKE",
+            "CONFIRMATION",
+            "HANDOFF",
+            "TOOL_RESULT",
+            "VALIDATION",
+            "REVIEW",
+            "APPROVAL_REQUESTED",
+            "APPROVAL_DECIDED",
+            "VERSION_CREATED",
+            "RESPONSE_DELIVERED",
+            "CASE_CLOSED",
+            "FAILURE"
+          ]
+        },
+        "subject": {
+          "$ref": "#/$defs/SubjectRef"
+        },
+        "parentEventId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "executionMode": {
+          "type": "string",
+          "enum": [
+            "STUB",
+            "FIXTURE",
+            "REAL"
+          ]
+        },
+        "summary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "result": {
+          "type": "string",
+          "enum": [
+            "SUCCESS",
+            "FAILURE",
+            "PENDING"
+          ]
+        },
+        "approvalId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "schemaVersion",
+        "caseId",
+        "correlationId",
+        "sourceReferences",
+        "validationResults",
+        "errors",
+        "requiresApproval",
+        "eventId",
+        "runId",
+        "timestamp",
+        "actor",
+        "eventType",
+        "subject",
+        "parentEventId",
+        "executionMode",
+        "summary",
+        "result",
+        "approvalId"
+      ]
+    }
+  }
+}

@@ -4,7 +4,9 @@
 
 TripMate AI 是 ELEC5620 课程项目，用于验证一名人类创始人能否在四个协作式 AI Agent 的支持下运营旅行服务。项目聚焦澳大利亚境内短途旅行，并使用模拟的供应商、预订、支付和异常数据。
 
-当前重点是 **Stage 1：需求、架构与系统建模**，截止日期为 **2026 年 9 月 24 日**。可运行原型计划在 Stage 2 完成。
+Stage 1 报告作为设计基线。**Stage 2 B01 的共享契约和模块框架已搭建，待四位成员审核**。Web、数据库启动和真实 LLM 接入由 B02 完成。
+
+入口：[项目框架](#项目框架)、[v1.0.0 契约](docs/contracts/v1/CONTRACTS.md)、[需求映射](docs/contracts/v1/REQUIREMENT_MAPPING.md)、[B01 验收记录](docs/contracts/v1/B01_ACCEPTANCE.md)。
 
 ## 项目构想
 
@@ -39,25 +41,99 @@ TripMate AI 是 ELEC5620 课程项目，用于验证一名人类创始人能否�
 - 盈利方式：供应商差价、付费会员和免费用户广告。
 - 真实广告发布或预算支出、供应商承诺、支付、退款或赔偿等重要操作仍需人工审批。
 
-## 计划中的系统形态
+## 项目框架
+
+本框架依据 Stage 1 报告的四 Agent 架构、UC-01–UC-08、G-04/G-05，以及
+planning 中 B01 的接口约定要求建立。2026-10-10 的交付范围为共享契约和模块边界。
+Python 3.9+ 是本次后端骨架的实现选择；报告没有指定语言。HTTP/前端框架与 SQLite
+适配器由 Jason 在 B02 接入。当前可以运行契约检查，尚没有 Web、数据库或真实 LLM。
+
+## 整体结构
 
 ```text
-Traveller / Operator
-        |
-      Web 界面
-        |
-  Orchestrator/API
-        |
-  +-----+----------------+-------------------+--------------------+
-  | Operations Agent    | Travel Planning   | Customer Exception | Supplier Partnership
-  +-----+----------------+-------------------+--------------------+
-        |
-  Reviewer / Guardrail
-        |
-  Tool adapters、repositories、trace store 与 approval queue
+Traveller / Supplier                    Human Founder / Operator
+        │                                           │
+        └────── 统一 Web 界面：接待、行程、Operator 工作台 ──┘   [B02]
+                              │
+                     API / Orchestrator
+                              │
+                    Operations（Jiaheng）
+                 ┌────────────┼─────────────┐
+          Planning（Moore） Exception（wrd） Supplier（Jason）
+                 └────────────┼─────────────┘
+                共享 Reviewer / Guardrail（wrd）
+                              │
+           会员/权限、约束校验、价格、LLM 与工具适配器
+                              │
+                一个数据库、Trace、人工审批记录
 ```
 
-Stage 2 概念验证预计采用轻量 Web 界面、结构化 Agent 输出、确定性校验工具和简单可追踪的数据存储。具体技术栈将在 Stage 1 模型稳定后确定。
+四个 Agent 是同一应用中的内部模块。Operations 负责确认、协调和对外回复；
+专门 Agent 返回建议，不能自行对 Traveller 作出承诺。Reviewer 是共享控制服务，
+不额外设置第五个业务 Agent。审批、人工协助和真实交易执行是不同概念。
+
+```text
+src/tripmate/
+  __main__.py          框架检查和 JSON 示例校验入口
+  orchestrator.py      四 Agent 组合入口
+  agents/              四位成员各自的模块 + 统一 handle_case 协议
+  contracts/           Schema 加载、验证器、v1/schemas.json
+  services/ports.py    会员、约束、价格、Review、权限服务接口
+  adapters/ports.py    LLM 与合格报价查询接口
+  persistence/ports.py Trace 和审批存储接口
+  api/                 B02 的 HTTP 接入边界
+web/                   B02 的统一前端接入边界
+docs/
+  contracts/v1/        契约文档、需求映射、审核记录与 JSON 示例
+tests/                 B01 正向和拒绝路径测试
+```
+
+这些接口是待实现的协议，不会保存数据或调用外部模型。Agent stub 返回
+`executionMode=STUB`、`status=FAILURE` 和 `NOT_IMPLEMENTED`，不会伪造成功。
+JSON 示例中的 FIXTURE 表示人工构造的契约样本，不是应用已经执行的业务结果。
+
+## 本地检查
+
+在仓库根目录执行；首次安装依赖需要网络。所有配置模板都不包含密钥。
+
+```bash
+python3 -m venv .venv
+.venv/bin/python -m pip install --upgrade pip
+.venv/bin/python -m pip install -e .
+.venv/bin/python -m tripmate
+.venv/bin/python -m tripmate --validate-examples docs/contracts/v1/examples
+.venv/bin/python -m unittest discover -s tests -v
+```
+
+如果暂时没有安装项目本身，也可先安装 `jsonschema[format]>=4.23,<5`，在后三条
+命令前加 `PYTHONPATH=src`。`.env.example` 只是 B02 的配置约定，当前 CLI 不读取它。
+不要把 STUB 改成 REAL 就认为已经接上模型；B02 必须实现适配器并记录真实 smoke call。
+
+## B01 文件入口
+
+- `docs/contracts/v1/CONTRACTS.md`：v1.0.0 的字段、状态、错误码、来源与审批语义。
+- `docs/contracts/v1/REQUIREMENT_MAPPING.md`：UC、需求、模块和负责人；旧 PLAN 与新 TP 的已确认语义关系和未决项。
+- `docs/contracts/v1/B01_ACCEPTANCE.md`：实际测试证据与四人待确认表。
+- `src/tripmate/contracts/v1/schemas.json`：语言无关的机器可校验契约。
+
+所有公开 Schema 都拒绝未知字段，并要求来源、验证结果、错误和审批标志显式出现。
+Money 使用 AUD 两位小数字符串；时间戳必须带时区。Schema 检查结构，不代替预算、
+库存、会员、报价过期、差价或行程可行性规则。那些规则按 B04/B07/B08/B09 接入。
+
+## 后续交接
+
+| 负责人 | 下一步 |
+| --- | --- |
+| Jiaheng | B06 在确认后创建 Case，再接 B07 的会员/权限和统一对外回复 |
+| Moore | B04 确定性校验；B09 行程生成；版本评估状态与旅行生命周期分别处理 |
+| wrd | B05 持久化 trace；B10 Review/人工审批，按对象版本与 scope 检查 |
+| Jason | B02 统一 Web/后端/数据库/LLM；B03 模拟数据；B08 报价和 B16 营销 |
+
+接入时保留 caseId/correlationId/sourceReferences，验证每次输入输出；实际保存失败
+必须显式报告。审批须关联当前对象版本，修改后重新审核。报告未规定的 rounding tie
+规则由 B04 明确记录，不能偷偷把测试示例金额变成全局政策。
+
+B01 的代码和文档已准备审核；四位成员的确认仍待记录，尚不能标记为 Done。
 
 ## 文档
 
@@ -65,7 +141,7 @@ Stage 2 概念验证预计采用轻量 Web 界面、结构化 Agent 输出、确
 - [当前项目 Requirement](https://unisydneyedu-my.sharepoint.com/:w:/r/personal/jguo9172_uni_sydney_edu_au/_layouts/15/doc.aspx?sourcedoc=%7Bdb7e1c58-8a31-419c-a0cf-9058e8145514%7D&action=edit)：当前产品需求基线。
 - [Stage 1 评分标准](docs/ELEC5620_Project_Stage_1_Marking_Criteria.pdf)：评分要求以及个人/小组交付物。
 
-README 只保留项目总览。详细需求、Use Case、模型分工和提交检查清单统一放在 Stage 1 计划或最终报告中，避免多处重复维护。
+README 包含项目总览、框架、启动和交接说明。详细契约、需求映射与验收证据保留在 docs/contracts/v1 中。
 
 ## 当前范围
 

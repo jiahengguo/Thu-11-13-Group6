@@ -1,0 +1,41 @@
+{
+  "schemaVersion": "1.0.0",
+  "caseId": "case-001",
+  "correlationId": "correlation-001",
+  "sourceReferences": [
+    {
+      "sourceId": "evidence-001",
+      "sourceType": "FIXTURE",
+      "sourceReference": "fixture://b01/supplier-offer-001",
+      "capturedAt": "2026-10-10T10:00:00+11:00",
+      "freshness": "FRESH",
+      "simulated": true
+    }
+  ],
+  "validationResults": [
+    {
+      "ruleId": "STRUCTURAL_EXAMPLE",
+      "ruleVersion": "1.0.0",
+      "outcome": "NOT_EVALUATED",
+      "reason": "Contract illustration only; no business tool was executed.",
+      "checkedAt": "2026-10-10T10:00:00+11:00",
+      "sourceIds": [
+        "evidence-001"
+      ]
+    }
+  ],
+  "errors": [],
+  "requiresApproval": false,
+  "runId": "run-supplier-001",
+  "agent": "supplier",
+  "status": "SUCCESS",
+  "executionMode": "FIXTURE",
+  "findings": [
+    "Synthetic message illustrating the contract; not an executed workflow."
+  ],
+  "proposedResponse": "Fixture contract example.",
+  "subjects": [],
+  "review": null,
+  "approvalIds": [],
+  "nextAction": "Submit the proposal for review before any external release."
+}

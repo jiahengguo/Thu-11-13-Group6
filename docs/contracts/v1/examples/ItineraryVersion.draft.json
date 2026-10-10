@@ -1,0 +1,77 @@
+{
+  "schemaVersion": "1.0.0",
+  "caseId": "case-001",
+  "correlationId": "correlation-001",
+  "sourceReferences": [
+    {
+      "sourceId": "evidence-001",
+      "sourceType": "FIXTURE",
+      "sourceReference": "fixture://b01/supplier-offer-001",
+      "capturedAt": "2026-10-10T10:00:00+11:00",
+      "freshness": "FRESH",
+      "simulated": true
+    }
+  ],
+  "validationResults": [
+    {
+      "ruleId": "STRUCTURAL_EXAMPLE",
+      "ruleVersion": "1.0.0",
+      "outcome": "NOT_EVALUATED",
+      "reason": "Contract illustration only; no business tool was executed.",
+      "checkedAt": "2026-10-10T10:00:00+11:00",
+      "sourceIds": [
+        "evidence-001"
+      ]
+    }
+  ],
+  "errors": [],
+  "requiresApproval": false,
+  "planId": "plan-001",
+  "travellerId": "traveller-001",
+  "versionId": "version-001",
+  "versionNo": 1,
+  "baselineVersionId": null,
+  "createdAt": "2026-10-10T10:00:00+11:00",
+  "assessmentState": "DRAFT",
+  "planStatus": "DRAFT",
+  "rankingMode": "VALUE",
+  "requestId": "request-001",
+  "constraintSetId": "constraints-001",
+  "constraintSetVersion": 1,
+  "travelDates": {
+    "startDate": "2026-10-20",
+    "endDate": "2026-10-22"
+  },
+  "items": [
+    {
+      "itemId": "item-001",
+      "productType": "TRANSPORT",
+      "offerId": "offer-001",
+      "offerVersion": 1,
+      "priceBreakdownId": "price-001",
+      "startAt": "2026-10-20T08:00:00+11:00",
+      "endAt": "2026-10-20T10:00:00+11:00",
+      "origin": "Sydney",
+      "destination": "Melbourne",
+      "quantity": 1,
+      "quotedPrice": {
+        "amount": "198.00",
+        "currency": "AUD"
+      },
+      "sourceIds": [
+        "evidence-001"
+      ]
+    }
+  ],
+  "totalPrice": {
+    "amount": "198.00",
+    "currency": "AUD"
+  },
+  "assumptions": [
+    "Partial transport-only draft; not a complete feasible itinerary."
+  ],
+  "tradeOffs": [],
+  "exclusionReasons": [],
+  "review": null,
+  "approvalId": null
+}

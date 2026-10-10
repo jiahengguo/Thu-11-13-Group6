@@ -1,0 +1,50 @@
+{
+  "schemaVersion": "1.0.0",
+  "caseId": "case-001",
+  "correlationId": "correlation-001",
+  "sourceReferences": [
+    {
+      "sourceId": "evidence-001",
+      "sourceType": "FIXTURE",
+      "sourceReference": "fixture://b01/supplier-offer-001",
+      "capturedAt": "2026-10-10T10:00:00+11:00",
+      "freshness": "FRESH",
+      "simulated": true
+    }
+  ],
+  "validationResults": [
+    {
+      "ruleId": "STRUCTURAL_EXAMPLE",
+      "ruleVersion": "1.0.0",
+      "outcome": "NOT_EVALUATED",
+      "reason": "Contract illustration only; no business tool was executed.",
+      "checkedAt": "2026-10-10T10:00:00+11:00",
+      "sourceIds": [
+        "evidence-001"
+      ]
+    }
+  ],
+  "errors": [],
+  "requiresApproval": false,
+  "offerId": "offer-001",
+  "materialVersion": 1,
+  "supplierId": "supplier-001",
+  "productId": "product-001",
+  "productType": "TRANSPORT",
+  "availableQuantity": 10,
+  "quotedQuantity": 1,
+  "unitBasis": "one adult one-way transport including mandatory charges",
+  "supplierCost": {
+    "amount": "180.00",
+    "currency": "AUD"
+  },
+  "mandatoryChargesIncluded": true,
+  "validFrom": "2026-10-10T10:00:00+11:00",
+  "validUntil": "2026-10-19T23:59:59+11:00",
+  "cancellationTerms": "Simulated refund terms; no live booking.",
+  "commercialTerms": [],
+  "status": "DRAFT",
+  "priceBreakdownId": null,
+  "review": null,
+  "approvalId": null
+}

@@ -1,0 +1,63 @@
+{
+  "schemaVersion": "1.0.0",
+  "caseId": "case-001",
+  "correlationId": "correlation-001",
+  "sourceReferences": [
+    {
+      "sourceId": "evidence-001",
+      "sourceType": "FIXTURE",
+      "sourceReference": "fixture://b01/supplier-offer-001",
+      "capturedAt": "2026-10-10T10:00:00+11:00",
+      "freshness": "FRESH",
+      "simulated": true
+    }
+  ],
+  "validationResults": [
+    {
+      "ruleId": "STRUCTURAL_EXAMPLE",
+      "ruleVersion": "1.0.0",
+      "outcome": "NOT_EVALUATED",
+      "reason": "Contract illustration only; no business tool was executed.",
+      "checkedAt": "2026-10-10T10:00:00+11:00",
+      "sourceIds": [
+        "evidence-001"
+      ]
+    }
+  ],
+  "errors": [],
+  "requiresApproval": true,
+  "runId": "run-supplier-001",
+  "agent": "supplier",
+  "status": "APPROVAL_PENDING",
+  "executionMode": "FIXTURE",
+  "findings": [
+    "Synthetic message illustrating the contract; not an executed workflow."
+  ],
+  "proposedResponse": "Restricted proposal held for approval.",
+  "subjects": [
+    {
+      "subjectType": "SupplierOffer",
+      "subjectId": "offer-001",
+      "materialVersion": 1
+    }
+  ],
+  "review": {
+    "reviewId": "review-001",
+    "subject": {
+      "subjectType": "SupplierOffer",
+      "subjectId": "offer-001",
+      "materialVersion": 1
+    },
+    "outcome": "PASS",
+    "reasons": [],
+    "reviewedAt": "2026-10-10T10:00:00+11:00",
+    "policyVersion": "fixture-1",
+    "sourceIds": [
+      "evidence-001"
+    ]
+  },
+  "approvalIds": [
+    "approval-001"
+  ],
+  "nextAction": "Await the authorised operator decision for this material version."
+}

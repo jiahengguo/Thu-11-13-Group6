@@ -657,7 +657,7 @@ Have another member reproduce setup and a demo scenario; cross-check the final d
 
 ## CSV import notes
 
-The companion `Jira_Starter_Backlog.csv` contains the same 20 cards. Map Summary to the issue title, Description to the issue description, and Due Date to the Jira deadline field using the date format `yyyy-MM-dd`. Assignee and Reviewer require verified account mapping. User Story and Dependencies are also included inside Description, so those details survive import even if separate custom fields are unavailable. Create the six Epics and four sprints, then map planning aliases to their actual Jira identifiers. The CSV does not itself create dependency links.
+The companion `Jira_Starter_Backlog.csv` contains the same 20 cards. Map Summary to the issue title, Description to the issue description, and Due Date to the Jira deadline field using the date format `yyyy-MM-dd`. Assignee and Reviewer require verified account mapping. User Story and Dependencies are also included inside Description, so those details survive import even if separate custom fields are unavailable. Create the six Epics and four sprints, then map planning aliases to their actual Jira identifiers. The CSV does not itself create dependency links. The additional columns `更改内容` (change record) and `交接内容` (handoff notes) record implementation evidence and follow-up responsibilities. Map them to matching multiline custom fields when available, or retain their contents as issue notes. B01 is populated as of 10 October 2026; its four-member schema approval remains pending.
 
 ## Capacity and release checks
 
