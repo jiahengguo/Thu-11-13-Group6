@@ -4,9 +4,16 @@
 
 TripMate AI 是 ELEC5620 课程项目，用于验证一名人类创始人能否在四个协作式 AI Agent 的支持下运营旅行服务。项目聚焦澳大利亚境内短途旅行，并使用模拟的供应商、预订、支付和异常数据。
 
-Stage 1 报告作为设计基线。**Stage 2 B01 的共享契约和模块框架已搭建，待四位成员审核**。Web、数据库启动和真实 LLM 接入由 B02 完成。
+Stage 1 报告作为设计基线。**Stage 2 B01 的共享契约和模块框架已搭建，待四位成员审核**。共享 Web/数据库启动和四 Agent 集成仍待 B02；本分支已提供 Planning SQLite 和课程模型适配器。
 
 入口：[项目框架](#项目框架)、[v1.0.0 契约](docs/contracts/v1/CONTRACTS.md)、[需求映射](docs/contracts/v1/REQUIREMENT_MAPPING.md)、[B01 验收记录](docs/contracts/v1/B01_ACCEPTANCE.md)。
+
+Moore 的 Travel Planning 实现（B04/B09/B13/B14）和运行方法见
+[实现与交接说明](docs/planning/Moore_Travel_Planning_Implementation.zh-CN.md)。
+可运行 `python -m tripmate.planning.demo` 生成 HTML/JSON 演示报告；增加 `--live-model` 调用课程模型。
+模型适配器已对接原有 `LLMService.extract/draft/explain` 占位。
+需要/提供哪些接口、字段、调用例子和未实现边界见 [API 交接文档](docs/planning/Travel_Planning_API_Handoff.zh-CN.md)。
+这条路径显式使用 FIXTURE 依赖；默认四 Agent 组合仍保持未接入时的 STUB 行为。
 
 ## 项目构想
 
@@ -46,7 +53,7 @@ Stage 1 报告作为设计基线。**Stage 2 B01 的共享契约和模块框架�
 本框架依据 Stage 1 报告的四 Agent 架构、UC-01–UC-08、G-04/G-05，以及
 planning 中 B01 的接口约定要求建立。2026-10-10 的交付范围为共享契约和模块边界。
 Python 3.9+ 是本次后端骨架的实现选择；报告没有指定语言。HTTP/前端框架与 SQLite
-适配器由 Jason 在 B02 接入。当前可以运行契约检查，尚没有 Web、数据库或真实 LLM。
+共享适配器由 Jason 在 B02 集成。当前可运行契约检查；本分支新增 Planning SQLite 和真实课程模型适配器，共享 Web 仍待实现。
 
 ## 整体结构
 
@@ -88,7 +95,7 @@ docs/
 tests/                 B01 正向和拒绝路径测试
 ```
 
-这些接口是待实现的协议，不会保存数据或调用外部模型。Agent stub 返回
+ports 文件定义协议；Planning 和 campus 适配器已实现其中部分能力，详见 API 交接文档。未注入 runtime 的 Agent stub 返回
 `executionMode=STUB`、`status=FAILURE` 和 `NOT_IMPLEMENTED`，不会伪造成功。
 JSON 示例中的 FIXTURE 表示人工构造的契约样本，不是应用已经执行的业务结果。
 
@@ -106,8 +113,8 @@ python3 -m venv .venv
 ```
 
 如果暂时没有安装项目本身，也可先安装 `jsonschema[format]>=4.23,<5`，在后三条
-命令前加 `PYTHONPATH=src`。`.env.example` 只是 B02 的配置约定，当前 CLI 不读取它。
-不要把 STUB 改成 REAL 就认为已经接上模型；B02 必须实现适配器并记录真实 smoke call。
+命令前加 `PYTHONPATH=src`。框架检查 CLI 不读取 `.env`，Planning 的 `--live-model` 会读取其中模型配置。
+不要把 STUB 改成 REAL 就认为已经接上模型；课程适配器已有真实 smoke call，四 Agent 的共享组合仍待 B02 联调。
 
 ## B01 文件入口
 

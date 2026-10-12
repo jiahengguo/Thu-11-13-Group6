@@ -1,10 +1,17 @@
 # TripMate AI
 
+Moore's Travel Planning implementation (B04/B09/B13/B14) is available via
+`python -m tripmate.planning.demo`, with optional `--live-model` for the course campus-qwen proxy.
+See the [API handoff: required/provided interfaces and data](docs/planning/Travel_Planning_API_Handoff.zh-CN.md)
+and [runbook](docs/planning/Moore_Travel_Planning_Implementation.zh-CN.md).
+The shared `LLMService.extract/draft/explain` port now has a `CampusLLMService` adapter.
+Supplier, access and review data remain explicitly FIXTURE; the default four-agent composition remains unconfigured.
+
 [English](README.md) | [简体中文](README.zh-CN.md)
 
 TripMate AI is an ELEC5620 project exploring whether one human founder can operate a useful travel service with four collaborating AI agents. The project focuses on Australian domestic trips and uses simulated supplier, booking, payment, and disruption data.
 
-The Stage 1 report is the design baseline. **Stage 2 B01 now has a shared contract and modular project framework**, pending four-member review. Web/database startup and real LLM integration remain B02 work.
+The Stage 1 report is the design baseline. **Stage 2 B01 now has a shared contract and modular project framework**, pending four-member review. Shared web/database startup and four-agent integration remain B02 work; Planning's SQLite and course model adapter are available on this branch.
 
 Start with the [project framework and local checks](#project-framework), [v1.0.0 contracts](docs/contracts/v1/CONTRACTS.md), [requirement mapping](docs/contracts/v1/REQUIREMENT_MAPPING.md), and [B01 acceptance record](docs/contracts/v1/B01_ACCEPTANCE.md).
 
@@ -48,7 +55,7 @@ G-04/G-05 and the B01 shared-contract requirements. The 10 October 2026 delivery
 covers contracts and module boundaries. Python 3.9+ is the backend skeleton's
 implementation choice; the report does not prescribe a language. Jason will wire
 the HTTP/frontend framework and SQLite adapter in B02. Contract checks run now;
-web, database and real LLM execution are not yet implemented.
+the shared web composition is pending. Planning now includes its own SQLite adapter and optional live model execution.
 
 ### Application structure
 
@@ -92,7 +99,7 @@ docs/
 tests/                 B01 success and rejection-path tests
 ```
 
-These ports are unimplemented protocols. They do not save data or call models.
+These port definitions are protocols; the Planning module and campus adapter provide selected implementations described in the API handoff.
 Agent stubs return `executionMode=STUB`, `status=FAILURE` and `NOT_IMPLEMENTED`.
 FIXTURE in the JSON examples identifies synthetic contract messages, not business
 results executed by the application.
@@ -113,8 +120,7 @@ python3 -m venv .venv
 
 If the project itself is not installed, install `jsonschema[format]>=4.23,<5`
 and prefix the last three commands with `PYTHONPATH=src`. `.env.example` reserves
-B02 configuration; the current CLI does not read it. Changing STUB to REAL does
-not connect a model. B02 must implement the adapter and record a real smoke call.
+B02 configuration; the framework inspection CLI does not read it. Planning's `--live-model` path reads the LLM configuration from local `.env`. Changing STUB to REAL alone does not connect a model. See the API handoff for the verified course adapter and smoke evidence.
 
 ### B01 deliverables
 
