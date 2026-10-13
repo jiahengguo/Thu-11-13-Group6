@@ -7,6 +7,8 @@ Python: 3.12.14. No real campus model request or remote write was performed.
 
 - Team main plus only B02/B03 files: **25/25 tests pass**.
 - Planning plus B02/B03: **82/82 tests pass**.
+- Actual Git merge onto Planning: README/config conflicts resolved, **82/82
+  tests and 20/20 contract examples pass**. Planning source and `tzdata` retained.
 - Shared contract examples: **20/20 pass**.
 - Frontend JavaScript syntax: PASS.
 - Wheel build and installation into a separate target directory: PASS.
