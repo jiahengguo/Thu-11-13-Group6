@@ -20,6 +20,9 @@ from tripmate.operations import OperationsRepository, OperationsService
 from tripmate.operations.common import OperationsError, instant
 from tripmate.operations.analytics import analyse, experiment
 from .settings import Settings, has_model_key
+from tripmate.exception_handling import ExceptionRepository
+from tripmate.exception_handling.fixtures import demo_runtime, SCENARIOS
+from tripmate.agents.exception import CustomerExceptionAgent
 
 
 class WorkbenchError(Exception):
@@ -56,6 +59,7 @@ class Workbench:
             except (ImportError, ValueError):
                 pass  # An absent/incompatible adapter remains explicitly unconfigured.
         self.ops_sessions = {}
+        self.exception_repository = ExceptionRepository(settings.database) if settings.mode == "FIXTURE" else None
 
     def ops_actor(self, session):
         evidence = self.ops_sessions.get(session)
@@ -149,7 +153,19 @@ class Workbench:
                 "fixtureTime": FIXTURE_TIME,
                 "fixtureCatalog": "SEE_/api/fixtures" if self.settings.mode == "FIXTURE" else "DISABLED",
                 "integration": {"operations": "LOCAL_FIXTURE" if self.operations else "STUB", "supplier": "STUB",
-                                "exception": "STUB", "planning": "ISOLATED_FIXTURE" if planning_is_available() else "NOT_INSTALLED"}}
+                                "exception": "ISOLATED_FIXTURE" if self.exception_repository else "STUB", "planning": "ISOLATED_FIXTURE" if planning_is_available() else "NOT_INSTALLED"}}
+
+    def exception_demo(self, body):
+        if self.exception_repository is None:
+            raise WorkbenchError("NOT_IMPLEMENTED", "Exception demos require FIXTURE mode.")
+        if set(body) - {"kind", "scenario"} or body.get("kind") not in {"DISRUPTION", "COMPLAINT"} or body.get("scenario", "normal") not in SCENARIOS:
+            raise ValueError("Select a supported exception demonstration and scenario.")
+        case, runtime = demo_runtime(self.exception_repository, body["kind"], body.get("scenario", "normal"))
+        result = CustomerExceptionAgent(runtime).handle_case(case)
+        saved = self.exception_repository.get(result["runId"])
+        if saved is None:
+            raise WorkbenchError("PERSISTENCE_FAILED", "Investigation was not saved. Keep the case open and retry or obtain human assistance.")
+        return saved
 
     def planning(self, body):
         if self.settings.mode != "FIXTURE":
@@ -261,6 +277,7 @@ def make_server(settings, port=8765, llm_factory=None):
             assets = {"/": ("index.html", "text/html; charset=utf-8"),
                       "/operations": ("operations.html", "text/html; charset=utf-8"),
                       "/operations.js": ("operations.js", "text/javascript; charset=utf-8"),
+                      "/exceptions.js": ("exceptions.js", "text/javascript; charset=utf-8"),
                       "/app.js": ("app.js", "text/javascript; charset=utf-8"),
                       "/style.css": ("style.css", "text/css; charset=utf-8")}
             try:
@@ -269,6 +286,10 @@ def make_server(settings, port=8765, llm_factory=None):
                     return self.send(200, (static / name).read_bytes(), mime)
                 if path == "/api/status":
                     return self.send(200, app.status())
+                if path == "/api/exception-runs":
+                    if app.exception_repository is None:
+                        raise WorkbenchError("NOT_IMPLEMENTED", "Exception history requires FIXTURE mode.")
+                    return self.send(200, {"runs": app.exception_repository.recent()})
                 if path == "/api/checks":
                     return self.send(200, {"checks": app.store.recent()})
                 if path == "/api/fixtures":
@@ -319,6 +340,8 @@ def make_server(settings, port=8765, llm_factory=None):
             try:
                 if self.path.startswith("/api/operations/"):
                     return self.send(200, app.ops_post(self.path.removeprefix("/api/operations/"), body, self.headers.get("X-Ops-Session", "")))
+                if self.path == "/api/exception-demo":
+                    return self.send(200, app.exception_demo(body))
                 if self.path == "/api/planning-demo":
                     if set(body) - {"mode", "budget"}:
                         raise ValueError("Unexpected demo fields")

@@ -1,5 +1,7 @@
 # TripMate AI
 
+Customer Exception EXC-01/EXC-02: [local simulated prototype and demonstration guide](docs/exception/README.md). Two buttons are available in the explicit `--workbench` web mode; results and traces persist locally.
+
 **Authenticated portals branch (13 October 2026):** `portal-supabase-integration`
 adds a public website and separate Traveller `/app`, Supplier `/supplier`, and
 Operator `/admin` portals. Supabase Auth verifies real accounts; backend role and
