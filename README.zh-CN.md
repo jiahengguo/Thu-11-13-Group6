@@ -1,5 +1,9 @@
 # TripMate AI
 
+**真实登录与门户分支（2026-10-13）：** `portal-supabase-integration` 接入新 Supabase 项目，提供官网、用户 `/app`、供应商 `/supplier` 和内部管理 `/admin`。默认 Web 入口运行真实身份与云端存储的门户；旧模拟工作台需要显式添加 `--workbench`。启动门户：`python -m tripmate.portal.server --port 8780`。详见 [门户配置与实现边界](docs/portal/PORTAL_HANDOFF.md) 和 [验证记录](docs/portal/TEST_RESULTS.md)。专业 Agent 仍需明确接入，交易保持报告中的模拟范围。
+
+**Operations Agent 分支（2026-10-13）：** 启动现有本地服务后访问 `/operations`，可使用请求补全与确认、模拟身份/会员校验、Case 跟踪、人工审核及受控回复。详见 [Operations 交接](docs/operations/OPERATIONS_HANDOFF.md) 和 [验证记录](docs/operations/TEST_RESULTS.md)。Planning、Supplier、Exception 与自动 Reviewer 通过明确的接口接入；本分支未合并 Travel Planning PR，也不宣称四 Agent 已完成联调。
+
 **B08 供应商评估：** 已新增 UC-06 源数据校验、版本化定价/审核/审批与可复用报价查询。
 共享服务通过接口注入；有 B04 时网页可运行明确标注的模拟演示。
 详见 [B08 交接说明](docs/stage2/B08_SUPPLIER_HANDOFF.zh-CN.md)。
@@ -114,7 +118,7 @@ python3 -m venv .venv
 
 如果暂时没有安装项目本身，也可先安装 `jsonschema[format]>=4.23,<5`，在后三条
 命令前加 `PYTHONPATH=src`。B02 服务会读取 `.env`，框架检查 CLI 不读取它。
-用 `python -m tripmate.api.server --port 8765` 启动工作台。业务模式支持 FIXTURE 和 STUB；
+用 `python -m tripmate.api.server --workbench --port 8765` 启动工作台。业务模式支持 FIXTURE 和 STUB；
 模型检测单独记录真实调用结果或阻塞原因。
 
 ## B01 文件入口
