@@ -9,8 +9,15 @@ description = "TripMate AI modular prototype and shared agent contracts"
 requires-python = ">=3.9"
 dependencies = ["jsonschema[format]>=4.23,<5", "tzdata>=2024.1"]
 
+[project.scripts]
+tripmate-web = "tripmate.portal.server:main"
+
 [tool.setuptools.packages.find]
 where = ["src"]
 
 [tool.setuptools.package-data]
 "tripmate.contracts" = ["v1/*.json"]
+
+"tripmate.api" = ["static/*.html", "static/*.css", "static/*.js"]
+"tripmate.fixtures" = ["*.json"]
+"tripmate.portal" = ["static/*.html", "static/*.css", "static/*.js"]

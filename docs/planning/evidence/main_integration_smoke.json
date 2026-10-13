@@ -1,0 +1,20 @@
+{
+  "date": "2026-10-13",
+  "baseMain": "a1605f4",
+  "operations": "actual merged OperationsService",
+  "supplierData": "Jason B03 SQLite database",
+  "reviewer": "explicit development fixture; B10 pending",
+  "model": "campus-qwen",
+  "caseStatus": "HUMAN_ASSISTANCE",
+  "resultStatus": "FAILURE",
+  "errors": [
+    {
+      "code": "TOOL_UNAVAILABLE",
+      "message": "Course proxy unreachable or timed out; check USYD VPN",
+      "step": "llm",
+      "retryable": true,
+      "sourceIds": []
+    }
+  ],
+  "options": []
+}

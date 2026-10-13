@@ -4,10 +4,14 @@
 依据：[共享 v1 契约](../contracts/v1/CONTRACTS.md)、[分工计划](Stage2_Week9-12_Plan_and_Jira.zh-CN.md)。
 本文件描述本分支的实际代码，不表示其他成员服务或全组验收已经完成。
 
+**main 合并更新**：已对接主分支 `a1605f4` 的 Operations 与 B03 数据库，见 [main 联调说明](Main_Integration.zh-CN.md)。
+原文未集成状态以此更新为准：Operations 实际服务已接通；B03 是共享模拟数据；正式 Supplier/Reviewer/Exception 仍待对接。
+
 ## 1. 接口形式与当前状态
 
 四个 Agent 在同一 Python 应用内调用，以下主要是 **Python API**，没有已经部署的 `/planning/*` HTTP 路由。
-唯一已实测的外部 HTTP API 是课程模型代理。前端路由由共享 B02 后端包装，不要让浏览器持有模型密钥。
+现已通过 main 的 `/api/operations/*` HTTP 路由联调规划/审核/交付/采用，具体认证与请求参数见 main 联调说明；
+没有独立公开的 `/planning/*` 路由。模型代理是外部 HTTP 服务，不要让浏览器持有模型密钥。
 
 | 能力 | 状态 |
 | --- | --- |
@@ -15,8 +19,9 @@
 | 确认后修改、比较、保存不可变版本、明确接受 | 已实现 |
 | campus-qwen 提出候选、工具校验、失败反馈修正 | 已实现并有真实模型运行证据；旅行数据仍为模拟 |
 | `LLMService.extract/draft/explain` 原有占位 | `CampusLLMService` 已实现；结构化输出本地验证 |
-| Operations/Supplier/会员/Reviewer 服务 | 已定义注入边界，目前演示使用 fixture |
-| 统一四 Agent `build_agents()` | 仍为 STUB，须由 B02 注入真实 runtime；不自动启用模拟权限 |
+| Operations/会员服务 | 已通过 main connect_planning 接入实际实现；开发账户仍为 fixture |
+| Supplier/Reviewer 服务 | B03 数据库报价适配器已接入；正式 Supplier/Reviewer 仍待注入 |
+| 统一四 Agent `build_agents()` | 支持注入 Operations；无依赖时仍为 STUB；开发联调须显式开启 |
 | Exception 专门恢复接口、人工审批队列、会员折扣联调 | 尚未实现，见第 9 节 |
 
 ## 2. 共用数据规则

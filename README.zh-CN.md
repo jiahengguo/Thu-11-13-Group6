@@ -1,19 +1,20 @@
 # TripMate AI
 
+Travel Planning 已接入合并后的 Operations 接口与 B03 数据库，详见 [API 交接](docs/planning/Travel_Planning_API_Handoff.zh-CN.md)和 [main 联调说明](docs/planning/Main_Integration.zh-CN.md)。课程模型已实现共享 LLMService；正式 Supplier/Reviewer 尚待对接。
+
+**真实登录与门户分支（2026-10-13）：** `portal-supabase-integration` 接入新 Supabase 项目，提供官网、用户 `/app`、供应商 `/supplier` 和内部管理 `/admin`。默认 Web 入口运行真实身份与云端存储的门户；旧模拟工作台需要显式添加 `--workbench`。启动门户：`python -m tripmate.portal.server --port 8780`。详见 [门户配置与实现边界](docs/portal/PORTAL_HANDOFF.md) 和 [验证记录](docs/portal/TEST_RESULTS.md)。专业 Agent 仍需明确接入，交易保持报告中的模拟范围。
+
+**Operations Agent 分支（2026-10-13）：** 启动现有本地服务后访问 `/operations`，可使用请求补全与确认、模拟身份/会员校验、Case 跟踪、人工审核及受控回复。详见 [Operations 交接](docs/operations/OPERATIONS_HANDOFF.md) 和 [验证记录](docs/operations/TEST_RESULTS.md)。Planning、Supplier、Exception 与自动 Reviewer 通过明确的接口接入；本分支未合并 Travel Planning PR，也不宣称四 Agent 已完成联调。
+
+**Supplier Partnership B02/B03 独立分支（2026-10-13）：** 已新增本地 Web/API、SQLite、可重复的模拟供应商/旅客/取消测试数据和安全 Reset。启动及交接见 [B02/B03 说明](docs/stage2/B02_B03_HANDOFF.md)。四 Agent 仍未完成集成；Moore 的 Planning 及校园模型适配器属于另一分支，未合入时会明确提示不可用，不伪装成已完成。
+
 [English](README.md) | [简体中文](README.zh-CN.md)
 
 TripMate AI 是 ELEC5620 课程项目，用于验证一名人类创始人能否在四个协作式 AI Agent 的支持下运营旅行服务。项目聚焦澳大利亚境内短途旅行，并使用模拟的供应商、预订、支付和异常数据。
 
-Stage 1 报告作为设计基线。**Stage 2 B01 的共享契约和模块框架已搭建，待四位成员审核**。共享 Web/数据库启动和四 Agent 集成仍待 B02；本分支已提供 Planning SQLite 和课程模型适配器。
+Stage 1 报告作为设计基线。**Stage 2 B01 的共享契约和模块框架已搭建，待四位成员审核**。B02 已补充本地 Web/API、SQLite 工作台；真实校园模型检测仍依赖独立适配器、凭据和校园网络。
 
 入口：[项目框架](#项目框架)、[v1.0.0 契约](docs/contracts/v1/CONTRACTS.md)、[需求映射](docs/contracts/v1/REQUIREMENT_MAPPING.md)、[B01 验收记录](docs/contracts/v1/B01_ACCEPTANCE.md)。
-
-Moore 的 Travel Planning 实现（B04/B09/B13/B14）和运行方法见
-[实现与交接说明](docs/planning/Moore_Travel_Planning_Implementation.zh-CN.md)。
-可运行 `python -m tripmate.planning.demo` 生成 HTML/JSON 演示报告；增加 `--live-model` 调用课程模型。
-模型适配器已对接原有 `LLMService.extract/draft/explain` 占位。
-需要/提供哪些接口、字段、调用例子和未实现边界见 [API 交接文档](docs/planning/Travel_Planning_API_Handoff.zh-CN.md)。
-这条路径显式使用 FIXTURE 依赖；默认四 Agent 组合仍保持未接入时的 STUB 行为。
 
 ## 项目构想
 
@@ -52,8 +53,9 @@ Moore 的 Travel Planning 实现（B04/B09/B13/B14）和运行方法见
 
 本框架依据 Stage 1 报告的四 Agent 架构、UC-01–UC-08、G-04/G-05，以及
 planning 中 B01 的接口约定要求建立。2026-10-10 的交付范围为共享契约和模块边界。
-Python 3.9+ 是本次后端骨架的实现选择；报告没有指定语言。HTTP/前端框架与 SQLite
-共享适配器由 Jason 在 B02 集成。当前可运行契约检查；本分支新增 Planning SQLite 和真实课程模型适配器，共享 Web 仍待实现。
+Python 3.9+ 是本次后端骨架的实现选择；报告没有指定语言。
+B02 已实现本地 HTTP/静态页面和 SQLite 工作台，B03 已实现可重置模拟数据。
+真实模型检测依赖另行合并的校园适配器、本地密钥及校园/VPN 网络；四 Agent 业务集成待完成。
 
 ## 整体结构
 
@@ -89,13 +91,13 @@ src/tripmate/
   adapters/ports.py    LLM 与合格报价查询接口
   persistence/ports.py Trace 和审批存储接口
   api/                 B02 的 HTTP 接入边界
-web/                   B02 的统一前端接入边界
+api/static/            B02 前端资源（位于 src/tripmate/ 内）
 docs/
   contracts/v1/        契约文档、需求映射、审核记录与 JSON 示例
 tests/                 B01 正向和拒绝路径测试
 ```
 
-ports 文件定义协议；Planning 和 campus 适配器已实现其中部分能力，详见 API 交接文档。未注入 runtime 的 Agent stub 返回
+这些接口是待实现的协议，不会保存数据或调用外部模型。Agent stub 返回
 `executionMode=STUB`、`status=FAILURE` 和 `NOT_IMPLEMENTED`，不会伪造成功。
 JSON 示例中的 FIXTURE 表示人工构造的契约样本，不是应用已经执行的业务结果。
 
@@ -113,8 +115,9 @@ python3 -m venv .venv
 ```
 
 如果暂时没有安装项目本身，也可先安装 `jsonschema[format]>=4.23,<5`，在后三条
-命令前加 `PYTHONPATH=src`。框架检查 CLI 不读取 `.env`，Planning 的 `--live-model` 会读取其中模型配置。
-不要把 STUB 改成 REAL 就认为已经接上模型；课程适配器已有真实 smoke call，四 Agent 的共享组合仍待 B02 联调。
+命令前加 `PYTHONPATH=src`。B02 服务会读取 `.env`，框架检查 CLI 不读取它。
+用 `python -m tripmate.api.server --workbench --port 8765` 启动工作台。业务模式支持 FIXTURE 和 STUB；
+模型检测单独记录真实调用结果或阻塞原因。
 
 ## B01 文件入口
 

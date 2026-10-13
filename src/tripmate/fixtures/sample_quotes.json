@@ -1,0 +1,902 @@
+[
+  {
+    "offer": {
+      "schemaVersion": "1.0.0",
+      "caseId": "demo-case",
+      "correlationId": "demo-correlation",
+      "sourceReferences": [
+        {
+          "sourceId": "coach",
+          "sourceType": "FIXTURE",
+          "sourceReference": "fixture://b03/supplier-offers/coach",
+          "capturedAt": "2026-10-12T10:00:00+11:00",
+          "freshness": "FRESH",
+          "simulated": true
+        }
+      ],
+      "validationResults": [
+        {
+          "ruleId": "FIXTURE_SUPPLIER",
+          "ruleVersion": "planning-1.0",
+          "outcome": "PASS",
+          "reason": "Prepared simulated supplier record",
+          "checkedAt": "2026-10-12T10:00:00+11:00",
+          "sourceIds": [
+            "coach"
+          ]
+        }
+      ],
+      "errors": [],
+      "requiresApproval": false,
+      "offerId": "coach",
+      "materialVersion": 1,
+      "supplierId": "fixture-supplier",
+      "productId": "coach",
+      "productType": "TRANSPORT",
+      "availableQuantity": 10,
+      "quotedQuantity": 1,
+      "unitBasis": "complete one-person package including mandatory charges",
+      "supplierCost": {
+        "amount": "120.00",
+        "currency": "AUD"
+      },
+      "mandatoryChargesIncluded": true,
+      "validFrom": "2026-10-12T10:00:00+11:00",
+      "validUntil": "2026-10-20T00:00:00+11:00",
+      "cancellationTerms": "Simulated: refundable until 24 hours before service.",
+      "commercialTerms": [
+        "Simulation only; no real supplier commitment."
+      ],
+      "status": "APPROVED",
+      "priceBreakdownId": "fixture-price-coach",
+      "review": {
+        "reviewId": "fixture-review-coach",
+        "subject": {
+          "subjectType": "SupplierOffer",
+          "subjectId": "coach",
+          "materialVersion": 1
+        },
+        "outcome": "PASS",
+        "reasons": [
+          "Explicit offline fixture approval"
+        ],
+        "reviewedAt": "2026-10-12T10:00:00+11:00",
+        "policyVersion": "fixture-only-1",
+        "sourceIds": [
+          "coach"
+        ]
+      },
+      "approvalId": null
+    },
+    "price": {
+      "schemaVersion": "1.0.0",
+      "caseId": "demo-case",
+      "correlationId": "demo-correlation",
+      "sourceReferences": [
+        {
+          "sourceId": "coach",
+          "sourceType": "FIXTURE",
+          "sourceReference": "fixture://b03/supplier-offers/coach",
+          "capturedAt": "2026-10-12T10:00:00+11:00",
+          "freshness": "FRESH",
+          "simulated": true
+        }
+      ],
+      "validationResults": [
+        {
+          "ruleId": "PRICE_MARGIN",
+          "ruleVersion": "planning-1.0",
+          "outcome": "PASS",
+          "reason": "AUD ROUND_HALF_UP; margin verified after rounding",
+          "checkedAt": "2026-10-12T10:00:00+11:00",
+          "sourceIds": []
+        }
+      ],
+      "errors": [],
+      "requiresApproval": false,
+      "priceBreakdownId": "fixture-price-coach",
+      "offerId": "coach",
+      "offerVersion": 1,
+      "supplierCost": {
+        "amount": "120.00",
+        "currency": "AUD"
+      },
+      "markupRate": "0.10",
+      "basePrice": {
+        "amount": "132.00",
+        "currency": "AUD"
+      },
+      "discountAmount": {
+        "amount": "0.00",
+        "currency": "AUD"
+      },
+      "sellingPrice": {
+        "amount": "132.00",
+        "currency": "AUD"
+      },
+      "marginAmount": {
+        "amount": "12.00",
+        "currency": "AUD"
+      },
+      "minimumMargin": {
+        "amount": "0.00",
+        "currency": "AUD"
+      },
+      "quotedQuantity": 1,
+      "unitBasis": "complete one-person package including mandatory charges",
+      "pricingConfigVersion": "fixture-pricing-1",
+      "calculatedAt": "2026-10-12T10:00:00+11:00",
+      "memberOfferRuleId": null,
+      "entitlementDecisionId": null
+    },
+    "product": {
+      "productId": "coach",
+      "role": "OUTBOUND",
+      "startAt": "2026-10-20T06:00:00+11:00",
+      "endAt": "2026-10-20T16:00:00+11:00",
+      "origin": "Sydney Central",
+      "destination": "Melbourne Centre",
+      "partySize": 1,
+      "accessible": true,
+      "baggageKg": 20,
+      "comfort": "0.35",
+      "reliability": "0.85",
+      "minConnectionMinutes": 30,
+      "openingStart": null,
+      "openingEnd": null,
+      "sourceIds": [
+        "coach"
+      ]
+    }
+  },
+  {
+    "offer": {
+      "schemaVersion": "1.0.0",
+      "caseId": "demo-case",
+      "correlationId": "demo-correlation",
+      "sourceReferences": [
+        {
+          "sourceId": "express",
+          "sourceType": "FIXTURE",
+          "sourceReference": "fixture://b03/supplier-offers/express",
+          "capturedAt": "2026-10-12T10:00:00+11:00",
+          "freshness": "FRESH",
+          "simulated": true
+        }
+      ],
+      "validationResults": [
+        {
+          "ruleId": "FIXTURE_SUPPLIER",
+          "ruleVersion": "planning-1.0",
+          "outcome": "PASS",
+          "reason": "Prepared simulated supplier record",
+          "checkedAt": "2026-10-12T10:00:00+11:00",
+          "sourceIds": [
+            "express"
+          ]
+        }
+      ],
+      "errors": [],
+      "requiresApproval": false,
+      "offerId": "express",
+      "materialVersion": 1,
+      "supplierId": "fixture-supplier",
+      "productId": "express",
+      "productType": "TRANSPORT",
+      "availableQuantity": 10,
+      "quotedQuantity": 1,
+      "unitBasis": "complete one-person package including mandatory charges",
+      "supplierCost": {
+        "amount": "230.00",
+        "currency": "AUD"
+      },
+      "mandatoryChargesIncluded": true,
+      "validFrom": "2026-10-12T10:00:00+11:00",
+      "validUntil": "2026-10-20T00:00:00+11:00",
+      "cancellationTerms": "Simulated: refundable until 24 hours before service.",
+      "commercialTerms": [
+        "Simulation only; no real supplier commitment."
+      ],
+      "status": "APPROVED",
+      "priceBreakdownId": "fixture-price-express",
+      "review": {
+        "reviewId": "fixture-review-express",
+        "subject": {
+          "subjectType": "SupplierOffer",
+          "subjectId": "express",
+          "materialVersion": 1
+        },
+        "outcome": "PASS",
+        "reasons": [
+          "Explicit offline fixture approval"
+        ],
+        "reviewedAt": "2026-10-12T10:00:00+11:00",
+        "policyVersion": "fixture-only-1",
+        "sourceIds": [
+          "express"
+        ]
+      },
+      "approvalId": null
+    },
+    "price": {
+      "schemaVersion": "1.0.0",
+      "caseId": "demo-case",
+      "correlationId": "demo-correlation",
+      "sourceReferences": [
+        {
+          "sourceId": "express",
+          "sourceType": "FIXTURE",
+          "sourceReference": "fixture://b03/supplier-offers/express",
+          "capturedAt": "2026-10-12T10:00:00+11:00",
+          "freshness": "FRESH",
+          "simulated": true
+        }
+      ],
+      "validationResults": [
+        {
+          "ruleId": "PRICE_MARGIN",
+          "ruleVersion": "planning-1.0",
+          "outcome": "PASS",
+          "reason": "AUD ROUND_HALF_UP; margin verified after rounding",
+          "checkedAt": "2026-10-12T10:00:00+11:00",
+          "sourceIds": []
+        }
+      ],
+      "errors": [],
+      "requiresApproval": false,
+      "priceBreakdownId": "fixture-price-express",
+      "offerId": "express",
+      "offerVersion": 1,
+      "supplierCost": {
+        "amount": "230.00",
+        "currency": "AUD"
+      },
+      "markupRate": "0.10",
+      "basePrice": {
+        "amount": "253.00",
+        "currency": "AUD"
+      },
+      "discountAmount": {
+        "amount": "0.00",
+        "currency": "AUD"
+      },
+      "sellingPrice": {
+        "amount": "253.00",
+        "currency": "AUD"
+      },
+      "marginAmount": {
+        "amount": "23.00",
+        "currency": "AUD"
+      },
+      "minimumMargin": {
+        "amount": "0.00",
+        "currency": "AUD"
+      },
+      "quotedQuantity": 1,
+      "unitBasis": "complete one-person package including mandatory charges",
+      "pricingConfigVersion": "fixture-pricing-1",
+      "calculatedAt": "2026-10-12T10:00:00+11:00",
+      "memberOfferRuleId": null,
+      "entitlementDecisionId": null
+    },
+    "product": {
+      "productId": "express",
+      "role": "OUTBOUND",
+      "startAt": "2026-10-20T08:00:00+11:00",
+      "endAt": "2026-10-20T11:00:00+11:00",
+      "origin": "Sydney Central",
+      "destination": "Melbourne Centre",
+      "partySize": 1,
+      "accessible": true,
+      "baggageKg": 20,
+      "comfort": "0.95",
+      "reliability": "0.98",
+      "minConnectionMinutes": 30,
+      "openingStart": null,
+      "openingEnd": null,
+      "sourceIds": [
+        "express"
+      ]
+    }
+  },
+  {
+    "offer": {
+      "schemaVersion": "1.0.0",
+      "caseId": "demo-case",
+      "correlationId": "demo-correlation",
+      "sourceReferences": [
+        {
+          "sourceId": "basic-stay",
+          "sourceType": "FIXTURE",
+          "sourceReference": "fixture://b03/supplier-offers/basic-stay",
+          "capturedAt": "2026-10-12T10:00:00+11:00",
+          "freshness": "FRESH",
+          "simulated": true
+        }
+      ],
+      "validationResults": [
+        {
+          "ruleId": "FIXTURE_SUPPLIER",
+          "ruleVersion": "planning-1.0",
+          "outcome": "PASS",
+          "reason": "Prepared simulated supplier record",
+          "checkedAt": "2026-10-12T10:00:00+11:00",
+          "sourceIds": [
+            "basic-stay"
+          ]
+        }
+      ],
+      "errors": [],
+      "requiresApproval": false,
+      "offerId": "basic-stay",
+      "materialVersion": 1,
+      "supplierId": "fixture-supplier",
+      "productId": "basic-stay",
+      "productType": "ACCOMMODATION",
+      "availableQuantity": 10,
+      "quotedQuantity": 1,
+      "unitBasis": "complete one-person package including mandatory charges",
+      "supplierCost": {
+        "amount": "200.00",
+        "currency": "AUD"
+      },
+      "mandatoryChargesIncluded": true,
+      "validFrom": "2026-10-12T10:00:00+11:00",
+      "validUntil": "2026-10-20T00:00:00+11:00",
+      "cancellationTerms": "Simulated: refundable until 24 hours before service.",
+      "commercialTerms": [
+        "Simulation only; no real supplier commitment."
+      ],
+      "status": "APPROVED",
+      "priceBreakdownId": "fixture-price-basic-stay",
+      "review": {
+        "reviewId": "fixture-review-basic-stay",
+        "subject": {
+          "subjectType": "SupplierOffer",
+          "subjectId": "basic-stay",
+          "materialVersion": 1
+        },
+        "outcome": "PASS",
+        "reasons": [
+          "Explicit offline fixture approval"
+        ],
+        "reviewedAt": "2026-10-12T10:00:00+11:00",
+        "policyVersion": "fixture-only-1",
+        "sourceIds": [
+          "basic-stay"
+        ]
+      },
+      "approvalId": null
+    },
+    "price": {
+      "schemaVersion": "1.0.0",
+      "caseId": "demo-case",
+      "correlationId": "demo-correlation",
+      "sourceReferences": [
+        {
+          "sourceId": "basic-stay",
+          "sourceType": "FIXTURE",
+          "sourceReference": "fixture://b03/supplier-offers/basic-stay",
+          "capturedAt": "2026-10-12T10:00:00+11:00",
+          "freshness": "FRESH",
+          "simulated": true
+        }
+      ],
+      "validationResults": [
+        {
+          "ruleId": "PRICE_MARGIN",
+          "ruleVersion": "planning-1.0",
+          "outcome": "PASS",
+          "reason": "AUD ROUND_HALF_UP; margin verified after rounding",
+          "checkedAt": "2026-10-12T10:00:00+11:00",
+          "sourceIds": []
+        }
+      ],
+      "errors": [],
+      "requiresApproval": false,
+      "priceBreakdownId": "fixture-price-basic-stay",
+      "offerId": "basic-stay",
+      "offerVersion": 1,
+      "supplierCost": {
+        "amount": "200.00",
+        "currency": "AUD"
+      },
+      "markupRate": "0.10",
+      "basePrice": {
+        "amount": "220.00",
+        "currency": "AUD"
+      },
+      "discountAmount": {
+        "amount": "0.00",
+        "currency": "AUD"
+      },
+      "sellingPrice": {
+        "amount": "220.00",
+        "currency": "AUD"
+      },
+      "marginAmount": {
+        "amount": "20.00",
+        "currency": "AUD"
+      },
+      "minimumMargin": {
+        "amount": "0.00",
+        "currency": "AUD"
+      },
+      "quotedQuantity": 1,
+      "unitBasis": "complete one-person package including mandatory charges",
+      "pricingConfigVersion": "fixture-pricing-1",
+      "calculatedAt": "2026-10-12T10:00:00+11:00",
+      "memberOfferRuleId": null,
+      "entitlementDecisionId": null
+    },
+    "product": {
+      "productId": "basic-stay",
+      "role": "STAY",
+      "startAt": "2026-10-20T17:00:00+11:00",
+      "endAt": "2026-10-22T10:00:00+11:00",
+      "origin": "Melbourne Centre",
+      "destination": "Melbourne Centre",
+      "partySize": 1,
+      "accessible": true,
+      "baggageKg": 20,
+      "comfort": "0.45",
+      "reliability": "0.90",
+      "minConnectionMinutes": 30,
+      "openingStart": null,
+      "openingEnd": null,
+      "sourceIds": [
+        "basic-stay"
+      ]
+    }
+  },
+  {
+    "offer": {
+      "schemaVersion": "1.0.0",
+      "caseId": "demo-case",
+      "correlationId": "demo-correlation",
+      "sourceReferences": [
+        {
+          "sourceId": "comfort-stay",
+          "sourceType": "FIXTURE",
+          "sourceReference": "fixture://b03/supplier-offers/comfort-stay",
+          "capturedAt": "2026-10-12T10:00:00+11:00",
+          "freshness": "FRESH",
+          "simulated": true
+        }
+      ],
+      "validationResults": [
+        {
+          "ruleId": "FIXTURE_SUPPLIER",
+          "ruleVersion": "planning-1.0",
+          "outcome": "PASS",
+          "reason": "Prepared simulated supplier record",
+          "checkedAt": "2026-10-12T10:00:00+11:00",
+          "sourceIds": [
+            "comfort-stay"
+          ]
+        }
+      ],
+      "errors": [],
+      "requiresApproval": false,
+      "offerId": "comfort-stay",
+      "materialVersion": 1,
+      "supplierId": "fixture-supplier",
+      "productId": "comfort-stay",
+      "productType": "ACCOMMODATION",
+      "availableQuantity": 10,
+      "quotedQuantity": 1,
+      "unitBasis": "complete one-person package including mandatory charges",
+      "supplierCost": {
+        "amount": "300.00",
+        "currency": "AUD"
+      },
+      "mandatoryChargesIncluded": true,
+      "validFrom": "2026-10-12T10:00:00+11:00",
+      "validUntil": "2026-10-20T00:00:00+11:00",
+      "cancellationTerms": "Simulated: refundable until 24 hours before service.",
+      "commercialTerms": [
+        "Simulation only; no real supplier commitment."
+      ],
+      "status": "APPROVED",
+      "priceBreakdownId": "fixture-price-comfort-stay",
+      "review": {
+        "reviewId": "fixture-review-comfort-stay",
+        "subject": {
+          "subjectType": "SupplierOffer",
+          "subjectId": "comfort-stay",
+          "materialVersion": 1
+        },
+        "outcome": "PASS",
+        "reasons": [
+          "Explicit offline fixture approval"
+        ],
+        "reviewedAt": "2026-10-12T10:00:00+11:00",
+        "policyVersion": "fixture-only-1",
+        "sourceIds": [
+          "comfort-stay"
+        ]
+      },
+      "approvalId": null
+    },
+    "price": {
+      "schemaVersion": "1.0.0",
+      "caseId": "demo-case",
+      "correlationId": "demo-correlation",
+      "sourceReferences": [
+        {
+          "sourceId": "comfort-stay",
+          "sourceType": "FIXTURE",
+          "sourceReference": "fixture://b03/supplier-offers/comfort-stay",
+          "capturedAt": "2026-10-12T10:00:00+11:00",
+          "freshness": "FRESH",
+          "simulated": true
+        }
+      ],
+      "validationResults": [
+        {
+          "ruleId": "PRICE_MARGIN",
+          "ruleVersion": "planning-1.0",
+          "outcome": "PASS",
+          "reason": "AUD ROUND_HALF_UP; margin verified after rounding",
+          "checkedAt": "2026-10-12T10:00:00+11:00",
+          "sourceIds": []
+        }
+      ],
+      "errors": [],
+      "requiresApproval": false,
+      "priceBreakdownId": "fixture-price-comfort-stay",
+      "offerId": "comfort-stay",
+      "offerVersion": 1,
+      "supplierCost": {
+        "amount": "300.00",
+        "currency": "AUD"
+      },
+      "markupRate": "0.10",
+      "basePrice": {
+        "amount": "330.00",
+        "currency": "AUD"
+      },
+      "discountAmount": {
+        "amount": "0.00",
+        "currency": "AUD"
+      },
+      "sellingPrice": {
+        "amount": "330.00",
+        "currency": "AUD"
+      },
+      "marginAmount": {
+        "amount": "30.00",
+        "currency": "AUD"
+      },
+      "minimumMargin": {
+        "amount": "0.00",
+        "currency": "AUD"
+      },
+      "quotedQuantity": 1,
+      "unitBasis": "complete one-person package including mandatory charges",
+      "pricingConfigVersion": "fixture-pricing-1",
+      "calculatedAt": "2026-10-12T10:00:00+11:00",
+      "memberOfferRuleId": null,
+      "entitlementDecisionId": null
+    },
+    "product": {
+      "productId": "comfort-stay",
+      "role": "STAY",
+      "startAt": "2026-10-20T17:00:00+11:00",
+      "endAt": "2026-10-22T10:00:00+11:00",
+      "origin": "Melbourne Centre",
+      "destination": "Melbourne Centre",
+      "partySize": 1,
+      "accessible": true,
+      "baggageKg": 20,
+      "comfort": "0.95",
+      "reliability": "0.98",
+      "minConnectionMinutes": 30,
+      "openingStart": null,
+      "openingEnd": null,
+      "sourceIds": [
+        "comfort-stay"
+      ]
+    }
+  },
+  {
+    "offer": {
+      "schemaVersion": "1.0.0",
+      "caseId": "demo-case",
+      "correlationId": "demo-correlation",
+      "sourceReferences": [
+        {
+          "sourceId": "walk",
+          "sourceType": "FIXTURE",
+          "sourceReference": "fixture://b03/supplier-offers/walk",
+          "capturedAt": "2026-10-12T10:00:00+11:00",
+          "freshness": "FRESH",
+          "simulated": true
+        }
+      ],
+      "validationResults": [
+        {
+          "ruleId": "FIXTURE_SUPPLIER",
+          "ruleVersion": "planning-1.0",
+          "outcome": "PASS",
+          "reason": "Prepared simulated supplier record",
+          "checkedAt": "2026-10-12T10:00:00+11:00",
+          "sourceIds": [
+            "walk"
+          ]
+        }
+      ],
+      "errors": [],
+      "requiresApproval": false,
+      "offerId": "walk",
+      "materialVersion": 1,
+      "supplierId": "fixture-supplier",
+      "productId": "walk",
+      "productType": "ACTIVITY",
+      "availableQuantity": 10,
+      "quotedQuantity": 1,
+      "unitBasis": "complete one-person package including mandatory charges",
+      "supplierCost": {
+        "amount": "40.00",
+        "currency": "AUD"
+      },
+      "mandatoryChargesIncluded": true,
+      "validFrom": "2026-10-12T10:00:00+11:00",
+      "validUntil": "2026-10-20T00:00:00+11:00",
+      "cancellationTerms": "Simulated: refundable until 24 hours before service.",
+      "commercialTerms": [
+        "Simulation only; no real supplier commitment."
+      ],
+      "status": "APPROVED",
+      "priceBreakdownId": "fixture-price-walk",
+      "review": {
+        "reviewId": "fixture-review-walk",
+        "subject": {
+          "subjectType": "SupplierOffer",
+          "subjectId": "walk",
+          "materialVersion": 1
+        },
+        "outcome": "PASS",
+        "reasons": [
+          "Explicit offline fixture approval"
+        ],
+        "reviewedAt": "2026-10-12T10:00:00+11:00",
+        "policyVersion": "fixture-only-1",
+        "sourceIds": [
+          "walk"
+        ]
+      },
+      "approvalId": null
+    },
+    "price": {
+      "schemaVersion": "1.0.0",
+      "caseId": "demo-case",
+      "correlationId": "demo-correlation",
+      "sourceReferences": [
+        {
+          "sourceId": "walk",
+          "sourceType": "FIXTURE",
+          "sourceReference": "fixture://b03/supplier-offers/walk",
+          "capturedAt": "2026-10-12T10:00:00+11:00",
+          "freshness": "FRESH",
+          "simulated": true
+        }
+      ],
+      "validationResults": [
+        {
+          "ruleId": "PRICE_MARGIN",
+          "ruleVersion": "planning-1.0",
+          "outcome": "PASS",
+          "reason": "AUD ROUND_HALF_UP; margin verified after rounding",
+          "checkedAt": "2026-10-12T10:00:00+11:00",
+          "sourceIds": []
+        }
+      ],
+      "errors": [],
+      "requiresApproval": false,
+      "priceBreakdownId": "fixture-price-walk",
+      "offerId": "walk",
+      "offerVersion": 1,
+      "supplierCost": {
+        "amount": "40.00",
+        "currency": "AUD"
+      },
+      "markupRate": "0.10",
+      "basePrice": {
+        "amount": "44.00",
+        "currency": "AUD"
+      },
+      "discountAmount": {
+        "amount": "0.00",
+        "currency": "AUD"
+      },
+      "sellingPrice": {
+        "amount": "44.00",
+        "currency": "AUD"
+      },
+      "marginAmount": {
+        "amount": "4.00",
+        "currency": "AUD"
+      },
+      "minimumMargin": {
+        "amount": "0.00",
+        "currency": "AUD"
+      },
+      "quotedQuantity": 1,
+      "unitBasis": "complete one-person package including mandatory charges",
+      "pricingConfigVersion": "fixture-pricing-1",
+      "calculatedAt": "2026-10-12T10:00:00+11:00",
+      "memberOfferRuleId": null,
+      "entitlementDecisionId": null
+    },
+    "product": {
+      "productId": "walk",
+      "role": "ACTIVITY",
+      "startAt": "2026-10-21T10:00:00+11:00",
+      "endAt": "2026-10-21T12:00:00+11:00",
+      "origin": "Melbourne Centre",
+      "destination": "Melbourne Centre",
+      "partySize": 1,
+      "accessible": true,
+      "baggageKg": 20,
+      "comfort": "0.60",
+      "reliability": "0.95",
+      "minConnectionMinutes": 30,
+      "openingStart": "2026-10-21T09:00:00+11:00",
+      "openingEnd": "2026-10-21T17:00:00+11:00",
+      "sourceIds": [
+        "walk"
+      ]
+    }
+  },
+  {
+    "offer": {
+      "schemaVersion": "1.0.0",
+      "caseId": "demo-case",
+      "correlationId": "demo-correlation",
+      "sourceReferences": [
+        {
+          "sourceId": "guided-tour",
+          "sourceType": "FIXTURE",
+          "sourceReference": "fixture://b03/supplier-offers/guided-tour",
+          "capturedAt": "2026-10-12T10:00:00+11:00",
+          "freshness": "FRESH",
+          "simulated": true
+        }
+      ],
+      "validationResults": [
+        {
+          "ruleId": "FIXTURE_SUPPLIER",
+          "ruleVersion": "planning-1.0",
+          "outcome": "PASS",
+          "reason": "Prepared simulated supplier record",
+          "checkedAt": "2026-10-12T10:00:00+11:00",
+          "sourceIds": [
+            "guided-tour"
+          ]
+        }
+      ],
+      "errors": [],
+      "requiresApproval": false,
+      "offerId": "guided-tour",
+      "materialVersion": 1,
+      "supplierId": "fixture-supplier",
+      "productId": "guided-tour",
+      "productType": "ACTIVITY",
+      "availableQuantity": 10,
+      "quotedQuantity": 1,
+      "unitBasis": "complete one-person package including mandatory charges",
+      "supplierCost": {
+        "amount": "70.00",
+        "currency": "AUD"
+      },
+      "mandatoryChargesIncluded": true,
+      "validFrom": "2026-10-12T10:00:00+11:00",
+      "validUntil": "2026-10-20T00:00:00+11:00",
+      "cancellationTerms": "Simulated: refundable until 24 hours before service.",
+      "commercialTerms": [
+        "Simulation only; no real supplier commitment."
+      ],
+      "status": "APPROVED",
+      "priceBreakdownId": "fixture-price-guided-tour",
+      "review": {
+        "reviewId": "fixture-review-guided-tour",
+        "subject": {
+          "subjectType": "SupplierOffer",
+          "subjectId": "guided-tour",
+          "materialVersion": 1
+        },
+        "outcome": "PASS",
+        "reasons": [
+          "Explicit offline fixture approval"
+        ],
+        "reviewedAt": "2026-10-12T10:00:00+11:00",
+        "policyVersion": "fixture-only-1",
+        "sourceIds": [
+          "guided-tour"
+        ]
+      },
+      "approvalId": null
+    },
+    "price": {
+      "schemaVersion": "1.0.0",
+      "caseId": "demo-case",
+      "correlationId": "demo-correlation",
+      "sourceReferences": [
+        {
+          "sourceId": "guided-tour",
+          "sourceType": "FIXTURE",
+          "sourceReference": "fixture://b03/supplier-offers/guided-tour",
+          "capturedAt": "2026-10-12T10:00:00+11:00",
+          "freshness": "FRESH",
+          "simulated": true
+        }
+      ],
+      "validationResults": [
+        {
+          "ruleId": "PRICE_MARGIN",
+          "ruleVersion": "planning-1.0",
+          "outcome": "PASS",
+          "reason": "AUD ROUND_HALF_UP; margin verified after rounding",
+          "checkedAt": "2026-10-12T10:00:00+11:00",
+          "sourceIds": []
+        }
+      ],
+      "errors": [],
+      "requiresApproval": false,
+      "priceBreakdownId": "fixture-price-guided-tour",
+      "offerId": "guided-tour",
+      "offerVersion": 1,
+      "supplierCost": {
+        "amount": "70.00",
+        "currency": "AUD"
+      },
+      "markupRate": "0.10",
+      "basePrice": {
+        "amount": "77.00",
+        "currency": "AUD"
+      },
+      "discountAmount": {
+        "amount": "0.00",
+        "currency": "AUD"
+      },
+      "sellingPrice": {
+        "amount": "77.00",
+        "currency": "AUD"
+      },
+      "marginAmount": {
+        "amount": "7.00",
+        "currency": "AUD"
+      },
+      "minimumMargin": {
+        "amount": "0.00",
+        "currency": "AUD"
+      },
+      "quotedQuantity": 1,
+      "unitBasis": "complete one-person package including mandatory charges",
+      "pricingConfigVersion": "fixture-pricing-1",
+      "calculatedAt": "2026-10-12T10:00:00+11:00",
+      "memberOfferRuleId": null,
+      "entitlementDecisionId": null
+    },
+    "product": {
+      "productId": "guided-tour",
+      "role": "ACTIVITY",
+      "startAt": "2026-10-21T10:00:00+11:00",
+      "endAt": "2026-10-21T12:00:00+11:00",
+      "origin": "Melbourne Centre",
+      "destination": "Melbourne Centre",
+      "partySize": 1,
+      "accessible": true,
+      "baggageKg": 20,
+      "comfort": "0.95",
+      "reliability": "0.98",
+      "minConnectionMinutes": 30,
+      "openingStart": "2026-10-21T09:00:00+11:00",
+      "openingEnd": "2026-10-21T17:00:00+11:00",
+      "sourceIds": [
+        "guided-tour"
+      ]
+    }
+  }
+]
