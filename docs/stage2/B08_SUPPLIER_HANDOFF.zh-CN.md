@@ -1,5 +1,9 @@
 # B08：供应商报价评估与定价交接
 
+**最新适配：** 已同步 Supabase 门户与 Operations。结构化供应商请求进入 SupplierGateway，
+报价、版本与审批使用共享私有云记录；未接自动 Reviewer 时等待登录的 Operator 显式审核。
+详见 [Supabase 适配说明](SUPABASE_ADAPTATION.md)。下方模拟演示属于独立开发工作台。
+
 负责人：Jason。对应 UC-06、SUP-01、SUP-02、AD-04、SD-04、SM-04。
 代码位于 `src/tripmate/supplier/`；`SupplierPartnershipAgent(runtime)` 调用实际流程，
 未注入 runtime 的共享组合仍显式返回 STUB。
@@ -48,7 +52,7 @@ $env:PYTHONPATH="src"
 python -m tripmate.supplier.demo --scenario coach
 python -m tripmate.supplier.demo --scenario zero-stock
 python -m tripmate.supplier.demo --scenario pending-approval
-python -m tripmate.api.server --port 8765
+python -m tripmate.api.server --workbench --port 8765
 ```
 
 网页新增 Supplier assessment，可手动选择有效报价、过期、零库存、缺成本、USD、

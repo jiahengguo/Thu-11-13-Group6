@@ -6,6 +6,10 @@
 
 ## Start the application (Windows PowerShell)
 
+**Current architecture:** Default startup now uses authenticated Supabase portals.
+The routes below describe isolated local workbench tools. See
+[SUPABASE_ADAPTATION.md](SUPABASE_ADAPTATION.md) for cloud fixtures and current setup.
+
 The `supplier-partnership` delivery folder contains changed files only. Apply
 them at matching paths in a branch based on the team repository's `main`; it
 relies on the shared contracts and framework already in that repository.
@@ -18,8 +22,8 @@ From the **repository root** (the folder containing `pyproject.toml`):
 ```powershell
 py -3 -m venv .venv
 .\.venv\Scripts\python.exe -m pip install -e .
-Copy-Item .env.example .env
-.\.venv\Scripts\python.exe -m tripmate.api.server --port 8765
+if (!(Test-Path .env)) { Copy-Item .env.example .env }
+.\.venv\Scripts\python.exe -m tripmate.api.server --workbench --port 8765
 ```
 
 Then open `http://127.0.0.1:8765` in a browser. The web app is intentionally **bound to localhost** and designed for a classroom prototype, not deployment on a public server. On the default `.env` settings, business workflows are **FIXTURE**. You can inspect startup/persistence checks, view B03 data and safely reset simulation fixtures. The optional Planning fixture demo becomes available after Moore’s separate branch is merged.

@@ -30,6 +30,10 @@ class SupplierRuntime:
         if offer:
             result['validationResults'] = deepcopy(offer['validationResults'])
             result['requiresApproval'] = offer['requiresApproval']
+            result['proposedResponse'] = (
+                'Supplier quotation ' + offer['offerId'] + ', version ' + str(offer['materialVersion'])
+                + (' passed offer assessment. This prototype makes no booking or supplier commitment.'
+                   if offer['status'] == 'APPROVED' else ' is awaiting its scoped offer review or decision.'))
         if error:
             result['errors'] = [dict(code=error.code, message=str(error), step='supplier',
                                      retryable=error.code in {'TOOL_UNAVAILABLE', 'PERSISTENCE_FAILED', 'LLM_TIMEOUT'},
@@ -71,7 +75,7 @@ class SupplierRuntime:
                     or case['unresolvedQuestions'] or case['errors']
                     or case['primaryHandler'] not in {None, 'supplier'}):
                 raise SupplierError('UNCONFIRMED_REQUEST', 'A confirmed, assigned supplier source is required')
-            if any(port is None for port in (self.pricing, self.reviewer, self.traces, self.approvals, self.access)):
+            if any(port is None for port in (self.pricing, self.traces, self.approvals, self.access)):
                 raise SupplierError('TOOL_UNAVAILABLE', 'Configure shared pricing, review, trace, approval and access ports')
             context = deepcopy(self.load_input(case['caseId']))
             offer_id = context.get('offerId')
@@ -131,27 +135,15 @@ class SupplierRuntime:
             offer['requiresApproval'] = (case['requiresApproval']
                                         or any(term not in self.ordinary_terms for term in offer['commercialTerms']))
             offer['status'] = 'UNDER_REVIEW'
-            offer['review'] = self.reviewer.review(deepcopy(offer), deepcopy(refs),
-                                                   [{'policyVersion': self.policy.version,
-                                                     'requiresApproval': offer['requiresApproval']}])
-            at = self.clock()
-            validate_offer(offer, at)
-            self._check_review(offer, at, price['calculatedAt'])
-            if offer['requiresApproval']:
-                approval = envelope(offer)
-                approval.update(requiresApproval=True, approvalId=uid('approval'), subject=subject(offer),
-                                scope='restricted_supplier_terms', status='PENDING', decision=None,
-                                requestedAt=at, decidedAt=None, operatorId=None, reason=None,
-                                reviewId=offer['review']['reviewId'])
-                validate('Approval', approval)
-                try:
-                    self.approvals.save(deepcopy(approval))
-                except Exception:
-                    raise SupplierError('PERSISTENCE_FAILED', 'Shared approval request save failed') from None
-                offer.update(status='AWAITING_APPROVAL', approvalId=approval['approvalId'])
-                status = 'APPROVAL_PENDING'
+            if self.reviewer is not None:
+                offer['review'] = self.reviewer.review(deepcopy(offer), deepcopy(refs),
+                                                       [{'policyVersion': self.policy.version,
+                                                         'requiresApproval': offer['requiresApproval']}])
+                status = self._advance_reviewed(offer, price)
             else:
-                offer['status'], status = 'APPROVED', 'SUCCESS'
+                # Authenticated portal operators supply an explicit scoped review.
+                # An absent automatic B10 reviewer does not fabricate PASS.
+                status = 'SUCCESS'
             validate('SupplierOffer', offer)
             product = deepcopy(context.get('product'))
             if product is not None and (not isinstance(product, dict)
@@ -159,9 +151,10 @@ class SupplierRuntime:
                     or not product.get('sourceIds') or not set(product['sourceIds']).issubset(ids)):
                 raise SupplierError('VERIFICATION_FAILED', 'Product metadata must match this sourced offer')
             result = self._result(offer, run, status, offer)
-            self._trace(offer, run, subject(offer), 'APPROVAL_REQUESTED' if offer['requiresApproval'] else 'VALIDATION',
-                        'PENDING' if offer['requiresApproval'] else 'SUCCESS',
-                        'Assessment passed; final Supplier snapshot persistence follows.', offer['approvalId'])
+            pending = status == 'APPROVAL_PENDING' or offer['status'] == 'UNDER_REVIEW'
+            self._trace(offer, run, subject(offer), 'APPROVAL_REQUESTED' if status == 'APPROVAL_PENDING' else 'VALIDATION',
+                        'PENDING' if pending else 'SUCCESS',
+                        'Source assessment recorded; explicit review and scoped approval gates remain in force.', offer['approvalId'])
             self.repository.save(offer_id, version, dict(offer=offer, price=price, result=result,
                                                         product=product, supplierId=case['requesterId'],
                                                         caseId=case['caseId'], executionMode=self.mode))
@@ -169,7 +162,7 @@ class SupplierRuntime:
         except Exception as exc:
             if isinstance(exc, SupplierError):
                 error = exc
-            elif isinstance(exc, (OSError, sqlite3.Error)):
+            elif isinstance(exc, (OSError, sqlite3.Error)) or getattr(exc, 'code', None) == 'CLOUD_UNAVAILABLE':
                 error = SupplierError('PERSISTENCE_FAILED', 'Supplier evidence or snapshot could not be saved')
             elif getattr(exc, 'code', None) in {'MARGIN_FAILED', 'OFFER_INVALID', 'TOOL_UNAVAILABLE', 'LLM_TIMEOUT'}:
                 error = SupplierError(exc.code, 'Shared supplier dependency rejected this assessment')
@@ -193,6 +186,51 @@ class SupplierRuntime:
                     result = self._result(case, run, 'FAILURE',
                                           error=SupplierError('PERSISTENCE_FAILED', 'Failed to persist the rejected assessment'))
             return result
+
+    def _advance_reviewed(self, offer, price):
+        at = self.clock()
+        validate_offer(offer, at)
+        verify_price(offer, price, self.policy)
+        self._check_review(offer, at, price['calculatedAt'])
+        if not offer['requiresApproval']:
+            offer['status'] = 'APPROVED'
+            return 'SUCCESS'
+        approval = envelope(offer)
+        approval.update(requiresApproval=True, approvalId=uid('approval'), subject=subject(offer),
+                        scope='restricted_supplier_terms', status='PENDING', decision=None,
+                        requestedAt=at, decidedAt=None, operatorId=None, reason=None,
+                        reviewId=offer['review']['reviewId'])
+        validate('Approval', approval)
+        try:
+            self.approvals.save(deepcopy(approval))
+        except Exception:
+            raise SupplierError('PERSISTENCE_FAILED', 'Scoped approval request save failed') from None
+        offer.update(status='AWAITING_APPROVAL', approvalId=approval['approvalId'])
+        return 'APPROVAL_PENDING'
+
+    def apply_review(self, offer_id, material_version, review, operator_id):
+        record = self.repository.current(offer_id)
+        if not record or not record['offer'] or record['executionMode'] != self.mode:
+            raise SupplierError('REVIEW_FAILED', 'No offer is available for review')
+        offer, price = deepcopy(record['offer']), record['price']
+        if (offer['materialVersion'] != material_version or offer['status'] != 'UNDER_REVIEW'
+                or not self.access.authorise(operator_id, 'REVIEW_SUPPLIER_OFFER', subject(offer))):
+            raise SupplierError('ACCESS_DENIED', 'Review requires an authorised operator and current unreviewed version')
+        offer['review'] = deepcopy(review)
+        validate('SupplierOffer', offer)
+        if not review['reasons'] or review['subject'] != subject(offer):
+            raise SupplierError('REVIEW_FAILED', 'Record evidence and a reason for this exact version')
+        if review['outcome'] == 'PASS':
+            status = self._advance_reviewed(offer, price)
+        else:
+            if not timestamp(price['calculatedAt']) <= timestamp(review['reviewedAt']) <= timestamp(self.clock()):
+                raise SupplierError('REVIEW_FAILED', 'Review timestamp does not match this assessment')
+            offer['status'], status = 'REVISION_REQUIRED', 'REVISION_REQUIRED'
+        result = self._result(offer, uid('supplier-run'), status, offer)
+        self._trace(offer, result['runId'], subject(offer), 'REVIEW',
+                    'SUCCESS' if status == 'SUCCESS' else 'PENDING', 'Operator reviewed this offer version.', offer['approvalId'])
+        self.repository.save(offer_id, material_version, dict(record, offer=offer, result=result))
+        return result
 
     def apply_decision(self, approval):
         """Consume an already persisted B10 decision; the caller cannot invent one."""
