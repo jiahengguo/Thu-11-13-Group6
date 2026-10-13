@@ -1,10 +1,12 @@
 # TripMate AI
 
+**Supplier Partnership B02/B03 branch (13 October 2026):** Local-only Web API/SQLite foundation, replayable synthetic supplier/traveller/disruption fixtures, controlled reset, and a model-smoke endpoint have been added. [Handoff](docs/stage2/B02_B03_HANDOFF.md). Four-agent workflows are **not** integrated. Planning demonstrations and campus model integration are enabled only after their separate provider implementation is merged; until then, the page reports them as unavailable.
+
 [English](README.md) | [简体中文](README.zh-CN.md)
 
 TripMate AI is an ELEC5620 project exploring whether one human founder can operate a useful travel service with four collaborating AI agents. The project focuses on Australian domestic trips and uses simulated supplier, booking, payment, and disruption data.
 
-The Stage 1 report is the design baseline. **Stage 2 B01 now has a shared contract and modular project framework**, pending four-member review. Web/database startup and real LLM integration remain B02 work.
+The Stage 1 report is the design baseline. **Stage 2 B01 now has a shared contract and modular project framework**, pending four-member review. B02 provides a local-only Web/API and SQLite workspace; a real campus LLM check requires the separately supplied provider adapter and network/credentials.
 
 Start with the [project framework and local checks](#project-framework), [v1.0.0 contracts](docs/contracts/v1/CONTRACTS.md), [requirement mapping](docs/contracts/v1/REQUIREMENT_MAPPING.md), and [B01 acceptance record](docs/contracts/v1/B01_ACCEPTANCE.md).
 
@@ -46,9 +48,10 @@ A shared Reviewer/Guardrail checks constraints, evidence, pricing, policy, and a
 The framework follows the Stage 1 report's four-agent architecture, UC-01–UC-08,
 G-04/G-05 and the B01 shared-contract requirements. The 10 October 2026 delivery
 covers contracts and module boundaries. Python 3.9+ is the backend skeleton's
-implementation choice; the report does not prescribe a language. Jason will wire
-the HTTP/frontend framework and SQLite adapter in B02. Contract checks run now;
-web, database and real LLM execution are not yet implemented.
+implementation choice; the report does not prescribe a language. B02 now provides
+a local HTTP/static frontend and SQLite workspace, and B03 provides resettable
+synthetic fixtures. A real model check requires the separately merged campus
+adapter, a local key and campus/VPN access. Four-agent business integration is pending.
 
 ### Application structure
 
@@ -86,7 +89,7 @@ src/tripmate/
   adapters/ports.py    LLM and approved-offer lookup ports
   persistence/ports.py Trace and approval repository ports
   api/                 B02 HTTP boundary
-web/                   B02 shared frontend boundary
+api/static/            B02 frontend assets (inside src/tripmate/)
 docs/
   contracts/v1/        Contracts, mappings, review evidence and JSON examples
 tests/                 B01 success and rejection-path tests
@@ -112,9 +115,10 @@ python3 -m venv .venv
 ```
 
 If the project itself is not installed, install `jsonschema[format]>=4.23,<5`
-and prefix the last three commands with `PYTHONPATH=src`. `.env.example` reserves
-B02 configuration; the current CLI does not read it. Changing STUB to REAL does
-not connect a model. B02 must implement the adapter and record a real smoke call.
+and prefix the last three commands with `PYTHONPATH=src`. The B02 server reads
+`.env`; the framework-inspection CLI does not. Start the workbench with
+`python -m tripmate.api.server --port 8765`. B02 supports FIXTURE and STUB business
+modes; use the separate model-smoke action to record a live call or its blocker.
 
 ### B01 deliverables
 

@@ -1,10 +1,12 @@
 # TripMate AI
 
+**Supplier Partnership B02/B03 独立分支（2026-10-13）：** 已新增本地 Web/API、SQLite、可重复的模拟供应商/旅客/取消测试数据和安全 Reset。启动及交接见 [B02/B03 说明](docs/stage2/B02_B03_HANDOFF.md)。四 Agent 仍未完成集成；Moore 的 Planning 及校园模型适配器属于另一分支，未合入时会明确提示不可用，不伪装成已完成。
+
 [English](README.md) | [简体中文](README.zh-CN.md)
 
 TripMate AI 是 ELEC5620 课程项目，用于验证一名人类创始人能否在四个协作式 AI Agent 的支持下运营旅行服务。项目聚焦澳大利亚境内短途旅行，并使用模拟的供应商、预订、支付和异常数据。
 
-Stage 1 报告作为设计基线。**Stage 2 B01 的共享契约和模块框架已搭建，待四位成员审核**。Web、数据库启动和真实 LLM 接入由 B02 完成。
+Stage 1 报告作为设计基线。**Stage 2 B01 的共享契约和模块框架已搭建，待四位成员审核**。B02 已补充本地 Web/API、SQLite 工作台；真实校园模型检测仍依赖独立适配器、凭据和校园网络。
 
 入口：[项目框架](#项目框架)、[v1.0.0 契约](docs/contracts/v1/CONTRACTS.md)、[需求映射](docs/contracts/v1/REQUIREMENT_MAPPING.md)、[B01 验收记录](docs/contracts/v1/B01_ACCEPTANCE.md)。
 
@@ -45,8 +47,9 @@ Stage 1 报告作为设计基线。**Stage 2 B01 的共享契约和模块框架�
 
 本框架依据 Stage 1 报告的四 Agent 架构、UC-01–UC-08、G-04/G-05，以及
 planning 中 B01 的接口约定要求建立。2026-10-10 的交付范围为共享契约和模块边界。
-Python 3.9+ 是本次后端骨架的实现选择；报告没有指定语言。HTTP/前端框架与 SQLite
-适配器由 Jason 在 B02 接入。当前可以运行契约检查，尚没有 Web、数据库或真实 LLM。
+Python 3.9+ 是本次后端骨架的实现选择；报告没有指定语言。
+B02 已实现本地 HTTP/静态页面和 SQLite 工作台，B03 已实现可重置模拟数据。
+真实模型检测依赖另行合并的校园适配器、本地密钥及校园/VPN 网络；四 Agent 业务集成待完成。
 
 ## 整体结构
 
@@ -82,7 +85,7 @@ src/tripmate/
   adapters/ports.py    LLM 与合格报价查询接口
   persistence/ports.py Trace 和审批存储接口
   api/                 B02 的 HTTP 接入边界
-web/                   B02 的统一前端接入边界
+api/static/            B02 前端资源（位于 src/tripmate/ 内）
 docs/
   contracts/v1/        契约文档、需求映射、审核记录与 JSON 示例
 tests/                 B01 正向和拒绝路径测试
@@ -106,8 +109,9 @@ python3 -m venv .venv
 ```
 
 如果暂时没有安装项目本身，也可先安装 `jsonschema[format]>=4.23,<5`，在后三条
-命令前加 `PYTHONPATH=src`。`.env.example` 只是 B02 的配置约定，当前 CLI 不读取它。
-不要把 STUB 改成 REAL 就认为已经接上模型；B02 必须实现适配器并记录真实 smoke call。
+命令前加 `PYTHONPATH=src`。B02 服务会读取 `.env`，框架检查 CLI 不读取它。
+用 `python -m tripmate.api.server --port 8765` 启动工作台。业务模式支持 FIXTURE 和 STUB；
+模型检测单独记录真实调用结果或阻塞原因。
 
 ## B01 文件入口
 
