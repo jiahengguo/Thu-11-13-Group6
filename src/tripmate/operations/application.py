@@ -63,7 +63,7 @@ def validate_fragment(name, value):
 
 class OperationsService:
     def __init__(self, repository, fixtures, clock=now, llm=None, specialists=None,
-                 planning_repository=None, adopt=None, reviewer=None, dependency_timeout=30):
+                 planning_repository=None, adopt=None, reviewer=None, dependency_timeout=30, seed_profiles=True):
         self.repository, self.fixtures, self.clock = repository, fixtures, clock
         self.llm, self.specialists = llm, specialists or {}
         self.planning_repository, self.adopt, self.reviewer = planning_repository, adopt, reviewer
@@ -74,7 +74,8 @@ class OperationsService:
         self.adoption_lock = RLock()
         self.access = AccessService(self.profile)
         self.entitlement = Entitlements(self.profile, self.trips, clock)
-        self._seed_profiles()
+        if seed_profiles:
+            self._seed_profiles()
 
     def _dependency(self, operation):
         """Bound waiting without retrying a timed-out, possibly still-running task.

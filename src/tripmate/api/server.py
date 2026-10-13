@@ -4,6 +4,7 @@ import json
 import re
 import secrets
 import sqlite3
+import sys
 from contextlib import closing
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
@@ -352,7 +353,11 @@ def make_server(settings, port=8765, llm_factory=None):
 
 
 def main():
+    if "--workbench" not in sys.argv[1:]:
+        from tripmate.portal.server import main as portal_main
+        return portal_main()
     parser = argparse.ArgumentParser(description="TripMate local B02 workbench")
+    parser.add_argument("--workbench", action="store_true", help="Explicitly enable the isolated, unauthenticated development workbench")
     parser.add_argument("--port", type=int, default=8765)
     parser.add_argument("--env-file", type=Path, default=Path(".env"))
     args = parser.parse_args()

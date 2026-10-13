@@ -1,5 +1,23 @@
 # TripMate AI
 
+**Authenticated portals branch (13 October 2026):** `portal-supabase-integration`
+adds a public website and separate Traveller `/app`, Supplier `/supplier`, and
+Operator `/admin` portals. Supabase Auth verifies real accounts; backend role and
+ownership checks protect private cloud Operations records. The default web entry
+now runs authenticated portals. The B02/B03 role-switching workbench requires
+explicit `--workbench` and remains isolated development tooling.
+
+```sh
+python -m pip install -e .
+# Configure the new project's keys in the ignored .env; apply migrations first.
+python -m tripmate.portal.server --port 8780
+```
+
+See [portal setup and boundaries](docs/portal/PORTAL_HANDOFF.md) and
+[portal verification](docs/portal/TEST_RESULTS.md). Auth and cloud persistence are
+real; specialist travel processing and financial transactions retain the report's
+prototype boundaries. Do not treat a portal deployment as four-agent completion.
+
 **Operations Agent branch (13 October 2026):** Run the existing local server and open
 `/operations` for confirmed request intake, simulated membership/access checks, tracked
 case coordination, operator review and controlled response delivery. See the
@@ -125,7 +143,7 @@ python3 -m venv .venv
 If the project itself is not installed, install `jsonschema[format]>=4.23,<5`
 and prefix the last three commands with `PYTHONPATH=src`. The B02 server reads
 `.env`; the framework-inspection CLI does not. Start the workbench with
-`python -m tripmate.api.server --port 8765`. B02 supports FIXTURE and STUB business
+`python -m tripmate.api.server --workbench --port 8765`. B02 supports FIXTURE and STUB business
 modes; use the separate model-smoke action to record a live call or its blocker.
 
 ### B01 deliverables

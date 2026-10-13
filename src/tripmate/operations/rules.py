@@ -16,12 +16,12 @@ class AccessService:
         if not profile or profile.get("verified") is not True:
             return False
         if profile["role"] == "OPERATOR":
-            return action in {"REVIEW_CASE", "CLOSE_CASE", "READ_CASE", "READ_TRACE", "ANALYSE"}
+            return action in {"REVIEW_CASE", "CLOSE_CASE", "READ_CASE", "READ_TRACE", "ANALYSE", "DELIVER"}
         owner = subject.get("travellerId", subject.get("requesterId"))
         if owner != requester_id:
             return False
         if profile["role"] == "SUPPLIER":
-            return action in {"READ_CASE", "CONFIRM", "DISPATCH", "WITHDRAW", "HUMAN", "DELIVER"}
+            return action in {"READ_CASE", "READ_TRACE", "CONFIRM", "DISPATCH", "WITHDRAW", "HUMAN", "DELIVER"}
         return action in TRIP_ACTIONS | {"READ_PLAN", "READ_CASE", "READ_TRACE", "CONFIRM", "DISPATCH", "WITHDRAW", "HUMAN", "DELIVER", "PREMIUM"}
 
 
