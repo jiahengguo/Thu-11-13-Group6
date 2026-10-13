@@ -13,7 +13,7 @@ python -m pip install -e .
 python -m tripmate.portal.server --port 8780
 ```
 
-See [portal setup and boundaries](docs/portal/PORTAL_HANDOFF.md) and
+See [delivery report](docs/portal/DELIVERY_REPORT.md), [portal setup and boundaries](docs/portal/PORTAL_HANDOFF.md) and
 [portal verification](docs/portal/TEST_RESULTS.md). Auth and cloud persistence are
 real; specialist travel processing and financial transactions retain the report's
 prototype boundaries. Do not treat a portal deployment as four-agent completion.
