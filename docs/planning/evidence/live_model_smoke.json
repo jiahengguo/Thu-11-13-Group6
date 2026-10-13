@@ -1,0 +1,214 @@
+{
+  "date": "2026-10-13",
+  "timezone": "Australia/Sydney",
+  "model": "campus-qwen",
+  "businessData": "FIXTURE",
+  "fixtureClock": "2026-10-12T10:00:00+11:00",
+  "normal": {
+    "status": "SUCCESS",
+    "modelPlanning": {
+      "model": "campus-qwen",
+      "callsAttempted": 1,
+      "attempts": [
+        {
+          "attempt": 1,
+          "proposal": {
+            "candidates": [
+              [
+                "coach",
+                "guided-tour",
+                "basic-stay"
+              ],
+              [
+                "coach",
+                "walk",
+                "basic-stay"
+              ]
+            ],
+            "explanation": "Only coach with basic-stay fits the 450 AUD ceiling; guided-tour is ranked first for stronger comfort and reliability."
+          },
+          "toolFeedback": [
+            {
+              "offerIds": [
+                "coach",
+                "guided-tour",
+                "basic-stay"
+              ],
+              "outcome": "PASS",
+              "checks": [],
+              "computedTotals": [
+                {
+                  "amount": "429.00",
+                  "currency": "AUD"
+                }
+              ]
+            },
+            {
+              "offerIds": [
+                "coach",
+                "walk",
+                "basic-stay"
+              ],
+              "outcome": "PASS",
+              "checks": [],
+              "computedTotals": [
+                {
+                  "amount": "396.00",
+                  "currency": "AUD"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "responses": [
+        {
+          "finishReason": "stop",
+          "usage": {
+            "prompt_tokens": 1633,
+            "total_tokens": 2323,
+            "completion_tokens": 690,
+            "prompt_tokens_details": null,
+            "completion_tokens_details": {
+              "reasoning_tokens": 633
+            }
+          }
+        }
+      ],
+      "status": "SUCCESS",
+      "supplierData": "FIXTURE",
+      "rankingScope": "validated model proposals only; not an exhaustive optimum"
+    },
+    "verifiedOptions": [
+      {
+        "total": {
+          "amount": "396.00",
+          "currency": "AUD"
+        },
+        "checkCount": 38,
+        "allPassed": true
+      },
+      {
+        "total": {
+          "amount": "429.00",
+          "currency": "AUD"
+        },
+        "checkCount": 38,
+        "allPassed": true
+      }
+    ]
+  },
+  "controlledRecovery": {
+    "test": "Controlled fixture fault: basic-stay quote expires at the fixed validation clock before execution. One cheapest candidate requested per round. Expiry checked by Python tool; real course model responses are not scripted.",
+    "status": "SUCCESS",
+    "attempts": [
+      {
+        "attempt": 1,
+        "proposal": {
+          "candidates": [
+            [
+              "coach",
+              "walk",
+              "basic-stay"
+            ]
+          ],
+          "explanation": "Cheapest complete one-way itinerary within AUD 550: coach outbound, walk activity, basic stay totals 396 AUD."
+        },
+        "toolFeedback": [
+          {
+            "offerIds": [
+              "coach",
+              "walk",
+              "basic-stay"
+            ],
+            "outcome": "FAIL",
+            "checks": [
+              {
+                "offerIds": [
+                  "coach",
+                  "basic-stay",
+                  "walk"
+                ],
+                "checks": [
+                  {
+                    "ruleId": "OFFER_VALIDITY",
+                    "ruleVersion": "planning-1.0",
+                    "outcome": "FAIL",
+                    "reason": "Quote must be current at validation time",
+                    "checkedAt": "2026-10-12T10:00:00+11:00",
+                    "sourceIds": [
+                      "basic-stay"
+                    ]
+                  }
+                ]
+              }
+            ],
+            "computedTotals": []
+          }
+        ]
+      },
+      {
+        "attempt": 2,
+        "proposal": {
+          "candidates": [
+            [
+              "coach",
+              "walk",
+              "comfort-stay"
+            ]
+          ],
+          "explanation": "Replaces the invalid basic-stay quote with the only remaining stay; total is 506 AUD, under the confirmed 550 AUD budget."
+        },
+        "toolFeedback": [
+          {
+            "offerIds": [
+              "coach",
+              "walk",
+              "comfort-stay"
+            ],
+            "outcome": "PASS",
+            "checks": [],
+            "computedTotals": [
+              {
+                "amount": "506.00",
+                "currency": "AUD"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "responses": [
+      {
+        "finishReason": "stop",
+        "usage": {
+          "prompt_tokens": 1226,
+          "total_tokens": 1742,
+          "completion_tokens": 516,
+          "prompt_tokens_details": null,
+          "completion_tokens_details": {
+            "reasoning_tokens": 468
+          }
+        }
+      },
+      {
+        "finishReason": "stop",
+        "usage": {
+          "prompt_tokens": 1434,
+          "total_tokens": 1723,
+          "completion_tokens": 289,
+          "prompt_tokens_details": null,
+          "completion_tokens_details": {
+            "reasoning_tokens": 237
+          }
+        }
+      }
+    ],
+    "totals": [
+      {
+        "amount": "506.00",
+        "currency": "AUD"
+      }
+    ]
+  }
+}

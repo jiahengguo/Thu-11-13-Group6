@@ -1,5 +1,7 @@
 # TripMate AI
 
+Travel Planning 已接入合并后的 Operations 接口与 B03 数据库，详见 [API 交接](docs/planning/Travel_Planning_API_Handoff.zh-CN.md)和 [main 联调说明](docs/planning/Main_Integration.zh-CN.md)。课程模型已实现共享 LLMService；正式 Supplier/Reviewer 尚待对接。
+
 **真实登录与门户分支（2026-10-13）：** `portal-supabase-integration` 接入新 Supabase 项目，提供官网、用户 `/app`、供应商 `/supplier` 和内部管理 `/admin`。默认 Web 入口运行真实身份与云端存储的门户；旧模拟工作台需要显式添加 `--workbench`。启动门户：`python -m tripmate.portal.server --port 8780`。详见 [门户配置与实现边界](docs/portal/PORTAL_HANDOFF.md) 和 [验证记录](docs/portal/TEST_RESULTS.md)。专业 Agent 仍需明确接入，交易保持报告中的模拟范围。
 
 **Operations Agent 分支（2026-10-13）：** 启动现有本地服务后访问 `/operations`，可使用请求补全与确认、模拟身份/会员校验、Case 跟踪、人工审核及受控回复。详见 [Operations 交接](docs/operations/OPERATIONS_HANDOFF.md) 和 [验证记录](docs/operations/TEST_RESULTS.md)。Planning、Supplier、Exception 与自动 Reviewer 通过明确的接口接入；本分支未合并 Travel Planning PR，也不宣称四 Agent 已完成联调。

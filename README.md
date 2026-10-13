@@ -1,5 +1,7 @@
 # TripMate AI
 
+Travel Planning now connects to the merged Operations ports and B03 catalog. See [Planning integration/API handoff](docs/planning/Travel_Planning_API_Handoff.zh-CN.md) and [main integration notes](docs/planning/Main_Integration.zh-CN.md). The course model adapter implements the shared `LLMService` port. Supplier/Reviewer production integration remains pending.
+
 **Authenticated portals branch (13 October 2026):** `portal-supabase-integration`
 adds a public website and separate Traveller `/app`, Supplier `/supplier`, and
 Operator `/admin` portals. Supabase Auth verifies real accounts; backend role and

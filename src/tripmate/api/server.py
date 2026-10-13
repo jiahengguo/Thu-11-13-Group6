@@ -33,7 +33,11 @@ def planning_is_available():
 
 
 class Workbench:
-    def __init__(self, settings, llm_factory=None):
+    def __init__(self, settings, llm_factory=None, *, planning_fixture=False, planning_live_model=False):
+        if planning_live_model and not planning_fixture:
+            raise ValueError('Live Planning requires explicit planning_fixture integration')
+        if planning_fixture and settings.mode != 'FIXTURE':
+            raise ValueError('Integrated development Planning requires FIXTURE mode')
         self.settings = settings
         self.store = PlatformStore(settings.database)
         self.fixtures = FixtureRepository(settings.database)
@@ -56,6 +60,17 @@ class Workbench:
             except (ImportError, ValueError):
                 pass  # An absent/incompatible adapter remains explicitly unconfigured.
         self.ops_sessions = {}
+        self.integrated_planning = None
+        self.planning_live_model = planning_live_model
+        if planning_fixture:
+            from tripmate.planning.integration import connect_workbench_planning
+            self.operations.clock = lambda: FIXTURE_TIME
+            self.operations.entitlement.clock = self.operations.clock
+            self.operations.dependency_timeout = 60
+            if planning_live_model and not has_model_key():
+                raise ValueError('Set the course model key locally before enabling live Planning')
+            self.integrated_planning = connect_workbench_planning(
+                self.operations, self.fixtures, settings.database, live_model=planning_live_model)
 
     def ops_actor(self, session):
         evidence = self.ops_sessions.get(session)
@@ -149,7 +164,9 @@ class Workbench:
                 "fixtureTime": FIXTURE_TIME,
                 "fixtureCatalog": "SEE_/api/fixtures" if self.settings.mode == "FIXTURE" else "DISABLED",
                 "integration": {"operations": "LOCAL_FIXTURE" if self.operations else "STUB", "supplier": "STUB",
-                                "exception": "STUB", "planning": "ISOLATED_FIXTURE" if planning_is_available() else "NOT_INSTALLED"}}
+                                "exception": "STUB", "planning": "OPERATIONS_B03_FIXTURE" if self.integrated_planning else "ISOLATED_FIXTURE" if planning_is_available() else "NOT_INSTALLED",
+                                "reviewer": "EXPLICIT_FIXTURE" if self.integrated_planning else "NOT_INTEGRATED",
+                                "planningModel": "CAMPUS_LIVE" if self.planning_live_model else "DETERMINISTIC"}}
 
     def planning(self, body):
         if self.settings.mode != "FIXTURE":
@@ -228,8 +245,8 @@ class Workbench:
         return self.store.record("LLM_SMOKE", outcome, details)
 
 
-def make_server(settings, port=8765, llm_factory=None):
-    app = Workbench(settings, llm_factory)
+def make_server(settings, port=8765, llm_factory=None, *, planning_fixture=False, planning_live_model=False):
+    app = Workbench(settings, llm_factory, planning_fixture=planning_fixture, planning_live_model=planning_live_model)
     static = Path(__file__).with_name("static")
 
     class Handler(BaseHTTPRequestHandler):
@@ -358,12 +375,14 @@ def main():
         return portal_main()
     parser = argparse.ArgumentParser(description="TripMate local B02 workbench")
     parser.add_argument("--workbench", action="store_true", help="Explicitly enable the isolated, unauthenticated development workbench")
+    parser.add_argument('--planning-fixture', action='store_true', help='Connect actual Operations + B03 database + Planning with an explicit fixture Reviewer')
+    parser.add_argument('--planning-live-model', action='store_true', help='Use campus-qwen for integrated Planning; requires --planning-fixture')
     parser.add_argument("--port", type=int, default=8765)
     parser.add_argument("--env-file", type=Path, default=Path(".env"))
     args = parser.parse_args()
     try:
         settings = Settings.load(args.env_file)
-        server = make_server(settings, args.port)
+        server = make_server(settings, args.port, planning_fixture=args.planning_fixture, planning_live_model=args.planning_live_model)
     except (ValueError, OSError, sqlite3.Error) as exc:
         parser.exit(1, "Startup failed: check mode, database permissions and port availability. " + type(exc).__name__ + "\n")
     print(f"TripMate B02 | {settings.mode} business data | http://127.0.0.1:{server.server_port}", flush=True)
@@ -373,6 +392,8 @@ def main():
         pass
     finally:
         server.server_close()
+        if server.app.integrated_planning:
+            server.app.integrated_planning.close()
 
 
 if __name__ == "__main__":
