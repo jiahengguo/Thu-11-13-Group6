@@ -41,6 +41,8 @@ class Workbench:
             settings.database.stem + ".planning-demo" + settings.database.suffix)
         if self.planning_db.resolve() == settings.database.resolve():
             raise ValueError("Planning demonstration database must be separate")
+        self.supplier_db = settings.database.with_name(
+            settings.database.stem + '.supplier-demo' + settings.database.suffix)
         self.token = secrets.token_urlsafe(32)
         self.busy = BoundedSemaphore(1)
 
@@ -49,6 +51,7 @@ class Workbench:
                 "database": "CONNECTED" if self.store.healthy() else "UNAVAILABLE",
                 "modelConfigured": has_model_key(), "csrfToken": self.token,
                 "fixtureTime": FIXTURE_TIME,
+                "supplierAssessment": "FIXTURE_AVAILABLE" if planning_is_available() else "B04_NOT_INSTALLED",
                 "fixtureCatalog": "SEE_/api/fixtures" if self.settings.mode == "FIXTURE" else "DISABLED",
                 "integration": {"operations": "STUB", "supplier": "STUB",
                                 "exception": "STUB", "planning": "ISOLATED_FIXTURE" if planning_is_available() else "NOT_INSTALLED"}}
@@ -84,6 +87,22 @@ class Workbench:
             raise WorkbenchError("NOT_IMPLEMENTED", "Fixture catalog requires FIXTURE mode")
         return self.fixtures.summary()
 
+    def supplier_demo(self, body):
+        if self.settings.mode != 'FIXTURE':
+            raise WorkbenchError('NOT_IMPLEMENTED', 'Supplier demonstration requires FIXTURE mode')
+        from tripmate.supplier.fixtures import fixture_runtime
+        scenario = body.get('scenario', 'coach')
+        if not isinstance(scenario, str):
+            raise ValueError('Choose a documented supplier scenario')
+        case, runtime = fixture_runtime(self.supplier_db, scenario)
+        result = runtime.handle_case(case)
+        record = runtime.repository.current(runtime.load_input(case['caseId'])['offerId'])
+        evidence = self.store.record('SUPPLIER_FIXTURE', result['status'],
+                                    {'caseId': case['caseId'], 'runId': result['runId'], 'scenario': scenario,
+                                     'executionMode': 'FIXTURE', 'modelExecution': 'FIXTURE_REPLAY'})
+        return {'result': result, 'snapshot': record, 'evidence': evidence,
+                'notice': 'B04 pricing executed; extraction, access, trace and review are synthetic adapters. No commitment or live AI call.'}
+
     def reset_fixtures(self):
         if self.settings.mode != "FIXTURE":
             raise WorkbenchError("NOT_IMPLEMENTED", "Reset is disabled outside FIXTURE mode")
@@ -97,6 +116,13 @@ class Workbench:
                 existing = {row[0] for row in db.execute("SELECT name FROM sqlite_master WHERE type='table'")}
                 for table in sorted(existing & allowed):
                     db.execute("DELETE FROM " + table)
+        if self.supplier_db.exists():
+            with closing(sqlite3.connect(str(self.supplier_db), timeout=10)) as db, db:
+                db.execute('BEGIN IMMEDIATE')
+                existing = {row[0] for row in db.execute("SELECT name FROM sqlite_master WHERE type='table'")}
+                allowed = {'supplier_current', 'supplier_versions', 'supplier_fixture_events', 'supplier_fixture_approvals'}
+                for table in sorted(existing & allowed):
+                    db.execute('DELETE FROM ' + table)
         return result
 
     def smoke(self):
@@ -181,6 +207,16 @@ def make_server(settings, port=8765, llm_factory=None):
 
         def do_POST(self):
             if not self.local_request() or not secrets.compare_digest(self.headers.get("X-TripMate-Token", ""), app.token):
+                # Discard a bounded body before closing an HTTP/1.0 connection.
+                # Unread inbound bytes can otherwise reset the socket on Windows
+                # before the caller receives the intended 403 response.
+                try:
+                    size = int(self.headers.get('Content-Length', '0'))
+                    if 0 < size <= 8192:
+                        self.connection.settimeout(1)
+                        self.rfile.read(size)
+                except (ValueError, OSError):
+                    pass
                 return self.send(403, {"error": "LOCAL_TOKEN_REQUIRED"})
             if self.headers.get("Content-Type", "").split(";")[0].strip() != "application/json":
                 return self.send(415, {"error": "JSON_REQUIRED"})
@@ -201,6 +237,10 @@ def make_server(settings, port=8765, llm_factory=None):
                     if set(body) - {"mode", "budget"}:
                         raise ValueError("Unexpected demo fields")
                     return self.send(200, app.planning(body))
+                if self.path == '/api/supplier-demo':
+                    if set(body) - {'scenario'}:
+                        raise ValueError('Unexpected supplier demo fields')
+                    return self.send(200, app.supplier_demo(body))
                 if self.path == "/api/fixtures/reset":
                     if body:
                         raise ValueError("Fixture reset accepts no user content")

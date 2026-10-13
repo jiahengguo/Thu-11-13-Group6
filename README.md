@@ -1,5 +1,10 @@
 # TripMate AI
 
+**B08 Supplier assessment:** UC-06 source validation, versioned pricing/review/approval
+and reusable approved-offer lookup are implemented with injected shared services.
+The local page includes an explicit fixture demonstration when B04 is installed.
+See the [B08 handoff](docs/stage2/B08_SUPPLIER_HANDOFF.zh-CN.md).
+
 **Supplier Partnership B02/B03 branch (13 October 2026):** Local-only Web API/SQLite foundation, replayable synthetic supplier/traveller/disruption fixtures, controlled reset, and a model-smoke endpoint have been added. [Handoff](docs/stage2/B02_B03_HANDOFF.md). Four-agent workflows are **not** integrated. Planning demonstrations and campus model integration are enabled only after their separate provider implementation is merged; until then, the page reports them as unavailable.
 
 [English](README.md) | [简体中文](README.zh-CN.md)

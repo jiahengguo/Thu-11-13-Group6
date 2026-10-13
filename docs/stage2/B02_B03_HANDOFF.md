@@ -100,4 +100,9 @@ Run `python -m unittest discover -s tests -v` before making Jira completion clai
 
 ## Branch ownership and integration boundary
 
+**B08 extension:** The later Supplier implementation adds an explicit
+`POST /api/supplier-demo` fixture action and a separate `*.supplier-demo.sqlite3`.
+Reset also clears its four B08 demo tables; supplier business tables in the shared
+database are preserved. See B08_SUPPLIER_HANDOFF.zh-CN.md for dependencies and scope.
+
 This change set is based on the team `main` baseline. Do not copy Moore’s `src/tripmate/planning/`, `src/tripmate/adapters/campus.py`, `docs/planning/`, or tests into this feature branch: those belong to `codex/travel-planning`. B02 exposes optional hooks; before that branch is merged, the Planning action is disabled and the campus model adapter check records `MODEL_ADAPTER_NOT_INSTALLED` if credentials exist. The synthetic B03 quote examples are data fixtures, not copied Planning source. Later merge both PRs into a common `main` and run integration regression tests.
