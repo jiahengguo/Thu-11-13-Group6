@@ -1,5 +1,9 @@
 # TripMate AI
 
+**B08 供应商评估：** 已新增 UC-06 源数据校验、版本化定价/审核/审批与可复用报价查询。
+共享服务通过接口注入；有 B04 时网页可运行明确标注的模拟演示。
+详见 [B08 交接说明](docs/stage2/B08_SUPPLIER_HANDOFF.zh-CN.md)。
+
 **Supplier Partnership B02/B03 独立分支（2026-10-13）：** 已新增本地 Web/API、SQLite、可重复的模拟供应商/旅客/取消测试数据和安全 Reset。启动及交接见 [B02/B03 说明](docs/stage2/B02_B03_HANDOFF.md)。四 Agent 仍未完成集成；Moore 的 Planning 及校园模型适配器属于另一分支，未合入时会明确提示不可用，不伪装成已完成。
 
 [English](README.md) | [简体中文](README.zh-CN.md)
