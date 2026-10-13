@@ -1,8 +1,21 @@
 # Operations acceptance evidence
 
-Date: 13 October 2026 (Australia/Sydney). Branch: `operations-agent`. Base: `1c83d8d`.
+Date: 13 October 2026 (Australia/Sydney). Branch: `operations-agent`. Updated base: `142b016`. Original acceptance base: `1c83d8d`.
 
-## Main-based regressions
+## Latest main synchronization
+
+PR #12 merged the Operations implementation and authenticated Supabase portals
+into `main`. The Operations branch was fast-forwarded to `142b016`; there were no
+code conflicts or unmerged Operations implementation changes. The handoff now
+separates the authenticated default entry point from the explicit fixture workbench.
+
+The updated branch regression run passed **88 tests** (the original 65 plus 23
+portal checks). Contract examples also passed validation, and `git diff --check`
+reported no whitespace errors. This synchronization does not claim another live
+Supabase or browser acceptance run; earlier portal evidence is recorded in
+[portal test results](../portal/TEST_RESULTS.md).
+
+## Original main-based regressions
 
 ```sh
 .venv/bin/python -m unittest discover -s tests -v
@@ -68,7 +81,9 @@ cover session identity, direct request rejection and protected reads.
 No personal `.env`, credential, runtime database or unrelated `.DS_Store` change belongs
 in the branch commit.
 
-No live campus model call, production authentication, automatic Supplier/Exception handling,
+The original fixture acceptance did not test production authentication; the subsequent
+Supabase portal delivery adds real authentication as documented above. No live campus
+model call, automatic Supplier/Exception handling,
 live map, discounted Planning quote or four-agent group acceptance is claimed. Those
 dependencies stay explicit in the interface and handoff. Teammate review/clean-start
 reproduction remains pending.
