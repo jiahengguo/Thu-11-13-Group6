@@ -5,9 +5,9 @@ from tripmate.agents.exception import CustomerExceptionAgent
 from tripmate.agents.supplier import SupplierPartnershipAgent
 
 
-def build_agents() -> dict:
+def build_agents(operations_service=None) -> dict:
     agents = (
-        OperationsAgent(), TravelPlanningAgent(),
+        OperationsAgent(operations_service), TravelPlanningAgent(),
         CustomerExceptionAgent(), SupplierPartnershipAgent(),
     )
     return {agent.agent_id: agent for agent in agents}

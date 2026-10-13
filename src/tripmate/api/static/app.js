@@ -79,7 +79,7 @@ async function start() {
     $("backend").textContent = "Connected"; $("database").textContent = data.database === "CONNECTED" ? "Connected" : "Unavailable";
     $("mode").textContent = data.executionMode; $("model").textContent = data.modelConfigured ? "Configured" : "Key needed";
     $("fixture-time").textContent = "Fixture clock: " + data.fixtureTime;
-    $("notice").textContent = "B02 foundation · " + data.executionMode + " business data. Four-agent integration, real permissions and approval services are pending.";
+    $("notice").textContent = "Shared workspace · " + data.executionMode + " business data. Operations has a local simulation desk; four-agent integration and production authentication remain pending.";
     if (data.integration.planning === "NOT_INSTALLED") {
       $("planning-form").querySelector('button[type="submit"]').disabled = true;
       $("planning-form").querySelector('button[type="submit"]').textContent = "Planning module is on a separate branch";

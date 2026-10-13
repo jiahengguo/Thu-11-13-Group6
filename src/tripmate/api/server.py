@@ -8,12 +8,16 @@ from contextlib import closing
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from threading import BoundedSemaphore
-from urllib.parse import urlsplit
+from urllib.parse import parse_qs, urlsplit
+from datetime import datetime, timezone, timedelta
 
 from importlib.util import find_spec
 from tripmate.fixtures.b03 import FIXTURE_TIME
 from tripmate.fixtures import FixtureRepository
 from tripmate.persistence.platform import PlatformStore
+from tripmate.operations import OperationsRepository, OperationsService
+from tripmate.operations.common import OperationsError, instant
+from tripmate.operations.analytics import analyse, experiment
 from .settings import Settings, has_model_key
 
 
@@ -43,6 +47,99 @@ class Workbench:
             raise ValueError("Planning demonstration database must be separate")
         self.token = secrets.token_urlsafe(32)
         self.busy = BoundedSemaphore(1)
+        self.operations = OperationsService(OperationsRepository(settings.database), self.fixtures) if settings.mode == "FIXTURE" else None
+        if self.operations is not None and has_model_key():
+            try:
+                from tripmate.adapters.campus import CampusLLMService
+                self.operations.llm = CampusLLMService(timeout=20)
+            except (ImportError, ValueError):
+                pass  # An absent/incompatible adapter remains explicitly unconfigured.
+        self.ops_sessions = {}
+
+    def ops_actor(self, session):
+        evidence = self.ops_sessions.get(session)
+        if not evidence or instant(evidence["expiresAt"]) <= datetime.now(timezone.utc):
+            raise OperationsError("ACCESS_DENIED", "Choose a simulated identity to start a new local session.")
+        return evidence["actor"]
+
+    def ops_post(self, action, body, session):
+        if self.operations is None:
+            raise OperationsError("NOT_IMPLEMENTED", "Operations requires explicit FIXTURE mode.")
+        if action == "session":
+            if set(body) != {"identityId"} or not isinstance(body["identityId"], str) or not self.operations.profile(body["identityId"]):
+                raise OperationsError("ACCESS_DENIED", "Select an available simulated identity.")
+            token = secrets.token_urlsafe(32)
+            # This is deliberately a fixture-role switcher, never a login claim.
+            evidence = {"actor": body["identityId"], "expiresAt": (datetime.now(timezone.utc)+timedelta(hours=1)).isoformat()}
+            if len(self.ops_sessions) >= 100:
+                self.ops_sessions = {k: v for k, v in self.ops_sessions.items() if instant(v["expiresAt"]) > datetime.now(timezone.utc)}
+                if len(self.ops_sessions) >= 100:
+                    raise OperationsError("TOOL_UNAVAILABLE", "Local session limit reached; restart or wait for expiry.")
+            self.ops_sessions[token] = evidence
+            return {"session": token, "identity": self.operations.profile(evidence["actor"]), "expiresAt": evidence["expiresAt"], "simulationOnly": True}
+        actor = self.ops_actor(session)
+        expected = {
+            "intake": ({"requestKey", "text"}, {"intents", "campaignId", "channel", "consent"}),
+            "confirm": ({"requestKey", "intakeId", "revision", "intents", "confirmed"}, set()),
+            "update-intake": ({"requestKey", "intakeId", "revision"}, {"intents", "human"}),
+            "dispatch": ({"requestKey", "caseId", "revision"}, set()),
+            "deliver": ({"requestKey", "caseId", "revision"}, set()),
+            "case-action": ({"requestKey", "caseId", "revision", "action"}, {"reason"}),
+            "clarify": ({"requestKey", "caseId", "revision", "intents", "confirmed"}, set()),
+            "review": ({"requestKey", "caseId", "revision", "decision", "reason"}, {"editedText"}),
+            "premium": ({"requestKey", "action"}, {"memberOfferRuleId"}),
+            "adopt": ({"requestKey", "versionId", "expectedBaseline", "accepted"}, set()),
+            "analysis": ({"requestKey", "data"}, set()),
+        }
+        if action not in expected:
+            raise OperationsError("INVALID_CONTRACT", "Unsupported Operations action.")
+        required, optional = expected[action]
+        if not required.issubset(body) or set(body) - required - optional:
+            raise OperationsError("INVALID_CONTRACT", "Required fields are missing or unexpected fields were supplied.")
+        if "revision" in body and (type(body["revision"]) is not int or body["revision"] < 1):
+            raise OperationsError("INVALID_CONTRACT", "A positive case/intake revision is required.")
+        for field in {"caseId", "intakeId", "versionId", "action", "decision"} & body.keys():
+            if not isinstance(body[field], str) or not 1 <= len(body[field]) <= 100:
+                raise OperationsError("INVALID_CONTRACT", "Invalid identifier or action.")
+        service, key = self.operations, body["requestKey"]
+        if action == "intake":
+            return service.intake(actor, key, body["text"], body.get("intents"), body.get("campaignId"), body.get("channel", "LOCAL"), body.get("consent", False))
+        if action == "confirm":
+            return service.confirm(actor, key, body["intakeId"], body["revision"], body["intents"], body["confirmed"])
+        if action == "update-intake":
+            if type(body.get("human", False)) is not bool:
+                raise OperationsError("INVALID_CONTRACT", "Human request flag must be boolean.")
+            return service.update_intake(actor, key, body["intakeId"], body["revision"], body.get("intents"), body.get("human", False))
+        if action in {"dispatch", "deliver"}:
+            return getattr(service, action)(actor, key, body["caseId"], body["revision"])
+        if action == "case-action":
+            return service.case_action(actor, key, body["caseId"], body["revision"], body["action"], body.get("reason", "Requester action"))
+        if action == "clarify":
+            return service.clarify(actor, key, body["caseId"], body["revision"], body["intents"], body["confirmed"])
+        if action == "review":
+            return service.review_case(actor, key, body["caseId"], body["revision"], body["decision"], body["reason"], body.get("editedText"))
+        if action == "premium":
+            result = service.premium(actor, key, body["action"], body.get("memberOfferRuleId"))
+            if body["action"] == "ROUTE_MAP" and result["decision"]["outcome"] == "ALLOWED":
+                result["routePoints"] = [{"label": "Sydney Central", "x": 90, "y": 60},
+                                         {"label": "Melbourne Centre", "x": 300, "y": 160}]
+                result["mapNotice"] = "B03 Sydney–Melbourne scenario: schematic simulated route points, not live geography."
+            return result
+        if action == "adopt":
+            return service.adopt_plan(actor, key, body["versionId"], body["expectedBaseline"], body["accepted"])
+        if not service.access.authorise(actor, "ANALYSE", {}):
+            raise OperationsError("ACCESS_DENIED", "Only the simulated operator may analyse campaign records.")
+        report = analyse(body["data"])
+        recommendation = experiment(report)
+        return service._command(actor, "analysis", key, body["data"],
+                                lambda records: self._save_analysis(records, key, body["data"], report, recommendation))
+
+    @staticmethod
+    def _save_analysis(records, key, data, report, recommendation):
+        result = {"report": report, "experiment": recommendation, "inputType": "OPERATOR_SUPPLIED_SIMULATION"}
+        records.put("analysis_source", key, data)
+        records.put("analysis", key, result)
+        return result
 
     def status(self):
         return {"stage": "B02 local workbench", "executionMode": self.settings.mode,
@@ -50,7 +147,7 @@ class Workbench:
                 "modelConfigured": has_model_key(), "csrfToken": self.token,
                 "fixtureTime": FIXTURE_TIME,
                 "fixtureCatalog": "SEE_/api/fixtures" if self.settings.mode == "FIXTURE" else "DISABLED",
-                "integration": {"operations": "STUB", "supplier": "STUB",
+                "integration": {"operations": "LOCAL_FIXTURE" if self.operations else "STUB", "supplier": "STUB",
                                 "exception": "STUB", "planning": "ISOLATED_FIXTURE" if planning_is_available() else "NOT_INSTALLED"}}
 
     def planning(self, body):
@@ -161,6 +258,8 @@ def make_server(settings, port=8765, llm_factory=None):
                 return self.send(403, {"error": "LOCAL_ONLY"})
             path = urlsplit(self.path).path
             assets = {"/": ("index.html", "text/html; charset=utf-8"),
+                      "/operations": ("operations.html", "text/html; charset=utf-8"),
+                      "/operations.js": ("operations.js", "text/javascript; charset=utf-8"),
                       "/app.js": ("app.js", "text/javascript; charset=utf-8"),
                       "/style.css": ("style.css", "text/css; charset=utf-8")}
             try:
@@ -173,7 +272,27 @@ def make_server(settings, port=8765, llm_factory=None):
                     return self.send(200, {"checks": app.store.recent()})
                 if path == "/api/fixtures":
                     return self.send(200, app.fixture_catalog())
+                if path.startswith("/api/operations/"):
+                    if app.operations is None:
+                        raise OperationsError("NOT_IMPLEMENTED", "Operations is disabled outside FIXTURE mode.")
+                    if path == "/api/operations/status":
+                        return self.send(200, {"identities": app.operations.identities(), "simulationOnly": True,
+                                              "modelExtraction": "NOT_INSTALLED" if app.operations.llm is None else "CONFIGURED",
+                                              "planning": "NOT_INTEGRATED" if app.operations.planning_repository is None else "INJECTED"})
+                    actor = app.ops_actor(self.headers.get("X-Ops-Session", ""))
+                    query = parse_qs(urlsplit(self.path).query)
+                    if path == "/api/operations/cases" and not query:
+                        return self.send(200, {"cases": app.operations.cases(actor)})
+                    if path in {"/api/operations/case", "/api/operations/traces", "/api/operations/history"} and set(query) == {"caseId"} and len(query["caseId"]) == 1:
+                        case_id = query["caseId"][0]
+                        if path.endswith("/history"):
+                            return self.send(200, {"history": app.operations.history(actor, case_id)})
+                        return self.send(200, app.operations.case_view(actor, case_id) if path.endswith("/case") else {"events": app.operations.traces(actor, case_id)})
+                    if path == "/api/operations/plan" and set(query) == {"versionId"} and len(query["versionId"]) == 1:
+                        return self.send(200, app.operations.plan_view(actor, query["versionId"][0]))
                 return self.send(404, {"error": "NOT_FOUND"})
+            except OperationsError as exc:
+                return self.send(403 if exc.code == "ACCESS_DENIED" else 422, {"error": exc.code, "message": str(exc)})
             except WorkbenchError as exc:
                 return self.send(422, {"error": exc.code, "message": str(exc)})
             except (OSError, sqlite3.Error):
@@ -197,6 +316,8 @@ def make_server(settings, port=8765, llm_factory=None):
             if not app.busy.acquire(blocking=False):
                 return self.send(409, {"error": "CHECK_RUNNING", "message": "Wait for the current check to finish."})
             try:
+                if self.path.startswith("/api/operations/"):
+                    return self.send(200, app.ops_post(self.path.removeprefix("/api/operations/"), body, self.headers.get("X-Ops-Session", "")))
                 if self.path == "/api/planning-demo":
                     if set(body) - {"mode", "budget"}:
                         raise ValueError("Unexpected demo fields")
@@ -212,6 +333,8 @@ def make_server(settings, port=8765, llm_factory=None):
                 return self.send(404, {"error": "NOT_FOUND"})
             except WorkbenchError as exc:
                 return self.send(422, {"error": exc.code, "message": str(exc)})
+            except OperationsError as exc:
+                return self.send(403 if exc.code == "ACCESS_DENIED" else 422, {"error": exc.code, "message": str(exc)})
             except ValueError as exc:
                 if hasattr(exc, "code"):
                     return self.send(422, {"error": exc.code, "message": str(exc)})

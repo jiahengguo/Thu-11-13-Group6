@@ -1,5 +1,13 @@
 # TripMate AI
 
+**Operations Agent branch (13 October 2026):** Run the existing local server and open
+`/operations` for confirmed request intake, simulated membership/access checks, tracked
+case coordination, operator review and controlled response delivery. See the
+[Operations handoff](docs/operations/OPERATIONS_HANDOFF.md) and
+[acceptance evidence](docs/operations/TEST_RESULTS.md). Planning/Supplier/Exception and
+automatic Reviewer dependencies remain explicitly injected; this branch does not merge
+the separate Travel Planning PR or claim four-agent completion.
+
 **Supplier Partnership B02/B03 branch (13 October 2026):** Local-only Web API/SQLite foundation, replayable synthetic supplier/traveller/disruption fixtures, controlled reset, and a model-smoke endpoint have been added. [Handoff](docs/stage2/B02_B03_HANDOFF.md). Four-agent workflows are **not** integrated. Planning demonstrations and campus model integration are enabled only after their separate provider implementation is merged; until then, the page reports them as unavailable.
 
 [English](README.md) | [简体中文](README.zh-CN.md)
