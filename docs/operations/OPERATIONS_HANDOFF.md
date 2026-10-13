@@ -1,19 +1,30 @@
 # Operations Agent implementation and handoff
 
-Branch: `operations-agent`. Base: `1c83d8d` (`main`, B02/B03). Date: 13 October 2026, Australia/Sydney.
+Branch: `operations-agent`. Updated base: `142b016` (`main`, after PR #12). Original implementation base: `1c83d8d` (B02/B03). Date: 13 October 2026, Australia/Sydney.
 Owner: Jiaheng Guo. Design baseline: Stage 1 report OPS-02, OPS-03, OPS-AH-01, UC-05 and UC-07; AD-01, SD-01 and SM-01. Existing v1.0.0 public schemas are unchanged.
 
 ## What runs on this branch
 
-Open the local application and choose **Open Operations desk**, or visit `/operations`.
+The default application now uses real Supabase authentication. Follow
+[the portal handoff](../portal/PORTAL_HANDOFF.md) for cloud configuration and sign in
+at `/login`. Travellers use `/app`, suppliers use `/supplier`, and authorised
+Operators use `/admin`. Operations still coordinates confirmed intake, routing,
+review, entitlement and controlled delivery behind these portals.
 
 ```sh
-.venv/bin/python -m tripmate.api.server --port 8765
+.venv/bin/python -m tripmate.api.server --port 8780
+```
+
+The earlier B02/B03 demonstration is a separate development workbench. To inspect
+its simulated Operations desk, explicitly enable it and visit `/operations`:
+
+```sh
+.venv/bin/python -m tripmate.api.server --workbench --port 8765
 .venv/bin/python -m unittest discover -s tests -v
 .venv/bin/python -m tripmate --validate-examples docs/contracts/v1/examples
 ```
 
-Use `.venv\Scripts\python.exe` on Windows. Follow the B02/B03 handoff for initial environment/dependency setup. The existing local-only host/origin checks, JSON body limit and `X-TripMate-Token` protection apply. No additional dependency is required.
+Use `.venv\Scripts\python.exe` on Windows. Follow the B02/B03 handoff for initial environment/dependency setup. The existing local-only host/origin checks, JSON body limit and `X-TripMate-Token` protection apply. No additional Python dependency is required. The following walkthrough describes only the explicit simulated workbench.
 
 1. Choose a **simulated** identity. B03 Free, Paid and unverified travellers, the fixture supplier and a fixture operator are available. This deliberate local role switcher is not production authentication.
 2. Capture a request. Missing fields remain questions; independent intents can be confirmed as related cases through the API. An unverified identity can retain intake but cannot create or access protected cases.
@@ -29,7 +40,7 @@ The optional automatic interpretation checkbox is enabled only when the campus a
 | Work item | Delivered Operations behaviour | Remaining team boundary |
 |---|---|---|
 | WN5620-7 / B06 | Source-tagged ExternalRequest, focused missing-field questions, typed extraction, explicit confirmation/split, role-based categories, routine enquiries and routing | Actual Supplier and Exception implementations are injected by their owners |
-| WN5620-8 / B07 | Backend ownership checks; initial/post-generation/presentation/adoption entitlement decisions; Free two-trip and five-inclusive-day rules; active Paid exemption; current lifecycle counts | Replace fixture identity/membership evidence before any production deployment |
+| WN5620-8 / B07 | Backend ownership checks; initial/post-generation/presentation/adoption entitlement decisions; Free two-trip and five-inclusive-day rules; active Paid exemption; current lifecycle counts | Authenticated portals use verified Supabase identities and protected account evidence; fixture identities remain only in the development workbench |
 | WN5620-18 / B17 | Paid ad-free decision, labelled Free advertisement, backend route-map gate, interactive **schematic B03 route**, approved member-offer eligibility | Supplier owns discounted quotation/margin; UC-08 owns approved member rules. No discount quote is passed into PR #9 until its member-offer integration is ready |
 | WN5620-22 | Case tracking, specialist clarification and full-summary re-confirmation, two human requests, withdrawal/operator closure, distinct assistance/approval states | Human Assistance is a handoff, not resolution of a complaint |
 | WN5620-23 | Exact-version response review, immutable pending/decided approval history, restricted release gate, durable simulated delivery | Shared automatic Reviewer is optional and must be injected; explicit fixture operator review runs now |
@@ -52,7 +63,14 @@ No numeric throughput, availability or latency SLA is inferred from the report. 
 
 ## Storage, restart and failure boundaries
 
-The shared SQLite file contains Operations-owned `ops_records`, `ops_traces` and `ops_commands`. State, inbox delivery, approval records and audit history use these tables. B03 reset still touches only its own `fixture_*` tables and its separate Planning demo database. It does not reset Operations cases, decisions, inbox messages or membership fixtures.
+The authenticated portals inject `SupabaseOperationsRepository`: private cloud
+records, traces and replay results commit through a backend-only atomic RPC with
+optimistic revision checks. Verified roles and ownership are enforced independently
+at the HTTP boundary. Operators deliver using their own verified identity. See the
+portal handoff for RLS, CSRF, session expiry, deployment and storage limits. Cloud
+business records survive restarts; authentication sessions are currently in memory.
+
+The separate workbench uses SQLite fixtures. The shared SQLite file contains Operations-owned `ops_records`, `ops_traces` and `ops_commands`. State, inbox delivery, approval records and audit history use these tables. B03 reset still touches only its own `fixture_*` tables and its separate Planning demo database. It does not reset Operations cases, decisions, inbox messages or membership fixtures.
 
 Operations adds explicit fixture subscription evidence: the synthetic Paid subscription expires at `2026-10-30T00:00:00+11:00`. After expiry it is evaluated under Free rules. These records persist across restarts; choosing Paid in the role switcher does not invent a new subscription. Sessions expire after an hour and are intentionally lost on restart.
 
@@ -87,7 +105,11 @@ Verified against PR #9 head `a7d13e589d1b6398259394baf1719f8d2da6fd1a`:
 
 Use `build_agents(operations_service=operations)` to inject the shared Operations Agent boundary. `build_agents()` without dependencies preserves the existing explicit B01 stubs.
 
-## Local HTTP surface
+## Development workbench HTTP surface
+
+This section applies only to the explicit `--workbench` process. The authenticated
+portal instead uses verified HttpOnly sessions, a CSRF token and live account roles;
+client-supplied fixture session headers cannot select its identity.
 
 Operations writes use `X-TripMate-Token`, `X-Ops-Session`, JSON and a `requestKey`; session creation takes only an explicit fixture `identityId`. A session is not accepted in URLs. Extra body fields are rejected. The UI keeps request keys after a lost response so retrying does not create duplicate effects.
 
