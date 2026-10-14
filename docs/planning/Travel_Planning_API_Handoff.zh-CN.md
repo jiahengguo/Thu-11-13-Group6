@@ -4,6 +4,10 @@
 依据：[共享 v1 契约](../contracts/v1/CONTRACTS.md)、[分工计划](Stage2_Week9-12_Plan_and_Jira.zh-CN.md)。
 本文件描述本分支的实际代码，不表示其他成员服务或全组验收已经完成。
 
+**2026-10-14 逐日扩展**：新增 opt-in `daily-1` 结构化策略及 `TravelFactorService`，支持有界多城市/多段交通/多活动、
+天气、延误、路线费用、步行负担、用餐休息、开放日历和预约检查。详见 [逐日规划接口](Daily_Planning_Factors.zh-CN.md)。
+下文单活动/直达范围描述旧默认模式；新模式需扩展报价与因素适配器，不会自动把 B03 数据变成真实旅行数据。
+
 **main 合并更新**：已对接主分支 `a1605f4` 的 Operations 与 B03 数据库，见 [main 联调说明](Main_Integration.zh-CN.md)。
 原文未集成状态以此更新为准：Operations 实际服务已接通；B03 是共享模拟数据；正式 Supplier/Reviewer/Exception 仍待对接。
 

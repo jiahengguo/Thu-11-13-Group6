@@ -20,12 +20,21 @@ def metrics(record):
     quotes = record["quotes"]
     transport = [q["product"] for q in quotes if q["product"]["role"] in {"OUTBOUND", "RETURN"}]
     journey = sum((timestamp(p["endAt"]) - timestamp(p["startAt"])).total_seconds() / 60 for p in transport)
-    return {"cost": record["version"]["totalPrice"], "journeyMinutes": journey, "transfers": 0,
+    daily = record.get('dailySchedule')
+    result = {"cost": record["version"]["totalPrice"], "journeyMinutes": daily['journeyMinutes'] if daily else journey, "transfers": daily['transfers'] if daily else 0,
             "comfort": str(sum(decimal(q["product"]["comfort"]) for q in quotes) / len(quotes)),
             "reliability": str(min(decimal(q["product"]["reliability"]) for q in quotes)),
             "terms": [q["offer"]["cancellationTerms"] for q in quotes],
             "activities": [q["product"]["productId"] for q in quotes if q["product"]["role"] == "ACTIVITY"],
             "accommodation": [q["product"]["productId"] for q in quotes if q["product"]["role"] == "STAY"]}
+    if daily:
+        limits = daily['policy']['limits']
+        load = max((max(Decimal(str(d['walkingMinutes']))/limits['maxWalkingMinutes'], Decimal(str(d['activityMinutes']))/limits['maxActivityMinutes']) for d in daily['days']), default=Decimal('0'))
+        result['paceLoad'] = str(load)
+        result['productComfort'] = result['comfort']
+        result['comfort'] = str(decimal(result['comfort']) * (Decimal('1') - Decimal('0.25') * min(load,Decimal('1'))))
+        result['additionalCost'] = daily['additionalCost']
+    return result
 
 
 def compare(baseline, proposal):
@@ -155,7 +164,7 @@ class PlanningEngine:
 
         for r, cost, travel in zip(records, costs, times):
             measures = [benefit(cost, costs), benefit(travel, times), decimal(r["metrics"]["comfort"]), decimal(r["metrics"]["reliability"])]
-            r["ranking"] = {"mode": mode, "configVersion": SCORING_VERSION,
+            r["ranking"] = {"mode": mode, "configVersion": 'daily-1' if 'dailySchedule' in r else SCORING_VERSION,
                             "weights": dict(zip(["cost", "journeyTime", "comfort", "reliability"], map(str, weights))),
                             "score": str(sum(w * x for w, x in zip(weights, measures)))}
             r["version"]["tradeOffs"] = [f"{mode}: AUD {cost:.2f}; transport {travel} minutes; comfort {r['metrics']['comfort']}; reliability {r['metrics']['reliability']}. No advertising input is used."]

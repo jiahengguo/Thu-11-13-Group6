@@ -38,8 +38,9 @@ def validate_product(product):
 
 class PlanningValidator:
     """Bind request, typed constraints and current supplier snapshot per call/run."""
-    def __init__(self, request, quotes, spec, clock=now):
+    def __init__(self, request, quotes, spec, clock=now, daily=None):
         self.request, self.quotes, self.spec, self.clock = request, quotes, spec, clock
+        self.daily = daily
 
     def validate_proposal(self, subject):
         return self.validate_plan(subject)
@@ -119,45 +120,49 @@ class PlanningValidator:
                 record("ITEM_DATES", date.fromisoformat(request["travelDates"]["startDate"]) <= local_start
                        <= local_end <= date.fromisoformat(request["travelDates"]["endDate"]),
                        "Item must fall within confirmed Sydney calendar dates", ids)
-            record("TOTAL", amount(version["totalPrice"]) == total, "Total equals sum of full-package selling prices")
+            if self.daily is not None:
+                total += amount(self.daily["additionalCost"])
+                results.extend(self.daily["checks"])
+            record("TOTAL", amount(version["totalPrice"]) == total, "Total equals package prices plus explicit daily route/meal allowances when enabled")
             record("BUDGET", Decimal("0") <= total <= amount(request["budgetCeiling"]), "Complete total must not exceed confirmed AUD budget")
             roles = {role: [p for p in products if p["role"] == role] for role in ["OUTBOUND", "RETURN", "STAY", "ACTIVITY"]}
-            complete = (len(products) == len(version["items"]) and len(roles["OUTBOUND"]) == 1
-                        and len(roles["RETURN"]) == int(spec["roundTrip"])
-                        and len(roles["STAY"]) == int(days > 1) and len(roles["ACTIVITY"]) >= 1)
-            record("COMPLETENESS", complete, "Need outbound, activity, overnight stay when applicable and requested return")
-            if complete:
-                outbound = roles["OUTBOUND"][0]
-                record("ROUTE", outbound["origin"] == request["origin"] and outbound["destination"] == request["destination"],
-                       "Outbound must connect confirmed origin and destination")
-                record("OUTBOUND_DATE", timestamp(outbound["startAt"]).astimezone(ZoneInfo("Australia/Sydney")).date().isoformat()
-                       == request["travelDates"]["startDate"], "Outbound leaves on the first confirmed date")
-                for p in roles["STAY"] + roles["ACTIVITY"]:
-                    record("DESTINATION", p["origin"] == p["destination"] == request["destination"],
-                           "Stay/activity must share the evidenced destination; missing transfers are not inferred")
-                    record("AFTER_ARRIVAL", (timestamp(p["startAt"]) - timestamp(outbound["endAt"])).total_seconds() / 60
-                           >= max(outbound["minConnectionMinutes"], p["minConnectionMinutes"]),
-                           "Destination services require the evidenced buffer after arrival")
-                if roles["RETURN"]:
-                    back = roles["RETURN"][0]
-                    record("RETURN_ROUTE", back["origin"] == request["destination"] and back["destination"] == request["origin"]
-                           and timestamp(back["endAt"]).astimezone(ZoneInfo("Australia/Sydney")).date().isoformat() == request["travelDates"]["endDate"],
-                           "Return must reach origin on the last confirmed date")
-                if days > 1:
-                    stay = roles["STAY"][0]
-                    record("STAY_COVERAGE", timestamp(stay["startAt"]).astimezone(ZoneInfo("Australia/Sydney")).date().isoformat() == request["travelDates"]["startDate"]
-                           and timestamp(stay["endAt"]).astimezone(ZoneInfo("Australia/Sydney")).date().isoformat() == request["travelDates"]["endDate"],
-                           "Stay must cover every requested night")
+            if self.daily is None:
+                complete = (len(products) == len(version["items"]) and len(roles["OUTBOUND"]) == 1
+                            and len(roles["RETURN"]) == int(spec["roundTrip"])
+                            and len(roles["STAY"]) == int(days > 1) and len(roles["ACTIVITY"]) >= 1)
+                record("COMPLETENESS", complete, "Need outbound, activity, overnight stay when applicable and requested return")
+                if complete:
+                    outbound = roles["OUTBOUND"][0]
+                    record("ROUTE", outbound["origin"] == request["origin"] and outbound["destination"] == request["destination"],
+                           "Outbound must connect confirmed origin and destination")
+                    record("OUTBOUND_DATE", timestamp(outbound["startAt"]).astimezone(ZoneInfo("Australia/Sydney")).date().isoformat()
+                           == request["travelDates"]["startDate"], "Outbound leaves on the first confirmed date")
+                    for p in roles["STAY"] + roles["ACTIVITY"]:
+                        record("DESTINATION", p["origin"] == p["destination"] == request["destination"],
+                               "Stay/activity must share the evidenced destination; missing transfers are not inferred")
+                        record("AFTER_ARRIVAL", (timestamp(p["startAt"]) - timestamp(outbound["endAt"])).total_seconds() / 60
+                               >= max(outbound["minConnectionMinutes"], p["minConnectionMinutes"]),
+                               "Destination services require the evidenced buffer after arrival")
                     if roles["RETURN"]:
                         back = roles["RETURN"][0]
-                        record("STAY_RETURN", (timestamp(back["startAt"]) - timestamp(stay["endAt"])).total_seconds() / 60
-                               >= max(stay["minConnectionMinutes"], back["minConnectionMinutes"]), "Stay ends with enough buffer before return departure")
-            # A stay is an accommodation reservation window, not a continuously occupied activity.
-            busy = sorted([p for p in products if p["role"] != "STAY"], key=lambda p: timestamp(p["startAt"]))
-            for left, right in zip(busy, busy[1:]):
-                gap = (timestamp(right["startAt"]) - timestamp(left["endAt"])).total_seconds() / 60
-                record("SCHEDULE", gap >= max(left["minConnectionMinutes"], right["minConnectionMinutes"]), "No overlap; evidenced connection buffer must pass")
-                record("CONNECTION", left["destination"] == right["origin"], "Every movement must connect; no free implicit airport/hotel transfers")
+                        record("RETURN_ROUTE", back["origin"] == request["destination"] and back["destination"] == request["origin"]
+                               and timestamp(back["endAt"]).astimezone(ZoneInfo("Australia/Sydney")).date().isoformat() == request["travelDates"]["endDate"],
+                               "Return must reach origin on the last confirmed date")
+                    if days > 1:
+                        stay = roles["STAY"][0]
+                        record("STAY_COVERAGE", timestamp(stay["startAt"]).astimezone(ZoneInfo("Australia/Sydney")).date().isoformat() == request["travelDates"]["startDate"]
+                               and timestamp(stay["endAt"]).astimezone(ZoneInfo("Australia/Sydney")).date().isoformat() == request["travelDates"]["endDate"],
+                               "Stay must cover every requested night")
+                        if roles["RETURN"]:
+                            back = roles["RETURN"][0]
+                            record("STAY_RETURN", (timestamp(back["startAt"]) - timestamp(stay["endAt"])).total_seconds() / 60
+                                   >= max(stay["minConnectionMinutes"], back["minConnectionMinutes"]), "Stay ends with enough buffer before return departure")
+                # A stay is an accommodation reservation window, not a continuously occupied activity.
+                busy = sorted([p for p in products if p["role"] != "STAY"], key=lambda p: timestamp(p["startAt"]))
+                for left, right in zip(busy, busy[1:]):
+                    gap = (timestamp(right["startAt"]) - timestamp(left["endAt"])).total_seconds() / 60
+                    record("SCHEDULE", gap >= max(left["minConnectionMinutes"], right["minConnectionMinutes"]), "No overlap; evidenced connection buffer must pass")
+                    record("CONNECTION", left["destination"] == right["origin"], "Every movement must connect; no free implicit airport/hotel transfers")
             ids = [c["constraintId"] for c in request["hardConstraints"]]
             if len(ids) != len(set(ids)) or set(spec["constraintBindings"]) != set(ids):
                 raise ValueError("Constraint bindings must exactly match unique confirmed constraint IDs")
@@ -176,9 +181,13 @@ class PlanningValidator:
                 elif kind == "BAGGAGE" and type(value) is int and value >= 0:
                     passed = all(p["baggageKg"] >= value for p in roles["OUTBOUND"] + roles["RETURN"])
                 elif kind == "ARRIVAL_TIME" and isinstance(value, str):
-                    passed = bool(roles["OUTBOUND"]) and timestamp(roles["OUTBOUND"][0]["endAt"]) <= timestamp(value)
+                    arrivals = ([timestamp(e['endAt']) for e in self.daily['timeline'] if e['kind'] == 'OUTBOUND']
+                                if self.daily is not None else [timestamp(p['endAt']) for p in roles['OUTBOUND']])
+                    passed = bool(arrivals) and max(arrivals) <= timestamp(value)
                 elif kind == "TRANSFER_LIMIT" and type(value) is int and value >= 0:
-                    passed = True  # Current supported route is direct in each direction: zero transfers.
+                    passed = (self.daily["transfers"] if self.daily is not None else 0) <= value
+                elif kind == "OTHER" and self.daily is not None and value == self.daily["policy"]:
+                    passed = True
                 else:
                     supported = False
                 record("CONSTRAINT:" + constraint["constraintId"], passed, "Confirmed " + kind + " evaluated" if supported

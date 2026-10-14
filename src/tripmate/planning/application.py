@@ -22,6 +22,7 @@ class PlanningRuntime:
     execution_mode: str = "FIXTURE"
     llm: object = None  # Optional shared LLMService.explain; advisory text is never a gate.
     planner: object = None  # Optional model proposal loop, still subject to deterministic checks.
+    factors: object = None  # TravelFactorService required for confirmed daily-1 requests.
 
     def __post_init__(self):
         if self.execution_mode not in {"FIXTURE", "REAL"}:
@@ -103,14 +104,28 @@ def run_case(runtime, case):
                 raise PlanningError("ACCESS_DENIED", "Baseline access denied", "revision")
         step = "lookup"
         quotes = lookup(runtime, request)
+        from .daily import policy_from, DailyPlanningEngine
+        from .factors import load_factors
+        daily_policy = policy_from(request, spec)
+        factors = load_factors(runtime.factors, request, quotes, runtime.clock(), runtime.execution_mode) if daily_policy else None
         sources = {s["sourceId"]: deepcopy(s) for s in case["sourceReferences"]}
         for s in request["sourceReferences"] + [s for q in quotes for group in [q["offer"], q["price"]] for s in group["sourceReferences"]]:
             if s["sourceId"] in sources and sources[s["sourceId"]] != s:
                 raise PlanningError("STALE_EVIDENCE", "Conflicting evidence identifiers", "lookup")
             sources[s["sourceId"]] = deepcopy(s)
         result["sourceReferences"] = list(sources.values())
+        if factors:
+            for source in factors['sources']:
+                if source['sourceId'] in sources and sources[source['sourceId']] != source:
+                    raise PlanningError('STALE_EVIDENCE', 'Conflicting factor source IDs', 'factors')
+                sources[source['sourceId']] = deepcopy(source)
+            result['sourceReferences'] = list(sources.values())
         step = "generation"
-        records, excluded = (runtime.planner or PlanningEngine(runtime.clock)).generate(request, quotes, spec, baseline)
+        engine = runtime.planner or PlanningEngine(runtime.clock)
+        if factors:
+            engine = DailyPlanningEngine(factors, runtime.clock, client=getattr(runtime.planner, 'client', None),
+                                         max_attempts=getattr(runtime.planner, 'max_attempts', 3))
+        records, excluded = engine.generate(request, quotes, spec, baseline)
         result["findings"] = [f"Evaluated {len(records) + len(excluded)} combinations from the supplied inventory."]
         for exclusion in excluded:
             result["findings"].append("Excluded " + ", ".join(exclusion["offerIds"]) + ": "
@@ -194,7 +209,15 @@ def accept_proposal(runtime, traveller_id, proposal_id, expected_baseline, *, ac
     current = {q["offer"]["offerId"]: q for q in quotes}
     if any(current.get(q["offer"]["offerId"]) != q for q in record["quotes"]):
         raise PlanningError("STALE_EVIDENCE", "Supplier snapshot changed; regenerate comparison and obtain fresh acceptance", "adoption")
-    checks = PlanningValidator(request, quotes, record["spec"], runtime.clock).validate_plan(version)
+    daily = None
+    if 'dailySchedule' in record:
+        from .factors import load_factors
+        from .daily import evaluate_daily
+        current_facts = load_factors(runtime.factors, request, quotes, runtime.clock(), runtime.execution_mode)
+        if current_facts != record['factorSnapshot']:
+            raise PlanningError('STALE_EVIDENCE', 'Weather/traffic/routes/venue snapshot changed; regenerate and reconfirm', 'adoption')
+        daily = evaluate_daily(request, record['quotes'], record['dailySchedule']['policy'], current_facts, runtime.clock)
+    checks = PlanningValidator(request, quotes, record["spec"], runtime.clock, daily=daily).validate_plan(version)
     if any(r["outcome"] != "PASS" for r in checks):
         raise PlanningError("NO_FEASIBLE_ITINERARY", "Proposal failed final validity checks", "adoption")
     review = runtime.reviewer.review(deepcopy(version), deepcopy(version["sourceReferences"]), ["planning-1.0"])
