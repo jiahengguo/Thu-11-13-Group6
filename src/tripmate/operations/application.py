@@ -232,6 +232,13 @@ release them. One running dependency per coordinator prevents unbounded threads.
                 valid = ((k == "ACCESSIBILITY" and type(v) is bool) or
                          (k in {"BAGGAGE", "TRANSFER_LIMIT"} and type(v) is int and v >= 0) or
                          (k == "ARRIVAL_TIME" and isinstance(v, str)))
+                if k == 'OTHER' and isinstance(v, dict) and v.get('version') == 'daily-1':
+                    from tripmate.planning.daily import validate_policy
+                    try:
+                        validate_policy(v, fields.get('travelDates'))
+                        valid = True
+                    except ValueError:
+                        raise OperationsError('INVALID_CONTRACT', 'Invalid confirmed daily planning policy.') from None
                 if not valid:
                     raise OperationsError("UNSUPPORTED_CONSTRAINT", "This constraint has no supported deterministic binding.")
                 if k == "ARRIVAL_TIME":
@@ -841,9 +848,13 @@ release them. One running dependency per coordinator prevents unbounded threads.
             raise OperationsError("ENTITLEMENT_DENIED", "Current membership does not allow plan presentation.")
         # Nested allowlist: comparison contains internal records on some adapters.
         comparison = record.get("comparison", {})
-        return {"version": deepcopy(record["version"]),
+        output = {"version": deepcopy(record["version"]),
                 "comparison": {k: deepcopy(comparison[k]) for k in ("baselineVersionId", "proposalVersionId", "costDelta", "journeyMinutesDelta", "changedRequirements", "addedOffers", "removedOffers", "changedOffers", "unchangedOffers", "scopeChanged", "dataRefresh", "attribution") if k in comparison},
                 "simulationOnly": True}
+        if 'dailySchedule' in record:
+            daily = record['dailySchedule']
+            output['dailySchedule'] = {k: deepcopy(daily[k]) for k in ['timeline', 'days', 'additionalCost', 'journeyMinutes', 'transfers']}
+        return output
 
     def adopt_plan(self, actor, key, version_id, expected_baseline, accepted):
         with self.adoption_lock:
