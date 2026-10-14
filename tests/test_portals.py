@@ -116,6 +116,32 @@ class PortalHTTPTests(unittest.TestCase):
         self.assertEqual(status,200)
         return result['caseIds'][0]
 
+    def test_four_browsers_can_repeatedly_login_from_the_same_ip(self):
+        from concurrent.futures import ThreadPoolExecutor
+        actors = [self.a, self.b, self.supplier, self.operator]
+        browsers = [Browser(self.root) for _ in actors]
+        def debug_login(pair):
+            browser, actor = pair
+            for _ in range(3):
+                self.assertEqual(browser.login(actor)[0], 200)
+            status, data, _ = browser.call('/api/session')
+            self.assertEqual(status, 200)
+            self.assertEqual(data['user']['id'], actor)
+            route = {'TRAVELLER': '/app', 'SUPPLIER': '/supplier', 'OPERATOR': '/admin'}[data['user']['role']]
+            self.assertEqual(browser.call(route)[0], 200)
+        with ThreadPoolExecutor(max_workers=4) as pool:
+            list(pool.map(debug_login, zip(browsers, actors)))
+        for browser, actor in zip(browsers, actors):
+            self.assertEqual(browser.call('/api/session')[1]['user']['id'], actor)
+
+    def test_portal_sessions_have_no_fixed_online_count_limit(self):
+        sessions = self.server.app.sessions
+        first, original = sessions.create()
+        for _ in range(1001):
+            sessions.create()
+        self.assertIs(sessions.get(first), original)
+        self.assertEqual(len(sessions.items), 1002)
+
     def test_public_website_has_no_role_switcher_or_diagnostic_routes(self):
         status,page,_=self.browser.call('/');self.assertEqual(status,200);self.assertIn('Plan your trip',page);self.assertNotIn('Choose a simulation role',page)
         for path in ['/api/fixtures','/api/checks','/operations','/api/operations/status']:
