@@ -185,7 +185,8 @@ def make_server(cloud, port=8780, origin=None, bind='127.0.0.1'):
                     return self.send(400,{'error':'INVALID_JSON'})
                 path=urlsplit(self.path).path
                 if path in ('/api/auth/login','/api/auth/signup','/api/auth/recover'):
-                    app.rate.check(('auth',self.client_address[0]))
+                    app.rate.check(('auth-ip',self.client_address[0]),limit=60)
+                    app.rate.check(('auth-session',session.csrf))
                     required={'email'} if path.endswith('recover') else {'email','password'}
                     if set(body)!=required or not isinstance(body.get('email'),str) or not 3<=len(body['email'])<=254 or '@' not in body['email']:
                         raise OperationsError('INVALID_CONTRACT','Enter a valid email and the required credentials.')
@@ -211,7 +212,8 @@ def make_server(cloud, port=8780, origin=None, bind='127.0.0.1'):
                     app.sessions.remove(self.sid())
                     return self.send(200,{'portal':PORTALS[user['role']]},sid=new_sid)
                 if path == '/api/auth/callback':
-                    app.rate.check(('auth',self.client_address[0]))
+                    app.rate.check(('auth-ip',self.client_address[0]),limit=60)
+                    app.rate.check(('auth-session',session.csrf))
                     if set(body)!={'access_token','refresh_token','state'} or any(not isinstance(v,str) or not 1<=len(v)<=8192 for v in body.values()):
                         raise OperationsError('INVALID_CONTRACT','Invalid sign-in link. Request a new email link.')
                     if not secrets.compare_digest(body['state'],session.csrf):

@@ -26,8 +26,6 @@ class Sessions:
         with self.lock:
             now = time.time()
             self.items = {k: v for k, v in self.items.items() if now-v.created<28800 and now-v.touched<3600}
-            if len(self.items) >= 1000:
-                raise OperationsError('RATE_LIMITED', 'Session capacity reached. Try again later.')
             sid, session = secrets.token_urlsafe(32), Session()
             if tokens:
                 self._tokens(session, tokens)
