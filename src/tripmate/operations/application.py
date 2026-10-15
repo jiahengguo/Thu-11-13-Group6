@@ -199,8 +199,16 @@ release them. One running dependency per coordinator prevents unbounded threads.
             if (kind in SUPPLIER_TYPES) != (profile["role"] == "SUPPLIER") or profile["role"] == "OPERATOR":
                 raise OperationsError("ACCESS_DENIED", "The request category does not match the requester role.")
             allowed = TRAVEL_FIELDS if kind in {"TRAVEL_PLANNING", "PLAN_REVISION"} else {"details", "planId", "feature", "memberOfferRuleId"}
+            if kind in SUPPLIER_TYPES:
+                allowed = allowed | {'supplierOffer'}
             if not isinstance(fields, dict) or set(fields) - allowed:
                 raise OperationsError("INVALID_CONTRACT", "Unexpected structured request fields.")
+            if 'supplierOffer' in fields:
+                from tripmate.supplier.intake import normalise_submission
+                try:
+                    fields['supplierOffer'] = normalise_submission(fields['supplierOffer'])
+                except ValueError as exc:
+                    raise OperationsError('INVALID_CONTRACT', str(exc)) from None
             for k in {"origin", "destination", "details", "baselineVersionId", "planId"} & fields.keys():
                 fields[k] = safe_text(fields[k], 1000)
             if "preferences" in fields:
@@ -232,6 +240,13 @@ release them. One running dependency per coordinator prevents unbounded threads.
                 valid = ((k == "ACCESSIBILITY" and type(v) is bool) or
                          (k in {"BAGGAGE", "TRANSFER_LIMIT"} and type(v) is int and v >= 0) or
                          (k == "ARRIVAL_TIME" and isinstance(v, str)))
+                if k == 'OTHER' and isinstance(v, dict) and v.get('version') == 'daily-1':
+                    from tripmate.planning.daily import validate_policy
+                    try:
+                        validate_policy(v, fields.get('travelDates'))
+                        valid = True
+                    except ValueError:
+                        raise OperationsError('INVALID_CONTRACT', 'Invalid confirmed daily planning policy.') from None
                 if not valid:
                     raise OperationsError("UNSUPPORTED_CONSTRAINT", "This constraint has no supported deterministic binding.")
                 if k == "ARRIVAL_TIME":
@@ -545,6 +560,13 @@ release them. One running dependency per coordinator prevents unbounded threads.
             self._failure(rec, "TOOL_UNAVAILABLE", "The specialist is still an unconfigured stub.")
             return
         rec["specialistResult"] = deepcopy(result)
+        if result['agent'] == 'supplier' and result['status'] == 'APPROVAL_PENDING':
+            rec['case']['requiresApproval'] = True
+            rec['case']['status'] = 'AWAITING_HUMAN_APPROVAL'
+            rec['response'] = None
+            rec['review'] = None
+            rec['approvalId'] = None  # Offer approval is scoped to SupplierOffer, not Case response.
+            return
         if result["status"] != "SUCCESS":
             rec["case"]["unresolvedQuestions"] = [safe_text(result["nextAction"])]
             rec["case"]["status"] = "AWAITING_REQUESTER" if result["status"] == "REVISION_REQUIRED" else "HUMAN_ASSISTANCE"
@@ -776,6 +798,9 @@ release them. One running dependency per coordinator prevents unbounded threads.
                        approvalId=None, dispatchStarted=False, completedRun=None, invokedRun=None)
             rec.pop("specialistResult", None)
             rec.pop("context", None)
+            supplier = self.specialists.get('supplier')
+            if rec['case']['caseKind'] == 'SUPPLIER' and hasattr(supplier, 'invalidate_confirmation'):
+                supplier.invalidate_confirmation(records, rec)
             if intent["caseType"] in {"TRAVEL_PLANNING", "PLAN_REVISION"}:
                 rec["context"] = self._planning_context(rec)
             rec["revision"] += 1
@@ -841,9 +866,13 @@ release them. One running dependency per coordinator prevents unbounded threads.
             raise OperationsError("ENTITLEMENT_DENIED", "Current membership does not allow plan presentation.")
         # Nested allowlist: comparison contains internal records on some adapters.
         comparison = record.get("comparison", {})
-        return {"version": deepcopy(record["version"]),
+        output = {"version": deepcopy(record["version"]),
                 "comparison": {k: deepcopy(comparison[k]) for k in ("baselineVersionId", "proposalVersionId", "costDelta", "journeyMinutesDelta", "changedRequirements", "addedOffers", "removedOffers", "changedOffers", "unchangedOffers", "scopeChanged", "dataRefresh", "attribution") if k in comparison},
                 "simulationOnly": True}
+        if 'dailySchedule' in record:
+            daily = record['dailySchedule']
+            output['dailySchedule'] = {k: deepcopy(daily[k]) for k in ['timeline', 'days', 'additionalCost', 'journeyMinutes', 'transfers']}
+        return output
 
     def adopt_plan(self, actor, key, version_id, expected_baseline, accepted):
         with self.adoption_lock:

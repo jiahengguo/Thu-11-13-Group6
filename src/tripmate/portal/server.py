@@ -21,7 +21,7 @@ COOKIE = 'tripmate_session'
 
 
 class Portal:
-    def __init__(self, cloud):
+    def __init__(self, cloud, supplier_pricing=None, supplier_policy=None):
         self.cloud, self.sessions, self.rate = cloud, Sessions(cloud), RateLimit()
         self.operations = OperationsService(SupabaseOperationsRepository(cloud), NoUserFixtures(), seed_profiles=False)
         if os.environ.get('ELEC5620_API_KEY') not in (None, '', 'REPLACE_LOCALLY'):
@@ -30,6 +30,10 @@ class Portal:
                 self.operations.llm = CampusLLMService(timeout=20)
             except (ImportError, ValueError):
                 pass
+        from tripmate.supplier.gateway import SupplierGateway
+        from tripmate.fixtures.shared import SharedFixtureCatalog
+        self.supplier = SupplierGateway(self.operations, supplier_pricing, supplier_policy)
+        self.fixtures = SharedFixtureCatalog(self.operations.repository)
 
     def ops_actor(self, actor):
         return actor  # Only Handler's verified server identity can reach this adapter.
@@ -42,8 +46,8 @@ class Portal:
     _save_analysis = staticmethod(Workbench._save_analysis)
 
 
-def make_server(cloud, port=8780, origin=None, bind='127.0.0.1'):
-    app, static = Portal(cloud), Path(__file__).with_name('static')
+def make_server(cloud, port=8780, origin=None, bind='127.0.0.1', supplier_pricing=None, supplier_policy=None):
+    app, static = Portal(cloud, supplier_pricing, supplier_policy), Path(__file__).with_name('static')
     configured_origin = origin
     if origin:
         p = urlsplit(origin)
@@ -139,6 +143,12 @@ def make_server(cloud, port=8780, origin=None, bind='127.0.0.1'):
                     return self.send(200,{'user':user,'csrf':session.csrf,'portal':PORTALS[user['role']] if user else None},sid=sid)
                 user=self.identity()
                 actor=user['id']
+                if path == '/api/supplier/assessment' and set(query) == {'caseId'} and len(query['caseId']) == 1:
+                    return self.send(200, app.supplier.view(actor, query['caseId'][0]))
+                if path == '/api/demo/fixtures' and not query:
+                    if user['role'] != 'OPERATOR':
+                        raise OperationsError('ACCESS_DENIED', 'Only operators can inspect the shared simulation catalog.')
+                    return self.send(200, app.fixtures.summary())
                 if path == '/api/operations/cases' and not query:
                     return self.send(200,{'cases':app.operations.cases(actor)})
                 if path == '/api/trips' and not query and user['role']=='TRAVELLER':
@@ -185,7 +195,8 @@ def make_server(cloud, port=8780, origin=None, bind='127.0.0.1'):
                     return self.send(400,{'error':'INVALID_JSON'})
                 path=urlsplit(self.path).path
                 if path in ('/api/auth/login','/api/auth/signup','/api/auth/recover'):
-                    app.rate.check(('auth',self.client_address[0]))
+                    app.rate.check(('auth-ip',self.client_address[0]),limit=60)
+                    app.rate.check(('auth-session',session.csrf))
                     required={'email'} if path.endswith('recover') else {'email','password'}
                     if set(body)!=required or not isinstance(body.get('email'),str) or not 3<=len(body['email'])<=254 or '@' not in body['email']:
                         raise OperationsError('INVALID_CONTRACT','Enter a valid email and the required credentials.')
@@ -211,7 +222,8 @@ def make_server(cloud, port=8780, origin=None, bind='127.0.0.1'):
                     app.sessions.remove(self.sid())
                     return self.send(200,{'portal':PORTALS[user['role']]},sid=new_sid)
                 if path == '/api/auth/callback':
-                    app.rate.check(('auth',self.client_address[0]))
+                    app.rate.check(('auth-ip',self.client_address[0]),limit=60)
+                    app.rate.check(('auth-session',session.csrf))
                     if set(body)!={'access_token','refresh_token','state'} or any(not isinstance(v,str) or not 1<=len(v)<=8192 for v in body.values()):
                         raise OperationsError('INVALID_CONTRACT','Invalid sign-in link. Request a new email link.')
                     if not secrets.compare_digest(body['state'],session.csrf):
@@ -241,6 +253,12 @@ def make_server(cloud, port=8780, origin=None, bind='127.0.0.1'):
                     return self.send(200,{'message':'Signed out.'},sid='')
                 user=app.sessions.identity(session)
                 app.rate.check(('write',user['id']),limit=60)
+                if path in ('/api/supplier/review', '/api/supplier/decision'):
+                    return self.send(200, app.supplier.mutate(user['id'], path.rsplit('/', 1)[1], body))
+                if path == '/api/demo/fixtures/reset':
+                    if user['role'] != 'OPERATOR' or body:
+                        raise OperationsError('ACCESS_DENIED', 'Only operators can reset the isolated simulation catalog.')
+                    return self.send(200, app.fixtures.reset())
                 if path.startswith('/api/operations/'):
                     return self.send(200,app.operation(path.removeprefix('/api/operations/'),body,user))
                 if path == '/api/partners/apply' and user['role']=='TRAVELLER' and set(body)=={'company','description'}:

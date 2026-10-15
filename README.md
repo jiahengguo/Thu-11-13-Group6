@@ -2,6 +2,8 @@
 
 Customer Exception EXC-01/EXC-02: [local simulated prototype and demonstration guide](docs/exception/README.md). Two buttons are available in the explicit `--workbench` web mode; results and traces persist locally.
 
+Travel Planning now connects to the merged Operations ports and B03 catalog. See [Planning integration/API handoff](docs/planning/Travel_Planning_API_Handoff.zh-CN.md) and [main integration notes](docs/planning/Main_Integration.zh-CN.md). The course model adapter implements the shared `LLMService` port. Supplier/Reviewer production integration remains pending.
+
 **Authenticated portals branch (13 October 2026):** `portal-supabase-integration`
 adds a public website and separate Traveller `/app`, Supplier `/supplier`, and
 Operator `/admin` portals. Supabase Auth verifies real accounts; backend role and
@@ -27,6 +29,14 @@ case coordination, operator review and controlled response delivery. See the
 [acceptance evidence](docs/operations/TEST_RESULTS.md). Planning/Supplier/Exception and
 automatic Reviewer dependencies remain explicitly injected; this branch does not merge
 the separate Travel Planning PR or claim four-agent completion.
+
+**B08 Supplier assessment:** UC-06 source validation, versioned pricing/review/approval
+and approved-offer lookup now connect to confirmed requests in the authenticated
+Supplier/Operator portals and private shared Supabase records. Operators review
+the offer and separately decide restricted terms; Operations retains external delivery.
+Actual pricing requires B04 and a configured policy. See the
+[Supabase adaptation and tests](docs/stage2/SUPABASE_ADAPTATION.md) and
+[B08 handoff](docs/stage2/B08_SUPPLIER_HANDOFF.zh-CN.md).
 
 **Supplier Partnership B02/B03 branch (13 October 2026):** Local-only Web API/SQLite foundation, replayable synthetic supplier/traveller/disruption fixtures, controlled reset, and a model-smoke endpoint have been added. [Handoff](docs/stage2/B02_B03_HANDOFF.md). Four-agent workflows are **not** integrated. Planning demonstrations and campus model integration are enabled only after their separate provider implementation is merged; until then, the page reports them as unavailable.
 

@@ -36,7 +36,11 @@ def planning_is_available():
 
 
 class Workbench:
-    def __init__(self, settings, llm_factory=None):
+    def __init__(self, settings, llm_factory=None, *, planning_fixture=False, planning_live_model=False):
+        if planning_live_model and not planning_fixture:
+            raise ValueError('Live Planning requires explicit planning_fixture integration')
+        if planning_fixture and settings.mode != 'FIXTURE':
+            raise ValueError('Integrated development Planning requires FIXTURE mode')
         self.settings = settings
         self.store = PlatformStore(settings.database)
         self.fixtures = FixtureRepository(settings.database)
@@ -49,6 +53,8 @@ class Workbench:
             settings.database.stem + ".planning-demo" + settings.database.suffix)
         if self.planning_db.resolve() == settings.database.resolve():
             raise ValueError("Planning demonstration database must be separate")
+        self.supplier_db = settings.database.with_name(
+            settings.database.stem + '.supplier-demo' + settings.database.suffix)
         self.token = secrets.token_urlsafe(32)
         self.busy = BoundedSemaphore(1)
         self.operations = OperationsService(OperationsRepository(settings.database), self.fixtures) if settings.mode == "FIXTURE" else None
@@ -60,6 +66,17 @@ class Workbench:
                 pass  # An absent/incompatible adapter remains explicitly unconfigured.
         self.ops_sessions = {}
         self.exception_repository = ExceptionRepository(settings.database) if settings.mode == "FIXTURE" else None
+        self.integrated_planning = None
+        self.planning_live_model = planning_live_model
+        if planning_fixture:
+            from tripmate.planning.integration import connect_workbench_planning
+            self.operations.clock = lambda: FIXTURE_TIME
+            self.operations.entitlement.clock = self.operations.clock
+            self.operations.dependency_timeout = 60
+            if planning_live_model and not has_model_key():
+                raise ValueError('Set the course model key locally before enabling live Planning')
+            self.integrated_planning = connect_workbench_planning(
+                self.operations, self.fixtures, settings.database, live_model=planning_live_model)
 
     def ops_actor(self, session):
         evidence = self.ops_sessions.get(session)
@@ -151,9 +168,12 @@ class Workbench:
                 "database": "CONNECTED" if self.store.healthy() else "UNAVAILABLE",
                 "modelConfigured": has_model_key(), "csrfToken": self.token,
                 "fixtureTime": FIXTURE_TIME,
+                "supplierAssessment": "FIXTURE_AVAILABLE" if planning_is_available() else "B04_NOT_INSTALLED",
                 "fixtureCatalog": "SEE_/api/fixtures" if self.settings.mode == "FIXTURE" else "DISABLED",
                 "integration": {"operations": "LOCAL_FIXTURE" if self.operations else "STUB", "supplier": "STUB",
-                                "exception": "ISOLATED_FIXTURE" if self.exception_repository else "STUB", "planning": "ISOLATED_FIXTURE" if planning_is_available() else "NOT_INSTALLED"}}
+                                "exception": "ISOLATED_FIXTURE" if self.exception_repository else "STUB", "planning": "OPERATIONS_B03_FIXTURE" if self.integrated_planning else "ISOLATED_FIXTURE" if planning_is_available() else "NOT_INSTALLED",
+                                "reviewer": "EXPLICIT_FIXTURE" if self.integrated_planning else "NOT_INTEGRATED",
+                                "planningModel": "CAMPUS_LIVE" if self.planning_live_model else "DETERMINISTIC"}}
 
     def exception_demo(self, body):
         if self.exception_repository is None:
@@ -198,6 +218,22 @@ class Workbench:
             raise WorkbenchError("NOT_IMPLEMENTED", "Fixture catalog requires FIXTURE mode")
         return self.fixtures.summary()
 
+    def supplier_demo(self, body):
+        if self.settings.mode != 'FIXTURE':
+            raise WorkbenchError('NOT_IMPLEMENTED', 'Supplier demonstration requires FIXTURE mode')
+        from tripmate.supplier.fixtures import fixture_runtime
+        scenario = body.get('scenario', 'coach')
+        if not isinstance(scenario, str):
+            raise ValueError('Choose a documented supplier scenario')
+        case, runtime = fixture_runtime(self.supplier_db, scenario)
+        result = runtime.handle_case(case)
+        record = runtime.repository.current(runtime.load_input(case['caseId'])['offerId'])
+        evidence = self.store.record('SUPPLIER_FIXTURE', result['status'],
+                                    {'caseId': case['caseId'], 'runId': result['runId'], 'scenario': scenario,
+                                     'executionMode': 'FIXTURE', 'modelExecution': 'FIXTURE_REPLAY'})
+        return {'result': result, 'snapshot': record, 'evidence': evidence,
+                'notice': 'B04 pricing executed; extraction, access, trace and review are synthetic adapters. No commitment or live AI call.'}
+
     def reset_fixtures(self):
         if self.settings.mode != "FIXTURE":
             raise WorkbenchError("NOT_IMPLEMENTED", "Reset is disabled outside FIXTURE mode")
@@ -211,6 +247,13 @@ class Workbench:
                 existing = {row[0] for row in db.execute("SELECT name FROM sqlite_master WHERE type='table'")}
                 for table in sorted(existing & allowed):
                     db.execute("DELETE FROM " + table)
+        if self.supplier_db.exists():
+            with closing(sqlite3.connect(str(self.supplier_db), timeout=10)) as db, db:
+                db.execute('BEGIN IMMEDIATE')
+                existing = {row[0] for row in db.execute("SELECT name FROM sqlite_master WHERE type='table'")}
+                allowed = {'supplier_current', 'supplier_versions', 'supplier_fixture_events', 'supplier_fixture_approvals'}
+                for table in sorted(existing & allowed):
+                    db.execute('DELETE FROM ' + table)
         return result
 
     def smoke(self):
@@ -244,8 +287,8 @@ class Workbench:
         return self.store.record("LLM_SMOKE", outcome, details)
 
 
-def make_server(settings, port=8765, llm_factory=None):
-    app = Workbench(settings, llm_factory)
+def make_server(settings, port=8765, llm_factory=None, *, planning_fixture=False, planning_live_model=False):
+    app = Workbench(settings, llm_factory, planning_fixture=planning_fixture, planning_live_model=planning_live_model)
     static = Path(__file__).with_name("static")
 
     class Handler(BaseHTTPRequestHandler):
@@ -322,6 +365,16 @@ def make_server(settings, port=8765, llm_factory=None):
 
         def do_POST(self):
             if not self.local_request() or not secrets.compare_digest(self.headers.get("X-TripMate-Token", ""), app.token):
+                # Discard a bounded body before closing an HTTP/1.0 connection.
+                # Unread inbound bytes can otherwise reset the socket on Windows
+                # before the caller receives the intended 403 response.
+                try:
+                    size = int(self.headers.get('Content-Length', '0'))
+                    if 0 < size <= 8192:
+                        self.connection.settimeout(1)
+                        self.rfile.read(size)
+                except (ValueError, OSError):
+                    pass
                 return self.send(403, {"error": "LOCAL_TOKEN_REQUIRED"})
             if self.headers.get("Content-Type", "").split(";")[0].strip() != "application/json":
                 return self.send(415, {"error": "JSON_REQUIRED"})
@@ -346,6 +399,10 @@ def make_server(settings, port=8765, llm_factory=None):
                     if set(body) - {"mode", "budget"}:
                         raise ValueError("Unexpected demo fields")
                     return self.send(200, app.planning(body))
+                if self.path == '/api/supplier-demo':
+                    if set(body) - {'scenario'}:
+                        raise ValueError('Unexpected supplier demo fields')
+                    return self.send(200, app.supplier_demo(body))
                 if self.path == "/api/fixtures/reset":
                     if body:
                         raise ValueError("Fixture reset accepts no user content")
@@ -381,12 +438,14 @@ def main():
         return portal_main()
     parser = argparse.ArgumentParser(description="TripMate local B02 workbench")
     parser.add_argument("--workbench", action="store_true", help="Explicitly enable the isolated, unauthenticated development workbench")
+    parser.add_argument('--planning-fixture', action='store_true', help='Connect actual Operations + B03 database + Planning with an explicit fixture Reviewer')
+    parser.add_argument('--planning-live-model', action='store_true', help='Use campus-qwen for integrated Planning; requires --planning-fixture')
     parser.add_argument("--port", type=int, default=8765)
     parser.add_argument("--env-file", type=Path, default=Path(".env"))
     args = parser.parse_args()
     try:
         settings = Settings.load(args.env_file)
-        server = make_server(settings, args.port)
+        server = make_server(settings, args.port, planning_fixture=args.planning_fixture, planning_live_model=args.planning_live_model)
     except (ValueError, OSError, sqlite3.Error) as exc:
         parser.exit(1, "Startup failed: check mode, database permissions and port availability. " + type(exc).__name__ + "\n")
     print(f"TripMate B02 | {settings.mode} business data | http://127.0.0.1:{server.server_port}", flush=True)
@@ -396,6 +455,8 @@ def main():
         pass
     finally:
         server.server_close()
+        if server.app.integrated_planning:
+            server.app.integrated_planning.close()
 
 
 if __name__ == "__main__":

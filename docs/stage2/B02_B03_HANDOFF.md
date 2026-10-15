@@ -6,6 +6,10 @@
 
 ## Start the application (Windows PowerShell)
 
+**Current architecture:** Default startup now uses authenticated Supabase portals.
+The routes below describe isolated local workbench tools. See
+[SUPABASE_ADAPTATION.md](SUPABASE_ADAPTATION.md) for cloud fixtures and current setup.
+
 The `supplier-partnership` delivery folder contains changed files only. Apply
 them at matching paths in a branch based on the team repository's `main`; it
 relies on the shared contracts and framework already in that repository.
@@ -18,8 +22,8 @@ From the **repository root** (the folder containing `pyproject.toml`):
 ```powershell
 py -3 -m venv .venv
 .\.venv\Scripts\python.exe -m pip install -e .
-Copy-Item .env.example .env
-.\.venv\Scripts\python.exe -m tripmate.api.server --port 8765
+if (!(Test-Path .env)) { Copy-Item .env.example .env }
+.\.venv\Scripts\python.exe -m tripmate.api.server --workbench --port 8765
 ```
 
 Then open `http://127.0.0.1:8765` in a browser. The web app is intentionally **bound to localhost** and designed for a classroom prototype, not deployment on a public server. On the default `.env` settings, business workflows are **FIXTURE**. You can inspect startup/persistence checks, view B03 data and safely reset simulation fixtures. The optional Planning fixture demo becomes available after Moore’s separate branch is merged.
@@ -99,5 +103,10 @@ All B03 entity IDs, source references and scenario associations are deterministi
 Run `python -m unittest discover -s tests -v` before making Jira completion claims. Jira's Definition of Done additionally requires a **real commit/PR, other-member review, evidence attachment, and clean-start reproduction by a teammate**. Do not mark the cards Done until those happen. Git history was not available in the ZIP source snapshot.
 
 ## Branch ownership and integration boundary
+
+**B08 extension:** The later Supplier implementation adds an explicit
+`POST /api/supplier-demo` fixture action and a separate `*.supplier-demo.sqlite3`.
+Reset also clears its four B08 demo tables; supplier business tables in the shared
+database are preserved. See B08_SUPPLIER_HANDOFF.zh-CN.md for dependencies and scope.
 
 This change set is based on the team `main` baseline. Do not copy Moore’s `src/tripmate/planning/`, `src/tripmate/adapters/campus.py`, `docs/planning/`, or tests into this feature branch: those belong to `codex/travel-planning`. B02 exposes optional hooks; before that branch is merged, the Planning action is disabled and the campus model adapter check records `MODEL_ADAPTER_NOT_INSTALLED` if credentials exist. The synthetic B03 quote examples are data fixtures, not copied Planning source. Later merge both PRs into a common `main` and run integration regression tests.

@@ -27,7 +27,7 @@ Revisions and adoptions of the same plan must not consume an extra Free trip slo
         return self.operations.entitlement.evaluate(traveller_id, action, facts)
 
 
-def connect_planning(operations, offers, reviewer, planning_repository, clock=None, planner=None):
+def connect_planning(operations, offers, reviewer, planning_repository, clock=None, planner=None, planner_factory=None, factors=None):
     """Connect installed Planning with the real Operations services on simulated data.
 
 Offers and Reviewer MUST be supplied by their owners. Test substitutes stay FIXTURE.
@@ -38,12 +38,14 @@ Each case gets its own scoped entitlement adapter. Shared DB is supported.
         from tripmate.planning.application import PlanningRuntime, accept_proposal
     except ImportError as exc:
         raise OperationsError("TOOL_UNAVAILABLE", "Merge the Travel Planning module before connecting it.") from exc
+    if planner is not None and planner_factory is not None:
+        raise ValueError('Provide planner or planner_factory, not both')
     operations.planning_repository = planning_repository
     def runtime(case_id):
         return PlanningRuntime(load_context=operations.load_context, offers=offers, access=operations.access,
                                entitlement=CaseEntitlements(operations, case_id), reviewer=reviewer,
                                repository=planning_repository, clock=clock or operations.clock,
-                               execution_mode="FIXTURE", planner=planner)
+                               execution_mode="FIXTURE", planner=planner_factory() if planner_factory else planner, factors=factors)
     class PlanningAdapter:
         def handle_case(self, case):
             return TravelPlanningAgent(runtime(case["caseId"])).handle_case(case)

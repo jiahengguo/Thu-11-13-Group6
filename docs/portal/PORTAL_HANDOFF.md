@@ -123,13 +123,16 @@ a production web server, targeted/paginated storage, monitoring and deployment c
 
 The identities, authentication and cloud persistence are real. The report's simulated
 business scope remains: no real booking, charge, refund, signing or ad publication.
-Planning/Supplier/Exception/Reviewer implementations are still explicit injected ports;
+Planning/Exception/automatic Reviewer implementations remain explicit injected ports;
 missing specialists cause documented human-assistance states, not invented results.
-This branch does not claim complete itinerary generation, maps, offer approval or four-agent
-integration. The portals expose intake and orchestration; specialist result screens must
-be connected when those modules are merged. Supplier form fields currently serialize into
-a confirmed details payload for the shared supplier request contract; normalized offer
-storage and supplier assessment UI are subsequent integration work.
+Supplier assessment now uses explicit Operator offer review and scoped approval.
+This branch does not claim complete itinerary generation, maps or four-agent
+integration. The portals expose intake and orchestration; remaining specialist screens must
+be connected when those modules are merged. Supplier form fields now serialize into
+confirmed structured source facts alongside the request details. SupplierGateway adds
+B08 private shared version storage and Operator-scoped offer review/approval;
+see `docs/stage2/SUPABASE_ADAPTATION.md`. Actual pricing still requires the separately
+merged B04 module and a configured policy; its absence is a recorded blocker.
 
 ## Report alignment
 
@@ -137,3 +140,29 @@ Stage 1 §§2.1–2.7 and §§3.1–3.6 define actor boundaries. UC-05 defines a
 confirmed intake, coordination, review, human decisions and controlled delivery. UC-07
 keeps entitlement deterministic. §13 keeps transactions simulated. The four route groups
 are an implementation choice consistent with those boundaries, not specified report URLs.
+
+## Four-member debugging and connection limits
+
+The three authenticated portals share no fixed application session-count ceiling.
+Active sessions are not evicted when another member signs in. Expiry, logout,
+verification, roles and case ownership remain enforced. Authentication requests
+allow six attempts per browser session per minute and sixty per source IP per
+minute, so four browsers on the same network can retry independently. Session
+creation retains its thirty-per-IP-per-minute limit and business writes retain
+sixty-per-user-per-minute throttling; these are request limits, not online-user caps.
+
+A concurrent HTTP regression uses four independent browsers (two Travellers, one
+Supplier and one Operator), signs each in three times from the same IP, and checks
+identity isolation and its permitted portal. The provider is a test substitute;
+this does not assert unlimited Supabase Auth capacity or a production load test.
+Another check creates more than 1,000 sessions without evicting the first.
+
+These portals use backend HTTPS requests to Supabase Auth and database APIs;
+they do not open Supabase Realtime WebSocket subscriptions. Realtime's Free-plan
+200-connection quota and its database pool settings therefore do not cap portal
+logins. Supabase plan quotas and Auth throttles still apply. No paid upgrade or
+provider setting change is included. Four teammates can use independent browser
+profiles/accounts against one reachable server; localhost is accessible only on
+the host machine. Remote access still requires the documented HTTPS deployment
+and callback configuration. In-memory sessions remain single-process and bounded
+by available server resources, rather than an application count threshold.

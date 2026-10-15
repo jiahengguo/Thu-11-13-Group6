@@ -10,6 +10,7 @@ import sqlite3
 import sys
 import tempfile
 import unittest
+from contextlib import closing
 from copy import deepcopy
 from pathlib import Path
 
@@ -123,7 +124,7 @@ class PlanningIntegrationTests(unittest.TestCase):
 
     def test_free_two_trip_revision_and_adoption_use_scoped_membership(self):
         # B03 normally has two Free trips; this test completes one explicitly.
-        with self.fixtures._connect() as db:
+        with closing(self.fixtures._connect()) as db, db:
             entity = self.fixtures.get_entity("itinerary:free-second")
             entity["data"]["status"] = "COMPLETED"
             db.execute("UPDATE fixture_entities SET payload=? WHERE id=?", (json.dumps(entity), entity["id"]))

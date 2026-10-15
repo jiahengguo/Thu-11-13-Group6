@@ -2,9 +2,19 @@
 
 Customer Exception EXC-01/EXC-02：[本地模拟原型与演示说明](docs/exception/README.md)。使用 `--workbench` 启动后，可在网页点击航班取消和延误投诉两个按钮，处理记录会保存在本地。
 
+逐日规划扩展：运行 `python -m tripmate.planning.daily_demo` 验证多城市、天气、交通延误、路线、体力、用餐休息和预约规则。
+目前为明确标注的模拟数据联调，配置与 API 字段见 [逐日规划文档](docs/planning/Daily_Planning_Factors.zh-CN.md)。
+
+Travel Planning 已接入合并后的 Operations 接口与 B03 数据库，详见 [API 交接](docs/planning/Travel_Planning_API_Handoff.zh-CN.md)和 [main 联调说明](docs/planning/Main_Integration.zh-CN.md)。课程模型已实现共享 LLMService；正式 Supplier/Reviewer 尚待对接。
+
 **真实登录与门户分支（2026-10-13）：** `portal-supabase-integration` 接入新 Supabase 项目，提供官网、用户 `/app`、供应商 `/supplier` 和内部管理 `/admin`。默认 Web 入口运行真实身份与云端存储的门户；旧模拟工作台需要显式添加 `--workbench`。启动门户：`python -m tripmate.portal.server --port 8780`。详见 [门户配置与实现边界](docs/portal/PORTAL_HANDOFF.md) 和 [验证记录](docs/portal/TEST_RESULTS.md)。专业 Agent 仍需明确接入，交易保持报告中的模拟范围。
 
 **Operations Agent 分支（2026-10-13）：** 启动现有本地服务后访问 `/operations`，可使用请求补全与确认、模拟身份/会员校验、Case 跟踪、人工审核及受控回复。详见 [Operations 交接](docs/operations/OPERATIONS_HANDOFF.md) 和 [验证记录](docs/operations/TEST_RESULTS.md)。Planning、Supplier、Exception 与自动 Reviewer 通过明确的接口接入；本分支未合并 Travel Planning PR，也不宣称四 Agent 已完成联调。
+
+**B08 供应商评估：** 已接入确认后的结构化供应商请求、真实登录的供应商/运营门户和
+共享私有 Supabase 记录。Operator 显式审核报价并单独决定受限条款，Operations 控制对外回复。
+实际定价仍需 B04 和明确配置的定价政策。详见 [适配与测试说明](docs/stage2/SUPABASE_ADAPTATION.md)
+和 [B08 交接](docs/stage2/B08_SUPPLIER_HANDOFF.zh-CN.md)。
 
 **Supplier Partnership B02/B03 独立分支（2026-10-13）：** 已新增本地 Web/API、SQLite、可重复的模拟供应商/旅客/取消测试数据和安全 Reset。启动及交接见 [B02/B03 说明](docs/stage2/B02_B03_HANDOFF.md)。四 Agent 仍未完成集成；Moore 的 Planning 及校园模型适配器属于另一分支，未合入时会明确提示不可用，不伪装成已完成。
 
