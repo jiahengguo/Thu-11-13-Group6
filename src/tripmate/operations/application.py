@@ -199,8 +199,16 @@ release them. One running dependency per coordinator prevents unbounded threads.
             if (kind in SUPPLIER_TYPES) != (profile["role"] == "SUPPLIER") or profile["role"] == "OPERATOR":
                 raise OperationsError("ACCESS_DENIED", "The request category does not match the requester role.")
             allowed = TRAVEL_FIELDS if kind in {"TRAVEL_PLANNING", "PLAN_REVISION"} else {"details", "planId", "feature", "memberOfferRuleId"}
+            if kind in SUPPLIER_TYPES:
+                allowed = allowed | {'supplierOffer'}
             if not isinstance(fields, dict) or set(fields) - allowed:
                 raise OperationsError("INVALID_CONTRACT", "Unexpected structured request fields.")
+            if 'supplierOffer' in fields:
+                from tripmate.supplier.intake import normalise_submission
+                try:
+                    fields['supplierOffer'] = normalise_submission(fields['supplierOffer'])
+                except ValueError as exc:
+                    raise OperationsError('INVALID_CONTRACT', str(exc)) from None
             for k in {"origin", "destination", "details", "baselineVersionId", "planId"} & fields.keys():
                 fields[k] = safe_text(fields[k], 1000)
             if "preferences" in fields:
@@ -552,6 +560,13 @@ release them. One running dependency per coordinator prevents unbounded threads.
             self._failure(rec, "TOOL_UNAVAILABLE", "The specialist is still an unconfigured stub.")
             return
         rec["specialistResult"] = deepcopy(result)
+        if result['agent'] == 'supplier' and result['status'] == 'APPROVAL_PENDING':
+            rec['case']['requiresApproval'] = True
+            rec['case']['status'] = 'AWAITING_HUMAN_APPROVAL'
+            rec['response'] = None
+            rec['review'] = None
+            rec['approvalId'] = None  # Offer approval is scoped to SupplierOffer, not Case response.
+            return
         if result["status"] != "SUCCESS":
             rec["case"]["unresolvedQuestions"] = [safe_text(result["nextAction"])]
             rec["case"]["status"] = "AWAITING_REQUESTER" if result["status"] == "REVISION_REQUIRED" else "HUMAN_ASSISTANCE"
@@ -783,6 +798,9 @@ release them. One running dependency per coordinator prevents unbounded threads.
                        approvalId=None, dispatchStarted=False, completedRun=None, invokedRun=None)
             rec.pop("specialistResult", None)
             rec.pop("context", None)
+            supplier = self.specialists.get('supplier')
+            if rec['case']['caseKind'] == 'SUPPLIER' and hasattr(supplier, 'invalidate_confirmation'):
+                supplier.invalidate_confirmation(records, rec)
             if intent["caseType"] in {"TRAVEL_PLANNING", "PLAN_REVISION"}:
                 rec["context"] = self._planning_context(rec)
             rec["revision"] += 1

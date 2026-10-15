@@ -9,6 +9,11 @@ Travel Planning 已接入合并后的 Operations 接口与 B03 数据库，详�
 
 **Operations Agent 分支（2026-10-13）：** 启动现有本地服务后访问 `/operations`，可使用请求补全与确认、模拟身份/会员校验、Case 跟踪、人工审核及受控回复。详见 [Operations 交接](docs/operations/OPERATIONS_HANDOFF.md) 和 [验证记录](docs/operations/TEST_RESULTS.md)。Planning、Supplier、Exception 与自动 Reviewer 通过明确的接口接入；本分支未合并 Travel Planning PR，也不宣称四 Agent 已完成联调。
 
+**B08 供应商评估：** 已接入确认后的结构化供应商请求、真实登录的供应商/运营门户和
+共享私有 Supabase 记录。Operator 显式审核报价并单独决定受限条款，Operations 控制对外回复。
+实际定价仍需 B04 和明确配置的定价政策。详见 [适配与测试说明](docs/stage2/SUPABASE_ADAPTATION.md)
+和 [B08 交接](docs/stage2/B08_SUPPLIER_HANDOFF.zh-CN.md)。
+
 **Supplier Partnership B02/B03 独立分支（2026-10-13）：** 已新增本地 Web/API、SQLite、可重复的模拟供应商/旅客/取消测试数据和安全 Reset。启动及交接见 [B02/B03 说明](docs/stage2/B02_B03_HANDOFF.md)。四 Agent 仍未完成集成；Moore 的 Planning 及校园模型适配器属于另一分支，未合入时会明确提示不可用，不伪装成已完成。
 
 [English](README.md) | [简体中文](README.zh-CN.md)

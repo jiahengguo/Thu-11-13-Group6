@@ -20,7 +20,8 @@ class Settings:
                     values[key.strip()] = value.strip().strip("\"'")
         allowed = {"TRIPMATE_DATABASE_PATH", "TRIPMATE_EXECUTION_MODE", "TRIPMATE_LLM_PROVIDER",
                    "TRIPMATE_LLM_MODEL", "ELEC5620_API_KEY", "ELEC5620_BASE_URL", "ELEC5620_MODEL",
-                   "SUPABASE_URL", "SUPABASE_PUBLISHABLE_KEY", "SUPABASE_SECRET_KEY", "TRIPMATE_PUBLIC_ORIGIN"}
+                   "SUPABASE_URL", "SUPABASE_PUBLISHABLE_KEY", "SUPABASE_SECRET_KEY", "TRIPMATE_PUBLIC_ORIGIN",
+                   'TRIPMATE_MARKUP_RATE', 'TRIPMATE_MINIMUM_MARGIN', 'TRIPMATE_PRICING_CONFIG_VERSION'}
         for key in allowed:
             if key in values:
                 os.environ.setdefault(key, values[key])

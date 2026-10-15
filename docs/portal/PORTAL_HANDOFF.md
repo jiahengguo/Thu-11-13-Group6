@@ -123,13 +123,16 @@ a production web server, targeted/paginated storage, monitoring and deployment c
 
 The identities, authentication and cloud persistence are real. The report's simulated
 business scope remains: no real booking, charge, refund, signing or ad publication.
-Planning/Supplier/Exception/Reviewer implementations are still explicit injected ports;
+Planning/Exception/automatic Reviewer implementations remain explicit injected ports;
 missing specialists cause documented human-assistance states, not invented results.
-This branch does not claim complete itinerary generation, maps, offer approval or four-agent
-integration. The portals expose intake and orchestration; specialist result screens must
-be connected when those modules are merged. Supplier form fields currently serialize into
-a confirmed details payload for the shared supplier request contract; normalized offer
-storage and supplier assessment UI are subsequent integration work.
+Supplier assessment now uses explicit Operator offer review and scoped approval.
+This branch does not claim complete itinerary generation, maps or four-agent
+integration. The portals expose intake and orchestration; remaining specialist screens must
+be connected when those modules are merged. Supplier form fields now serialize into
+confirmed structured source facts alongside the request details. SupplierGateway adds
+B08 private shared version storage and Operator-scoped offer review/approval;
+see `docs/stage2/SUPABASE_ADAPTATION.md`. Actual pricing still requires the separately
+merged B04 module and a configured policy; its absence is a recorded blocker.
 
 ## Report alignment
 
