@@ -1,5 +1,7 @@
 # TripMate AI
 
+Customer Exception EXC-01/EXC-02：[本地模拟原型与演示说明](docs/exception/README.md)。使用 `--workbench` 启动后，可在网页点击航班取消和延误投诉两个按钮，处理记录会保存在本地。
+
 逐日规划扩展：运行 `python -m tripmate.planning.daily_demo` 验证多城市、天气、交通延误、路线、体力、用餐休息和预约规则。
 目前为明确标注的模拟数据联调，配置与 API 字段见 [逐日规划文档](docs/planning/Daily_Planning_Factors.zh-CN.md)。
 
