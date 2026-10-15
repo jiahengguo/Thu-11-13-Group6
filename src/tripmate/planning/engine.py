@@ -79,9 +79,27 @@ class PlanningEngine:
         self.clock, self.max_candidates = clock, max_candidates
 
     def generate(self, request, quotes, spec, baseline=None):
+        return self._generate(request, quotes, spec, baseline)
+
+    def recover(self, request, quotes, spec, baseline):
+        """Re-evaluate unavailable resources without inventing a preference change.
+
+        Recovery keeps every confirmed requirement. Ordinary user revisions still
+        use validate_revision and require an explicit changed-field confirmation.
+        """
+        if (not baseline or request['baselineVersionId'] != baseline['version']['versionId']
+                or request['travellerId'] != baseline['request']['travellerId']
+                or request['confirmedChangedFields']
+                or any(request[k] != baseline['request'][k] for k in CHANGE_FIELDS)
+                or spec != baseline['spec']):
+            raise PlanningError('UNCONFIRMED_REQUEST', 'Recovery cannot change confirmed requirements or constraint meanings', 'recovery')
+        return self._generate(request, quotes, spec, baseline, recovery=True)
+
+    def _generate(self, request, quotes, spec, baseline=None, *, recovery=False):
         validate("TravelRequest", request)
         if baseline:
-            validate_revision(request, baseline)
+            if not recovery:
+                validate_revision(request, baseline)
             if spec["roundTrip"] != baseline["spec"]["roundTrip"]:
                 raise PlanningError("UNCONFIRMED_REQUEST", "Route topology changes need an extended confirmed contract", "revision")
             for key, binding in spec["constraintBindings"].items():

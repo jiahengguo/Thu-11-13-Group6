@@ -16,6 +16,19 @@ class Records:
     def __init__(self, db):
         self.db = db
 
+    @contextmanager
+    def savepoint(self):
+        """Rollback an imported specialist receipt before recording a safe failure."""
+        self.db.execute('SAVEPOINT specialist_receipt')
+        try:
+            yield
+        except Exception:
+            self.db.execute('ROLLBACK TO specialist_receipt')
+            self.db.execute('RELEASE specialist_receipt')
+            raise
+        else:
+            self.db.execute('RELEASE specialist_receipt')
+
     def get(self, kind, key):
         row = self.db.execute("SELECT payload FROM ops_records WHERE kind=? AND id=?", (kind, key)).fetchone()
         return json.loads(row[0]) if row else None

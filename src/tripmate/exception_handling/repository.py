@@ -38,3 +38,8 @@ class ExceptionRepository:
         with closing(sqlite3.connect(self.path)) as db:
             rows = db.execute('SELECT payload FROM exception_runs WHERE case_id=? ORDER BY rowid', (case_id,)).fetchall()
         return [event for row in rows for event in json.loads(row[0])["trace"]]
+
+    def latest_proposal(self, case_id):
+        with closing(sqlite3.connect(self.path)) as db:
+            rows = db.execute('SELECT payload FROM exception_runs WHERE case_id=? ORDER BY rowid DESC', (case_id,)).fetchall()
+        return next((value for row in rows if (value := json.loads(row[0])).get('proposal')), None)

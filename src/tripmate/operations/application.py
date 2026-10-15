@@ -559,6 +559,17 @@ release them. One running dependency per coordinator prevents unbounded threads.
         if result["executionMode"] == "STUB":
             self._failure(rec, "TOOL_UNAVAILABLE", "The specialist is still an unconfigured stub.")
             return
+        exception = self.specialists.get('exception')
+        if result['agent'] == 'exception' and hasattr(exception, 'receive'):
+            before = deepcopy(rec)
+            try:
+                with records.savepoint():
+                    exception.receive(records, rec, result)
+            except Exception:
+                rec.clear()
+                rec.update(before)
+                raise
+            return
         rec["specialistResult"] = deepcopy(result)
         if result['agent'] == 'supplier' and result['status'] == 'APPROVAL_PENDING':
             rec['case']['requiresApproval'] = True
@@ -642,6 +653,13 @@ release them. One running dependency per coordinator prevents unbounded threads.
             rec = self._owned(records, actor, case_id, "REVIEW_CASE", revision)
             if rec["case"]["status"] in {"CLOSED", "WITHDRAWN"}:
                 raise OperationsError("UNCONFIRMED_REQUEST", "A closed case cannot be reviewed again.")
+            exception = self.specialists.get('exception')
+            if (rec['case']['primaryHandler'] == 'exception' and hasattr(exception, 'decide')
+                    and exception.decide(records, rec, actor, decision, reason, edited_text)):
+                rec['revision'] += 1
+                self._event(records, rec, 'REVIEW', 'Exception proposal reviewed: ' + reason, actor=actor)
+                self._save(records, rec)
+                return {'caseId': case_id}
             if edited_text is not None:
                 rec["response"] = safe_text(edited_text)
                 rec["responseVersion"] += 1
@@ -656,6 +674,8 @@ release them. One running dependency per coordinator prevents unbounded threads.
                 rec["case"]["unresolvedQuestions"] = [reason]
                 rec["review"] = None
             else:
+                if rec.get('exceptionRunId') and hasattr(exception, 'ensure_release'):
+                    exception.ensure_release(records, rec)
                 if not rec["response"]:
                     raise OperationsError("REVIEW_FAILED", "Supply an evidence-supported response before approval.")
                 if rec["case"]["errors"]:
@@ -690,6 +710,9 @@ release them. One running dependency per coordinator prevents unbounded threads.
             rec = self._owned(records, actor, case_id, "DELIVER", revision)
             if rec["case"]["status"] != "READY_TO_RESPOND" or not rec["review"] or rec["review"]["outcome"] != "PASS" or rec["review"]["subject"] != self._response_subject(rec):
                 raise OperationsError("REVIEW_FAILED", "Only the current reviewed response can be delivered.")
+            exception = self.specialists.get('exception')
+            if rec.get('exceptionRunId') and hasattr(exception, 'ensure_release'):
+                exception.ensure_release(records, rec)
             if rec["case"]["requiresApproval"]:
                 approval = records.get("approval", rec["approvalId"])
                 if not approval or approval["status"] != "DECIDED" or approval["decision"] != "APPROVE" or approval["subject"] != self._response_subject(rec) or approval["reviewId"] != rec["review"]["reviewId"] or approval["scope"] != "SIMULATED_EXTERNAL_RESPONSE":
@@ -710,12 +733,16 @@ release them. One running dependency per coordinator prevents unbounded threads.
                 self._event(records, rec, "FAILURE", "Simulated delivery failed; response retained and case remains open.", "FAILURE")
             else:
                 # No external side effect: the durable local inbox IS simulated delivery.
-                records.put("inbox", case_id + ":" + str(rec["responseVersion"]),
-                            {"caseId": case_id, "requesterId": rec["case"]["requesterId"], "response": rec["response"],
-                             "responseVersion": rec["responseVersion"], "deliveredAt": self.clock(), "simulated": True})
+                message = {"caseId": case_id, "requesterId": rec["case"]["requesterId"], "response": rec["response"],
+                           "responseVersion": rec["responseVersion"], "deliveredAt": self.clock(), "simulated": True}
+                if rec.get('exceptionRunId') and hasattr(exception, 'presented_options'):
+                    message['recoveryOptions'] = exception.presented_options(records, rec)
+                records.put("inbox", case_id + ":" + str(rec["responseVersion"]), message)
                 self._event(records, rec, "RESPONSE_DELIVERED", "Reviewed response saved to the simulated requester inbox.")
-                rec["case"]["status"] = "CLOSED"
-                self._event(records, rec, "CASE_CLOSED", "Closed after successful simulated delivery.")
+                if not (rec.get('exceptionRunId') and hasattr(exception, 'after_delivery')
+                        and exception.after_delivery(records, rec)):
+                    rec["case"]["status"] = "CLOSED"
+                    self._event(records, rec, "CASE_CLOSED", "Closed after successful simulated delivery.")
             self._save(records, rec)
             return {"delivered": bool(sink_available), "caseId": case_id}
         return self._command(actor, "deliver", key, [case_id, revision], deliver)
@@ -734,6 +761,8 @@ release them. One running dependency per coordinator prevents unbounded threads.
                     rec["case"]["status"] = "HUMAN_ASSISTANCE"
             else:
                 rec["case"]["status"] = "WITHDRAWN" if action == "WITHDRAW" else "CLOSED"
+                if rec.get('exceptionRunId'):
+                    rec['exceptionStage'] = 'WITHDRAWN' if action == 'WITHDRAW' else 'CLOSED_UNRESOLVED'
             rec["revision"] += 1
             self._event(records, rec, "HANDOFF" if action == "HUMAN" else "CASE_CLOSED", action + ": " + reason, actor=actor)
             self._save(records, rec)
@@ -754,7 +783,27 @@ release them. One running dependency per coordinator prevents unbounded threads.
                  "review": rec["review"] if operator else None, "campaignId": rec["campaignId"], "sourceChannel": rec["sourceChannel"]}
         if operator:
             value.update(membershipSnapshots=rec.get("membershipSnapshots", []), approvalId=rec["approvalId"])
+            if rec.get('exceptionRunId'):
+                value['exception'] = {k: rec.get(k) for k in
+                                      ('exceptionRunId', 'exceptionApprovalId', 'exceptionDecisionId', 'exceptionStage', 'exceptionSelection')}
+        elif delivered and delivered.get('recoveryOptions'):
+            value['recoveryOptions'] = delivered['recoveryOptions']
+            value['canSelectRecovery'] = (rec.get('exceptionStage') == 'AWAITING_TRAVELLER_DECISION'
+                                           and rec['case']['status'] == 'AWAITING_REQUESTER')
         return value
+
+    def select_exception(self, actor, key, case_id, revision, run_id, option_id, confirmed):
+        def select(rows):
+            rec = self._owned(rows, actor, case_id, 'CONFIRM', revision)
+            bridge = self.specialists.get('exception')
+            if rec['case']['primaryHandler'] != 'exception' or not hasattr(bridge, 'select'):
+                raise OperationsError('NOT_IMPLEMENTED', 'Exception selection is not configured.')
+            bridge.select(rows, rec, actor, run_id, option_id, confirmed)
+            rec['revision'] += 1
+            self._save(rows, rec)
+            return {'caseId': case_id}
+        self._command(actor, 'exception-selection', key, [case_id, revision, run_id, option_id, confirmed], select)
+        return self.case_view(actor, case_id)
 
     def update_intake(self, actor, key, intake_id, revision, intents=None, human=False):
         normalised = self._normalise(actor, intents) if intents is not None else None
@@ -801,6 +850,9 @@ release them. One running dependency per coordinator prevents unbounded threads.
             supplier = self.specialists.get('supplier')
             if rec['case']['caseKind'] == 'SUPPLIER' and hasattr(supplier, 'invalidate_confirmation'):
                 supplier.invalidate_confirmation(records, rec)
+            exception = self.specialists.get('exception')
+            if hasattr(exception, 'invalidate_confirmation'):
+                exception.invalidate_confirmation(records, rec)
             if intent["caseType"] in {"TRAVEL_PLANNING", "PLAN_REVISION"}:
                 rec["context"] = self._planning_context(rec)
             rec["revision"] += 1
@@ -832,6 +884,14 @@ release them. One running dependency per coordinator prevents unbounded threads.
         if not rec or not self.access.authorise(actor, "READ_TRACE", rec["case"]):
             raise OperationsError("ACCESS_DENIED", "The trace is unavailable to this identity.")
         events = self.repository.find_by_case(case_id)
+        if self.planning_repository is not None:
+            events += self.planning_repository.find_by_case(case_id)
+        unique = {}
+        for event in events:
+            if event['eventId'] in unique and unique[event['eventId']] != event:
+                raise OperationsError('INVALID_CONTRACT', 'Conflicting shared trace identities require investigation.')
+            unique[event['eventId']] = event
+        events = sorted(unique.values(), key=lambda e: instant(e['timestamp']))
         if self.profile(actor)["role"] == "OPERATOR":
             return events
         return [{k: e[k] for k in ("eventId", "timestamp", "eventType", "result", "executionMode", "subject")} for e in events]
