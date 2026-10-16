@@ -36,7 +36,9 @@ def planning_is_available():
 
 
 class Workbench:
-    def __init__(self, settings, llm_factory=None, *, planning_fixture=False, planning_live_model=False):
+    def __init__(self, settings, llm_factory=None, *, planning_fixture=False, planning_live_model=False, exception_fixture=False):
+        if exception_fixture and (settings.mode != 'FIXTURE' or planning_fixture):
+            raise ValueError('Exception demonstration requires FIXTURE mode and its own fixture clock')
         if planning_live_model and not planning_fixture:
             raise ValueError('Live Planning requires explicit planning_fixture integration')
         if planning_fixture and settings.mode != 'FIXTURE':
@@ -67,6 +69,7 @@ class Workbench:
         self.ops_sessions = {}
         self.exception_repository = ExceptionRepository(settings.database) if settings.mode == "FIXTURE" else None
         self.integrated_planning = None
+        self.integrated_exception = None
         self.planning_live_model = planning_live_model
         if planning_fixture:
             from tripmate.planning.integration import connect_workbench_planning
@@ -77,6 +80,9 @@ class Workbench:
                 raise ValueError('Set the course model key locally before enabling live Planning')
             self.integrated_planning = connect_workbench_planning(
                 self.operations, self.fixtures, settings.database, live_model=planning_live_model)
+        if exception_fixture:
+            from tripmate.exception_handling.integration_demo import connect_saved_demo
+            self.integrated_exception = connect_saved_demo(self.operations, self.fixtures, settings.database)
 
     def ops_actor(self, session):
         evidence = self.ops_sessions.get(session)
@@ -112,6 +118,7 @@ class Workbench:
             "premium": ({"requestKey", "action"}, {"memberOfferRuleId"}),
             "adopt": ({"requestKey", "versionId", "expectedBaseline", "accepted"}, set()),
             "analysis": ({"requestKey", "data"}, set()),
+            "exception-selection": ({"requestKey", "caseId", "revision", "runId", "optionId", "confirmed"}, set()),
         }
         if action not in expected:
             raise OperationsError("INVALID_CONTRACT", "Unsupported Operations action.")
@@ -140,6 +147,9 @@ class Workbench:
             return service.clarify(actor, key, body["caseId"], body["revision"], body["intents"], body["confirmed"])
         if action == "review":
             return service.review_case(actor, key, body["caseId"], body["revision"], body["decision"], body["reason"], body.get("editedText"))
+        if action == 'exception-selection':
+            return service.select_exception(actor, key, body['caseId'], body['revision'],
+                                            body['runId'], body['optionId'], body['confirmed'])
         if action == "premium":
             result = service.premium(actor, key, body["action"], body.get("memberOfferRuleId"))
             if body["action"] == "ROUTE_MAP" and result["decision"]["outcome"] == "ALLOWED":
@@ -287,8 +297,8 @@ class Workbench:
         return self.store.record("LLM_SMOKE", outcome, details)
 
 
-def make_server(settings, port=8765, llm_factory=None, *, planning_fixture=False, planning_live_model=False):
-    app = Workbench(settings, llm_factory, planning_fixture=planning_fixture, planning_live_model=planning_live_model)
+def make_server(settings, port=8765, llm_factory=None, *, planning_fixture=False, planning_live_model=False, exception_fixture=False):
+    app = Workbench(settings, llm_factory, planning_fixture=planning_fixture, planning_live_model=planning_live_model, exception_fixture=exception_fixture)
     static = Path(__file__).with_name("static")
 
     class Handler(BaseHTTPRequestHandler):
@@ -346,6 +356,10 @@ def make_server(settings, port=8765, llm_factory=None, *, planning_fixture=False
                                               "planning": "NOT_INTEGRATED" if app.operations.planning_repository is None else "INJECTED"})
                     actor = app.ops_actor(self.headers.get("X-Ops-Session", ""))
                     query = parse_qs(urlsplit(self.path).query)
+                    if path == '/api/operations/exception' and set(query) == {'caseId'} and len(query['caseId']) == 1:
+                        if app.integrated_exception is None:
+                            raise OperationsError('NOT_IMPLEMENTED', 'Exception integration is not configured.')
+                        return self.send(200, {'investigation': app.integrated_exception.investigation(actor, query['caseId'][0])})
                     if path == "/api/operations/cases" and not query:
                         return self.send(200, {"cases": app.operations.cases(actor)})
                     if path in {"/api/operations/case", "/api/operations/traces", "/api/operations/history"} and set(query) == {"caseId"} and len(query["caseId"]) == 1:
@@ -440,12 +454,13 @@ def main():
     parser.add_argument("--workbench", action="store_true", help="Explicitly enable the isolated, unauthenticated development workbench")
     parser.add_argument('--planning-fixture', action='store_true', help='Connect actual Operations + B03 database + Planning with an explicit fixture Reviewer')
     parser.add_argument('--planning-live-model', action='store_true', help='Use campus-qwen for integrated Planning; requires --planning-fixture')
+    parser.add_argument('--exception-fixture', action='store_true', help='Reopen an explicitly seeded Exception integration demonstration database')
     parser.add_argument("--port", type=int, default=8765)
     parser.add_argument("--env-file", type=Path, default=Path(".env"))
     args = parser.parse_args()
     try:
         settings = Settings.load(args.env_file)
-        server = make_server(settings, args.port, planning_fixture=args.planning_fixture, planning_live_model=args.planning_live_model)
+        server = make_server(settings, args.port, planning_fixture=args.planning_fixture, planning_live_model=args.planning_live_model, exception_fixture=args.exception_fixture)
     except (ValueError, OSError, sqlite3.Error) as exc:
         parser.exit(1, "Startup failed: check mode, database permissions and port availability. " + type(exc).__name__ + "\n")
     print(f"TripMate B02 | {settings.mode} business data | http://127.0.0.1:{server.server_port}", flush=True)

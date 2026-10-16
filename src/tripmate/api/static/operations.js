@@ -104,6 +104,34 @@ async function loadCase(id) {
   el("response-text").textContent = currentCase.response || (c.status === "READY_TO_RESPOND" ? "Your checked response is ready. Select Receive checked response to view it." : "A checked response is not available yet.");
   el("operator-review").hidden = identity.role !== "OPERATOR";
   el("edited-response").value = "";
+  el("exception-investigation").hidden = !currentCase.exception;
+  el("exception-evidence").textContent = "";
+  if (currentCase.exception) {
+    el("exception-stage").textContent = currentCase.exception.exceptionStage.replaceAll("_", " ");
+    const data = await api("exception?caseId=" + encodeURIComponent(id));
+    el("exception-evidence").textContent = JSON.stringify(data.investigation, null, 2);
+  }
+  const proposalPending = Boolean(currentCase.exception?.exceptionApprovalId);
+  el("operator-decision").querySelector('[value="APPROVE"]').textContent = proposalPending ? "Approve current Exception proposal" : "Approve current response";
+  el("edited-response").disabled = proposalPending;
+  el("recovery-selection").hidden = !currentCase.recoveryOptions;
+  el("recovery-options").replaceChildren();
+  if (currentCase.recoveryOptions) {
+    const presented = currentCase.recoveryOptions;
+    for (const [index, option] of presented.options.entries()) {
+      const box = document.createElement("div"), description = document.createElement("p"), button = document.createElement("button");
+      description.textContent = option.currency + " " + option.totalCost + " total · arrival change " + option.arrivalChangeMinutes + " minutes · " + option.terms;
+      button.textContent = "Confirm option " + (index + 1);
+      button.dataset.recoveryChoice = "true";
+      button.addEventListener("click", () => task(() => caseCommand("exception-selection", {runId: presented.runId, optionId: option.offerId, confirmed: true})));
+      box.append(description, button); el("recovery-options").append(box);
+    }
+    const decline = document.createElement("button");
+    decline.textContent = "Decline all options and ask for a human"; decline.className = "secondary";
+    decline.dataset.recoveryChoice = "true";
+    decline.addEventListener("click", () => task(() => caseCommand("exception-selection", {runId: presented.runId, optionId: null, confirmed: true})));
+    el("recovery-options").append(decline);
+  }
   const {events} = await api("traces?caseId=" + encodeURIComponent(id));
   el("case-history").replaceChildren();
   for (const event of events) {
@@ -129,6 +157,7 @@ function controls() {
   el("clarify-case").disabled = operator || ["CLOSED", "WITHDRAWN", "IN_PROGRESS", "HUMAN_ASSISTANCE"].includes(state);
   el("review-case").disabled = !operator || closed;
   el("close-case").disabled = !operator || closed;
+  for (const button of document.querySelectorAll('[data-recovery-choice]')) button.disabled = !currentCase.canSelectRecovery;
 }
 async function caseCommand(action, extra={}) {
   if (!currentCase) throw new Error("Choose a case first.");

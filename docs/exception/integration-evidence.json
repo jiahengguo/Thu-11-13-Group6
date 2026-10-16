@@ -1,0 +1,218 @@
+{
+  "simulationOnly": true,
+  "scriptedOperatorDecisions": true,
+  "runs": [
+    {
+      "repetition": 1,
+      "kind": "disruption",
+      "scenario": "normal",
+      "stages": [
+        "UNDER_REVIEW",
+        "READY_TO_RESPOND",
+        "AWAITING_REQUESTER",
+        "UNDER_REVIEW",
+        "READY_TO_RESPOND",
+        "AWAITING_REQUESTER",
+        "CLOSED"
+      ],
+      "agentStatus": "SUCCESS",
+      "projectSupplierAndPlanning": true,
+      "traceCount": 52
+    },
+    {
+      "repetition": 1,
+      "kind": "disruption",
+      "scenario": "approval",
+      "stages": [
+        "AWAITING_HUMAN_APPROVAL",
+        "UNDER_REVIEW",
+        "READY_TO_RESPOND",
+        "AWAITING_REQUESTER",
+        "UNDER_REVIEW",
+        "READY_TO_RESPOND",
+        "AWAITING_REQUESTER",
+        "CLOSED"
+      ],
+      "agentStatus": "APPROVAL_PENDING",
+      "projectSupplierAndPlanning": false,
+      "traceCount": 52
+    },
+    {
+      "repetition": 1,
+      "kind": "disruption",
+      "scenario": "conflict",
+      "stages": [
+        "HUMAN_ASSISTANCE"
+      ],
+      "agentStatus": "HUMAN_ASSISTANCE",
+      "projectSupplierAndPlanning": false,
+      "traceCount": 20
+    },
+    {
+      "repetition": 1,
+      "kind": "disruption",
+      "scenario": "missing-evidence",
+      "stages": [
+        "AWAITING_REQUESTER"
+      ],
+      "agentStatus": "REVISION_REQUIRED",
+      "projectSupplierAndPlanning": false,
+      "traceCount": 27
+    },
+    {
+      "repetition": 1,
+      "kind": "complaint",
+      "scenario": "normal",
+      "stages": [
+        "UNDER_REVIEW",
+        "READY_TO_RESPOND",
+        "CLOSED"
+      ],
+      "agentStatus": "SUCCESS",
+      "projectSupplierAndPlanning": false,
+      "traceCount": 39
+    },
+    {
+      "repetition": 1,
+      "kind": "complaint",
+      "scenario": "approval",
+      "stages": [
+        "AWAITING_HUMAN_APPROVAL",
+        "UNDER_REVIEW",
+        "READY_TO_RESPOND",
+        "CLOSED"
+      ],
+      "agentStatus": "APPROVAL_PENDING",
+      "projectSupplierAndPlanning": false,
+      "traceCount": 45
+    },
+    {
+      "repetition": 1,
+      "kind": "complaint",
+      "scenario": "conflict",
+      "stages": [
+        "HUMAN_ASSISTANCE"
+      ],
+      "agentStatus": "HUMAN_ASSISTANCE",
+      "projectSupplierAndPlanning": false,
+      "traceCount": 21
+    },
+    {
+      "repetition": 1,
+      "kind": "complaint",
+      "scenario": "missing-evidence",
+      "stages": [
+        "AWAITING_REQUESTER"
+      ],
+      "agentStatus": "REVISION_REQUIRED",
+      "projectSupplierAndPlanning": false,
+      "traceCount": 27
+    },
+    {
+      "repetition": 2,
+      "kind": "disruption",
+      "scenario": "normal",
+      "stages": [
+        "UNDER_REVIEW",
+        "READY_TO_RESPOND",
+        "AWAITING_REQUESTER",
+        "UNDER_REVIEW",
+        "READY_TO_RESPOND",
+        "AWAITING_REQUESTER",
+        "CLOSED"
+      ],
+      "agentStatus": "SUCCESS",
+      "projectSupplierAndPlanning": true,
+      "traceCount": 52
+    },
+    {
+      "repetition": 2,
+      "kind": "disruption",
+      "scenario": "approval",
+      "stages": [
+        "AWAITING_HUMAN_APPROVAL",
+        "UNDER_REVIEW",
+        "READY_TO_RESPOND",
+        "AWAITING_REQUESTER",
+        "UNDER_REVIEW",
+        "READY_TO_RESPOND",
+        "AWAITING_REQUESTER",
+        "CLOSED"
+      ],
+      "agentStatus": "APPROVAL_PENDING",
+      "projectSupplierAndPlanning": false,
+      "traceCount": 52
+    },
+    {
+      "repetition": 2,
+      "kind": "disruption",
+      "scenario": "conflict",
+      "stages": [
+        "HUMAN_ASSISTANCE"
+      ],
+      "agentStatus": "HUMAN_ASSISTANCE",
+      "projectSupplierAndPlanning": false,
+      "traceCount": 20
+    },
+    {
+      "repetition": 2,
+      "kind": "disruption",
+      "scenario": "missing-evidence",
+      "stages": [
+        "AWAITING_REQUESTER"
+      ],
+      "agentStatus": "REVISION_REQUIRED",
+      "projectSupplierAndPlanning": false,
+      "traceCount": 27
+    },
+    {
+      "repetition": 2,
+      "kind": "complaint",
+      "scenario": "normal",
+      "stages": [
+        "UNDER_REVIEW",
+        "READY_TO_RESPOND",
+        "CLOSED"
+      ],
+      "agentStatus": "SUCCESS",
+      "projectSupplierAndPlanning": false,
+      "traceCount": 39
+    },
+    {
+      "repetition": 2,
+      "kind": "complaint",
+      "scenario": "approval",
+      "stages": [
+        "AWAITING_HUMAN_APPROVAL",
+        "UNDER_REVIEW",
+        "READY_TO_RESPOND",
+        "CLOSED"
+      ],
+      "agentStatus": "APPROVAL_PENDING",
+      "projectSupplierAndPlanning": false,
+      "traceCount": 45
+    },
+    {
+      "repetition": 2,
+      "kind": "complaint",
+      "scenario": "conflict",
+      "stages": [
+        "HUMAN_ASSISTANCE"
+      ],
+      "agentStatus": "HUMAN_ASSISTANCE",
+      "projectSupplierAndPlanning": false,
+      "traceCount": 21
+    },
+    {
+      "repetition": 2,
+      "kind": "complaint",
+      "scenario": "missing-evidence",
+      "stages": [
+        "AWAITING_REQUESTER"
+      ],
+      "agentStatus": "REVISION_REQUIRED",
+      "projectSupplierAndPlanning": false,
+      "traceCount": 27
+    }
+  ]
+}

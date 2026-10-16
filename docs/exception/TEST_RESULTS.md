@@ -1,5 +1,10 @@
 # Customer Exception prototype validation
 
+**Latest (15 October):** see [integration acceptance](INTEGRATION_ACCEPTANCE.md):
+238 repository tests, 38 focused Exception tests, the integrated Operations browser flow,
+and two repeated fresh-data scenario sets. The original 13 October results below are retained
+as historical evidence for PR #14 and its standalone scope.
+
 Date: 13 October 2026 (Australia/Sydney). Local base: main commit `a1605f4`.
 Execution environment: macOS, Python 3.14, local SQLite, synthetic data only.
 

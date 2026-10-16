@@ -2,6 +2,8 @@
 
 Customer Exception EXC-01/EXC-02: [local simulated prototype and demonstration guide](docs/exception/README.md). Two buttons are available in the explicit `--workbench` web mode; results and traces persist locally.
 
+The follow-up [Operations integration guide](docs/exception/INTEGRATION.md) covers confirmed cases, project Supplier/Planning adapters, scoped human decisions, traveller selection, same-case revisions and the remaining Jira acceptance dependencies.
+
 Travel Planning now connects to the merged Operations ports and B03 catalog. See [Planning integration/API handoff](docs/planning/Travel_Planning_API_Handoff.zh-CN.md) and [main integration notes](docs/planning/Main_Integration.zh-CN.md). The course model adapter implements the shared `LLMService` port. Supplier/Reviewer production integration remains pending.
 
 **Authenticated portals branch (13 October 2026):** `portal-supabase-integration`

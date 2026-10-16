@@ -14,7 +14,7 @@ def obj(properties):
 def array(item):
     return {"type": "array", "items": item}
 
-ITEM = obj({"itemId": TEXT, "kind": {"enum": ["FLIGHT", "HOTEL", "ACTIVITY"]},
+ITEM = obj({"itemId": TEXT, "kind": {"enum": ["FLIGHT", "TRANSPORT", "HOTEL", "ACTIVITY"]},
             "origin": TEXT, "destination": TEXT, "startAt": TIME, "endAt": TIME,
             "remainingCost": MONEY, "sourceIds": IDS})
 OFFER = obj({"offerId": TEXT, "status": {"enum": ["APPROVED", "PENDING", "EXPIRED"]},
@@ -38,6 +38,11 @@ CONTEXT = obj({
                            "action": {"enum": ["EXPLAIN_AND_APOLOGISE", "HUMAN_REVIEW_REFUND"]},
                            "description": TEXT})),
 })
+# Optional integration input reuses the project's existing Planning contracts.
+CONTEXT['properties']['planningContext'] = obj({
+    'request': {'$ref': '#/$defs/TravelRequest'}, 'spec': {'type': 'object'},
+    'baseline': {'type': 'object'}})
+CONTEXT['properties']['complaintCategory'] = {'enum': ['DELAY', 'ITINERARY', 'SUPPLIER_TERMS']}
 
 def validate_context(value):
     schema = schema_bundle()

@@ -38,9 +38,11 @@ class Referral(Exception):
 
 
 class ExceptionRuntime:
-    def __init__(self, contexts, repository, supplier, planning, reviewer):
+    def __init__(self, contexts, repository, supplier, planning, reviewer, *, clarification=False, complaint_findings=None):
         self.contexts, self.repository = contexts, repository
         self.supplier, self.planning, self.reviewer = supplier, planning, reviewer
+        self.clarification = clarification
+        self.complaint_findings = complaint_findings
 
     def handle_case(self, supplied_case):
         validate('Case', supplied_case)
@@ -56,6 +58,7 @@ class ExceptionRuntime:
                         dependencies={'operations': 'CONFIRMED_FIXTURE_HANDOFF', 'supplier': 'SIMULATED',
                                       'planning': 'SIMULATED', 'reviewer': 'SIMULATED_RULES'},
                         note='Local simulation. No traveller contact, booking change or financial transaction.')
+        snapshot['dependencies'].update(supplier=type(self.supplier).__name__, planning=type(self.planning).__name__)
         case_subject = dict(subjectType='Case', subjectId=case['caseId'], materialVersion=1)
 
         def event(kind, summary, outcome='SUCCESS', subject=None, approval=None):
@@ -89,6 +92,12 @@ class ExceptionRuntime:
                   'Repeated explicit human requests require Operations human assistance.')
             ctx = self.contexts.load(case['caseId'])
             validate_context(ctx)
+            if 'planningContext' in ctx:
+                request = ctx['planningContext']['request']
+                check('EXC_PLANNING_CONTEXT', request['caseId'] == case['caseId']
+                      and request['correlationId'] == case['correlationId']
+                      and request['travellerId'] == case['requesterId'],
+                      'Planning context must bind to this confirmed Operations case.', 'ACCESS_DENIED')
             if ctx['issue']['requestedActions']:
                 result['requiresApproval'] = True
             snapshot['context'] = deepcopy(ctx)
@@ -147,19 +156,43 @@ class ExceptionRuntime:
                       'Recovery requires an active baseline itinerary.', 'INVALID_CONTRACT')
                 check('EXC_CANCELLATION', facts.get(affected[0]['itemId'] + ':status', [('', '')])[0][0] == 'CANCELLED',
                       'Cancellation must be supported by a referenced structured fact.', 'MISSING_REQUIRED_FIELDS')
-                proposal = self._recover(ctx, sources, check, event)
+                proposal = (self._recover_project(ctx, sources, result['sourceReferences'], check, event)
+                            if 'planningContext' in ctx else self._recover(ctx, sources, check, event))
             else:
+                if ctx.get('complaintCategory', 'DELAY') != 'DELAY':
+                    if self.complaint_findings is None:
+                        raise Referral('TOOL_UNAVAILABLE', 'Relevant Planning/Supplier complaint findings are not configured.')
+                    findings = self.complaint_findings.investigate(deepcopy(ctx))
+                    self._merge_sources(findings['sources'], sources, result['sourceReferences'], ctx, check)
+                    result['findings'].extend(findings['findings'])
+                    snapshot['specialistFindings'] = deepcopy(findings)
+                    event('TOOL_RESULT', 'Retrieved recorded Planning/Supplier facts; no service fault or liability is inferred.')
+                    raise Referral('HUMAN_ASSISTANCE_REQUIRED',
+                                   'Specialist facts collected. No agreed resolution policy for this complaint category; Operations must refer for human handling.')
                 proposal = self._complaint(ctx, sources, facts, check, event)
-            subject = dict(subjectType='RecoveryProposal' if case['caseType'] == 'DISRUPTION' else 'ResolutionRecommendation',
-                           subjectId=str(uuid4()), materialVersion=1)
+            previous = self.repository.latest_proposal(case['caseId'])
+            subject_type = 'RecoveryProposal' if case['caseType'] == 'DISRUPTION' else 'ResolutionRecommendation'
+            previous_ref = previous['proposal']['subject'] if previous else None
+            if previous_ref and previous_ref['subjectType'] != subject_type:
+                previous_ref = None
+            subject = dict(subjectType=subject_type,
+                           subjectId=previous_ref['subjectId'] if previous_ref else str(uuid4()),
+                           materialVersion=previous_ref['materialVersion'] + 1 if previous_ref else 1)
+            proposal['previousSubject'] = deepcopy(previous_ref)
+            proposal['previousReviewId'] = (previous['result']['review']['reviewId']
+                                            if previous and previous['result']['review'] else None)
             proposal.update(subject=subject, baselineVersionId=ctx['itinerary']['versionId'],
                             sourceIds=list(sources), checks=deepcopy(result['validationResults']),
                             requiresApproval=result['requiresApproval'], simulated=True)
+            proposal['assessedAt'] = ctx['assessedAt']
+            proposal['evidenceAssertions'] = [dict(sourceId=e['source']['sourceId'], assertions=deepcopy(e['assertions']))
+                                               for e in ctx['evidence']]
             snapshot['proposal'] = proposal
             result['subjects'] = [subject]
             event('VERSION_CREATED', 'Created a proposal; original itinerary remains unchanged.', subject=subject)
             review = self.reviewer.review(deepcopy(proposal), deepcopy(result['sourceReferences']), deepcopy(ctx['policies']))
             result['review'] = review
+            snapshot['dependencies']['reviewer'] = review['policyVersion'] if review else 'UNAVAILABLE'
             # Validate review shape through the existing result contract before trusting its fields.
             validate('AgentResult', result)
             check('EXC_REVIEW_BINDING', review is not None and review['subject'] == subject and
@@ -187,6 +220,9 @@ class ExceptionRuntime:
                 event('APPROVAL_REQUESTED', approval['scope'], 'PENDING', subject, approval['approvalId'])
         except Referral as exc:
             result.update(status='HUMAN_ASSISTANCE', proposedResponse=None)
+            if self.clarification and exc.code in {'MISSING_REQUIRED_FIELDS', 'STALE_EVIDENCE', 'REVIEW_FAILED'}:
+                result['status'] = 'REVISION_REQUIRED'
+                result['nextAction'] = 'Operations must obtain and confirm clarification/correction, then resume this same case. ' + exc.reason
             result['errors'].append(dict(code=exc.code, message=exc.reason, step='exception_investigation', retryable=False, sourceIds=[]))
             result['findings'].append(exc.reason)
             event('FAILURE', exc.reason, 'FAILURE')
@@ -204,6 +240,9 @@ class ExceptionRuntime:
             snapshot['referral'] = dict(reason=[e['message'] for e in result['errors']],
                                        unresolvedQuestions=case['unresolvedQuestions'], evidenceIds=[s['sourceId'] for s in result['sourceReferences']],
                                        to='operations', humanHandlingRequired=True)
+        elif result['status'] == 'REVISION_REQUIRED':
+            snapshot['clarification'] = dict(to='operations', questions=[e['message'] for e in result['errors']],
+                                             requiresConfirmation=True, caseRemainsOpen=True)
         event('HANDOFF', 'Internal result prepared for Operations; traveller delivery has not occurred.', 'PENDING')
         validate('AgentResult', result)
         try:
@@ -216,6 +255,68 @@ class ExceptionRuntime:
                                     step='save', retryable=True, sourceIds=[])]
             validate('AgentResult', result)
         return result
+
+    @staticmethod
+    def _merge_sources(new_sources, sources, sink, ctx, check):
+        for source in new_sources:
+            check('EXC_PROJECT_SOURCE', source['simulated'] and source['freshness'] == 'FRESH'
+                  and instant(source['capturedAt']) <= instant(ctx['assessedAt'])
+                  and (source['sourceId'] not in sources or sources[source['sourceId']] == source),
+                  'Project dependency sources must be current, simulated and consistent.', 'STALE_EVIDENCE')
+            sources[source['sourceId']] = deepcopy(source)
+            sink[:] = list(sources.values())
+
+    def _recover_project(self, ctx, sources, sink, check, event):
+        planning = ctx['planningContext']
+        baseline = planning['baseline']
+        check('EXC_PLANNING_BASELINE', baseline['version']['versionId'] == ctx['itinerary']['versionId']
+              and baseline['version']['travellerId'] == ctx['travellerId'] and not ctx['constraints'],
+              'Use the owned baseline and the complete confirmed Planning constraint set; extra unbound constraints require clarification.',
+              'UNSUPPORTED_CONSTRAINT')
+        affected = [i for i in baseline['version']['items'] if i['itemId'] == ctx['issue']['itemId']]
+        check('EXC_PLANNING_AFFECTED', len(affected) == 1, 'Cancelled item must resolve to the Planning baseline.', 'MISSING_REQUIRED_FIELDS')
+        affected_offer = affected[0]['offerId']
+        affected_quote = next(q for q in baseline['quotes'] if q['offer']['offerId'] == affected_offer)
+        role = affected_quote['product']['role']
+        unchanged = {i['offerId'] for i in baseline['version']['items']} - {affected_offer}
+        quotes = self.supplier.alternatives(deepcopy(ctx))
+        quotes = [q for q in quotes if q['offer']['offerId'] != affected_offer
+                  and (q['product']['role'] == role or q['offer']['offerId'] in unchanged)]
+        for quote in quotes:
+            self._merge_sources(quote['offer']['sourceReferences'] + quote['price']['sourceReferences'], sources, sink, ctx, check)
+        event('TOOL_RESULT', 'Queried the project Supplier lookup; excluded the cancelled offer and retained unaffected arrangements.')
+        records, excluded = self.planning.recover(deepcopy(ctx), deepcopy(quotes))
+        options, rejected = [], [{'offerId': ','.join(e['offerIds']),
+                                  'reasons': [c['reason'] for c in e['checks'] if c['outcome'] != 'PASS'],
+                                  'sourceIds': []} for e in excluded]
+        for record in records:
+            version = record['version']
+            validate('ItineraryVersion', version)
+            if (not unchanged <= {i['offerId'] for i in version['items']}
+                    or any(c['outcome'] != 'PASS' for c in version['validationResults'])):
+                continue
+            total = money(ctx['itinerary']['sunkCost']) + money(version['totalPrice']['amount'])
+            if total > money(planning['request']['budgetCeiling']['amount']):
+                rejected.append(dict(offerId=version['versionId'], reasons=['Sunk plus candidate cost exceeds the confirmed budget.'], sourceIds=[]))
+                continue
+            products = {q['offer']['offerId']: q for q in record['quotes']}
+            items = [dict(itemId=i['itemId'], kind={'TRANSPORT':'TRANSPORT','ACCOMMODATION':'HOTEL','ACTIVITY':'ACTIVITY'}[i['productType']],
+                          origin=i['origin'], destination=i['destination'], startAt=i['startAt'], endAt=i['endAt'],
+                          remainingCost=i['quotedPrice']['amount'], sourceIds=i['sourceIds']) for i in version['items']]
+            replacement = next(i for i in version['items'] if products[i['offerId']]['product']['role'] == role)
+            options.append(dict(offerId=version['versionId'], items=items, totalCost=f'{total:.2f}', currency='AUD',
+                                terms='; '.join(q['offer']['cancellationTerms'] for q in record['quotes']),
+                                sourceIds=[s['sourceId'] for s in version['sourceReferences']],
+                                arrivalChangeMinutes=int((instant(replacement['endAt'])-instant(affected[0]['endAt'])).total_seconds()/60),
+                                planningRecord=record))
+        check('EXC_PROJECT_FEASIBLE', bool(options), 'The project Planning engine must return a complete feasible recovery preserving confirmed requirements.',
+              'NO_FEASIBLE_ITINERARY')
+        event('TOOL_RESULT', 'Project Planning generated and validated candidates using the existing typed constraints and preference ranking.')
+        return dict(kind='RECOVERY', options=options, rejectedOptions=rejected, sunkCost=ctx['itinerary']['sunkCost'],
+                    affectedItemIds=[ctx['issue']['itemId']], findings=['Existing Planning constraints and preference ranking applied.',
+                    'Unaffected arrangements and the original baseline are preserved.'],
+                    costBasis='Supplied sunk non-refundable cost plus quoted candidate costs; no assumed refund or credit.',
+                    recommendation='Operations: present the validated project recovery options and their cost/time changes. No booking has changed.')
 
     def _recover(self, ctx, sources, check, event):
         items, affected_id = ctx['itinerary']['items'], ctx['issue']['itemId']
@@ -277,6 +378,7 @@ class ExceptionRuntime:
               'No feasible alternative. ' + '; '.join(r['offerId'] + ': ' + ', '.join(r['reasons']) for r in rejected),
               'NO_FEASIBLE_ITINERARY')
         return dict(kind='RECOVERY', options=eligible, rejectedOptions=rejected,
+                    sunkCost=ctx['itinerary']['sunkCost'],
                     affectedItemIds=[affected_id] + [i['itemId'] for i in items if i['itemId'] != affected_id],
                     costBasis='Sunk non-refundable cost + all revised remaining costs. No assumed refund or credit.',
                     findings=['Transport, hotel and activity timing assessed; all confirmed constraints preserved.',
@@ -314,6 +416,7 @@ class ExceptionRuntime:
                   'Refund-review policy requires an explicit restricted-action request.')
             recommendation = 'Operations: refer the refund request for a human decision. Eligibility and amount are undetermined; no refund is authorised.'
         return dict(kind='COMPLAINT', delayMinutes=minutes, policyIds=[policy['policyId']],
+                    affectedItemIds=[item_id],
                     findings=[f'Referenced service records establish a {minutes}-minute arrival delay.',
                               'Policy: ' + policy['policyId'] + ' version ' + policy['version']],
                     recommendation=recommendation)

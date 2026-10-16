@@ -1,5 +1,10 @@
 # Customer Exception Agent prototype
 
+**15 October integration update:** see [INTEGRATION.md](INTEGRATION.md) for the
+new Operations workflow and [acceptance evidence](INTEGRATION_ACCEPTANCE.md).
+The guide below describes the original standalone demonstration merged in PR #14;
+its simulation/specialist-handoff limits do not describe the new opt-in integration.
+
 Owner: Runda / wrd. Implements the confirmed specialist portion of EXC-01 / UC-03
 and EXC-02 / UC-04. Based on the supplied **TripMate AI111.docx**, sections 2.4,
 3.4, 6.3, UC-03/04, G-02 and the relevant AD-03/SD-03/SM-03 constraints. This is
