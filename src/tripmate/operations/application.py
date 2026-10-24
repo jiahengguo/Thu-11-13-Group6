@@ -129,7 +129,12 @@ release them. One running dependency per coordinator prevents unbounded threads.
         if self.planning_repository is not None:
             for rec in self.repository.list("case"):
                 if rec["case"]["requesterId"] == actor and rec.get("planId"):
-                    plans[rec["planId"]] = self.planning_repository.lifecycle(rec["planId"])
+                    current = self.planning_repository.lifecycle(rec["planId"])
+                    saved = plans.get(rec['planId'], {})
+                    if (saved.get('selectedVersionId') == current.get('selectedVersionId')
+                            and saved.get('planStatus') in {'ACTIVE', 'COMPLETED'}):
+                        current = dict(current, **saved)
+                    plans[rec["planId"]] = current
         return list(plans.values())
 
     def identities(self):
@@ -916,7 +921,7 @@ release them. One running dependency per coordinator prevents unbounded threads.
         validate("ItineraryVersion", record["version"])
         return record
 
-    def plan_view(self, actor, version_id):
+    def _released_plan(self, actor, version_id):
         record = self._plan_record(actor, version_id)
         rec = self.repository.read("case", record["version"]["caseId"])
         ref = {"subjectType": "ItineraryVersion", "subjectId": version_id, "materialVersion": record["version"]["versionNo"]}
@@ -926,6 +931,10 @@ release them. One running dependency per coordinator prevents unbounded threads.
                 or rec["review"]["subject"] != self._response_subject(rec)
                 or rec["case"]["errors"] or ref not in rec.get("specialistResult", {}).get("subjects", [])):
             raise OperationsError("REVIEW_FAILED", "Operations has not released this plan.")
+        return record
+
+    def plan_view(self, actor, version_id):
+        record = self._released_plan(actor, version_id)
         if self.entitlement.evaluate(actor, "PRESENT_PLAN", dict(record["version"]["travelDates"], planId=record["version"]["planId"]))["outcome"] != "ALLOWED":
             raise OperationsError("ENTITLEMENT_DENIED", "Current membership does not allow plan presentation.")
         # Nested allowlist: comparison contains internal records on some adapters.
@@ -975,6 +984,8 @@ release them. One running dependency per coordinator prevents unbounded threads.
             adopted = self.adopt(actor, version_id, expected_baseline, accepted=True)
             if adopted["version"]["versionId"] != version_id or adopted["version"]["travellerId"] != actor:
                 raise OperationsError("INVALID_CONTRACT", "Adoption returned a mismatched version.")
+            if self.planning_repository.selected(record['version']['planId']) != version_id:
+                raise OperationsError('STALE_EVIDENCE', 'A different version is current; confirm a new revision instead.')
             return adopted
         # Shared storage joins the command's single commit. Independent adapters
         # retain their existing transaction and bounded dependency call.
@@ -987,11 +998,52 @@ release them. One running dependency per coordinator prevents unbounded threads.
             rec = self._owned(records, actor, case_id)
             if atomic is not None:
                 atomic(records, accept)
+            previous = records.get('lifecycle', record['version']['planId']) or {}
+            active = (previous.get('planStatus') == 'ACTIVE'
+                      and previous.get('selectedVersionId') in {expected_baseline, version_id})
             self._record_decision(records, rec, decision)
             records.put("lifecycle", record["version"]["planId"], {"planId": record["version"]["planId"],
-                        "travellerId": actor, "planStatus": "PLANNED", "selectedVersionId": version_id})
+                        "travellerId": actor, "planStatus": "ACTIVE" if active else "PLANNED", "selectedVersionId": version_id,
+                        **({'startedAt': previous['startedAt']} if active and previous.get('startedAt') else {})})
             rec["revision"] += 1
             self._event(records, rec, "VERSION_CREATED", "Exact proposal explicitly adopted; no booking or payment.", actor=actor)
             self._save(records, rec)
             return {"versionId": version_id, "adopted": True, "simulationOnly": True}
         return self._command(actor, "adopt", key, [version_id, expected_baseline, accepted], persist)
+
+    def start_trip(self, actor, key, version_id, confirmed):
+        """Explicit traveller activation; no date-based or booking-based inference."""
+        if confirmed is not True:
+            raise OperationsError('UNCONFIRMED_REQUEST', 'Explicitly confirm that you are starting this itinerary.')
+        record = self._plan_record(actor, version_id)
+        version = record['version']
+        def start(rows):
+            rec = self._owned(rows, actor, version['caseId'], 'START_TRIP')
+            lifecycle = rows.get('lifecycle', version['planId'])
+            if (not lifecycle or lifecycle['travellerId'] != actor
+                    or lifecycle['selectedVersionId'] != version_id
+                    or self.planning_repository.selected(version['planId']) != version_id
+                    or lifecycle['planStatus'] not in {'PLANNED', 'ACTIVE'}):
+                raise OperationsError('STALE_EVIDENCE', 'Only your current adopted Planned itinerary can be started.')
+            if lifecycle['planStatus'] == 'ACTIVE':
+                return dict(planId=version['planId'], versionId=version_id, planStatus='ACTIVE', simulationOnly=True)
+            # Check the exact released version, then retain a fresh activation
+            # entitlement decision even when the requested start is denied.
+            self._released_plan(actor, version_id)
+            dates = dict(version['travelDates'], planId=version['planId'])
+            decision = self.entitlement.evaluate(actor, 'START_TRIP', dates)
+            decision.update(tripDates=dates, planVersionId=version_id)
+            self._record_decision(rows, rec, decision)
+            if decision['outcome'] != 'ALLOWED':
+                # Persist the denial without changing the trip or claiming activation.
+                rec['revision'] += 1
+                self._save(rows, rec)
+                return dict(planId=version['planId'], versionId=version_id, planStatus='PLANNED',
+                            started=False, decision=Entitlements.wire(decision), simulationOnly=True)
+            rows.put('lifecycle', version['planId'], dict(lifecycle, planStatus='ACTIVE', startedAt=self.clock()))
+            rec['revision'] += 1
+            self._event(rows, rec, 'CONFIRMATION', 'Traveller explicitly started itinerary version ' + version_id
+                        + '; no booking or payment executed.', actor=actor)
+            self._save(rows, rec)
+            return dict(planId=version['planId'], versionId=version_id, planStatus='ACTIVE', started=True, simulationOnly=True)
+        return self._command(actor, 'start-trip', key, [version_id, confirmed], start)
