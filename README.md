@@ -1,5 +1,7 @@
 # TripMate AI
 
+Sprint 2 authenticated Planning integration: [scope, demo pricing, tests and remaining work](docs/planning/Authenticated_Portal_Integration.zh-CN.md). The default portal now composes Planning with current reviewed Supplier records and private shared storage; released options support comparison, explicit adoption and confirmed revisions. Exception default composition and full release acceptance remain pending.
+
 Customer Exception EXC-01/EXC-02: [local simulated prototype and demonstration guide](docs/exception/README.md). Two buttons are available in the explicit `--workbench` web mode; results and traces persist locally.
 
 The follow-up [Operations integration guide](docs/exception/INTEGRATION.md) covers confirmed cases, project Supplier/Planning adapters, scoped human decisions, traveller selection, same-case revisions and the remaining Jira acceptance dependencies.
