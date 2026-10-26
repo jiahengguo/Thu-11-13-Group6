@@ -20,22 +20,24 @@ def load_local_config(path=Path('.env')):
 
 
 class CampusClient:
-    def __init__(self, timeout=60):
+    def __init__(self, timeout=60, max_completion_tokens=4096):
         self.key = os.environ.get('ELEC5620_API_KEY', '')
         self.base = os.environ.get('ELEC5620_BASE_URL', 'http://10.167.60.148:8000/v1').rstrip('/')
         self.model = os.environ.get('TRIPMATE_LLM_MODEL') or os.environ.get('ELEC5620_MODEL') or 'campus-qwen'
         provider = os.environ.get('TRIPMATE_LLM_PROVIDER')
         if provider and provider != 'elec5620':
             raise PlanningError('INVALID_CONTRACT', 'Campus adapter requires TRIPMATE_LLM_PROVIDER=elec5620', 'llm')
-        self.timeout = timeout
+        if type(max_completion_tokens) is not int or not 1 <= max_completion_tokens <= 8192:
+            raise ValueError('Completion limit must be an integer within 1..8192')
+        self.timeout, self.max_completion_tokens = timeout, max_completion_tokens
         self.calls = 0
         self.responses = []  # Usage/finish metadata only; never credentials or private reasoning.
-        if not self.key:
+        if not self.key.strip() or self.key.strip() == 'REPLACE_LOCALLY':
             raise PlanningError('VERIFICATION_FAILED', 'Set ELEC5620_API_KEY locally', 'llm')
 
     def chat(self, messages):
         payload = {'model': self.model, 'messages': messages,
-                   'max_completion_tokens': 4096, 'stream': False}
+                   'max_completion_tokens': self.max_completion_tokens, 'stream': False}
         req = http.Request(self.base + '/chat/completions',
                            data=json.dumps(payload).encode('utf-8'),
                            headers={'Authorization': 'Bearer ' + self.key,
