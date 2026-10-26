@@ -3,7 +3,7 @@ from datetime import date
 
 from .common import identifier, instant
 
-TRIP_ACTIONS = {"CREATE_PLAN", "REVISE_PLAN", "PRESENT_PLAN", "ADOPT_PLAN"}
+TRIP_ACTIONS = {"CREATE_PLAN", "REVISE_PLAN", "PRESENT_PLAN", "ADOPT_PLAN", "START_TRIP"}
 PREMIUM_FEATURES = {"ROUTE_MAP", "AD_FREE"}
 
 

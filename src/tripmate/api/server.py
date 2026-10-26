@@ -117,6 +117,7 @@ class Workbench:
             "review": ({"requestKey", "caseId", "revision", "decision", "reason"}, {"editedText"}),
             "premium": ({"requestKey", "action"}, {"memberOfferRuleId"}),
             "adopt": ({"requestKey", "versionId", "expectedBaseline", "accepted"}, set()),
+            "start-trip": ({"requestKey", "versionId", "confirmed"}, set()),
             "analysis": ({"requestKey", "data"}, set()),
             "exception-selection": ({"requestKey", "caseId", "revision", "runId", "optionId", "confirmed"}, set()),
         }
@@ -159,6 +160,8 @@ class Workbench:
             return result
         if action == "adopt":
             return service.adopt_plan(actor, key, body["versionId"], body["expectedBaseline"], body["accepted"])
+        if action == "start-trip":
+            return service.start_trip(actor, key, body['versionId'], body['confirmed'])
         if not service.access.authorise(actor, "ANALYSE", {}):
             raise OperationsError("ACCESS_DENIED", "Only the simulated operator may analyse campaign records.")
         report = analyse(body["data"])
