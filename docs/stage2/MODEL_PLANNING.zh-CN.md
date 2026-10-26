@@ -26,4 +26,4 @@
 
 最终将已成功实验的提示顺序写入实际代码，客户端上限设为 25 秒。实际代码再次真实调用通过，约 6.90 秒，得到 AUD 429 / AUD 660 两套完整模拟方案，全部校验通过，使用 622 completion tokens（其中 545 reasoning tokens）。此前一次 20 秒复核曾超时，故仍保留超时/截断失败边界，不保证提供方延迟。修复后 12 项 campus 测试、4 项模型门户测试和 7 项 readiness 测试通过；此前 277 项完整回归是前置分支的基线，本次没有重新声称完整回归已执行。
 
-用户随后明确目标项目并更新本地忽略的凭据，云端 Auth、私有 RPC 和 JWKS 检查通过，cloud/model 联合 doctor 返回 ready=true；此前 DNS/目标选择阻塞已解除。演示账户准备函数仍返回 HTTP 404 / PGRST202，完整云端业务未验收。见 [PR 验证审计](PR_VALIDATION_AUDIT_2026-10-27.zh-CN.md)。
+用户随后明确目标项目并更新本地忽略的凭据，云端 Auth、私有 RPC 和 JWKS 检查通过，cloud/model 联合 doctor 返回 ready=true；此前 DNS/目标选择阻塞已解除。演示准备函数已部署，原 HTTP 404/PGRST202 已解除，四类账户实际登录及七项供应数据/两份客户草稿已验证。模型在真实云端案件中的完整旅行/恢复链仍待验收。见 [PR 验证审计](PR_VALIDATION_AUDIT_2026-10-27.zh-CN.md)。

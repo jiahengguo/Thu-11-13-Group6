@@ -1,6 +1,6 @@
 # TripMate AI
 
-Current validation and remaining Sprint 2 work: [27 October PR/provider audit](docs/stage2/PR_VALIDATION_AUDIT_2026-10-27.zh-CN.md). Real cloud/model component preflights pass on the current development branch; demo-account provisioning and the complete real-cloud business walkthrough remain unaccepted. Main includes PR18/19; PR20–24 are still under review.
+Current validation and remaining Sprint 2 work: [27 October PR/provider audit](docs/stage2/PR_VALIDATION_AUDIT_2026-10-27.zh-CN.md). Real cloud/model preflights and dedicated demo-account/data provisioning pass on the current development branch; the complete real-cloud travel/recovery walkthrough remains unaccepted. Main includes PR18/19; PR20–24 are still under review.
 
 Setup and explicit provider preflights: `python3 scripts/setup_demo.py`, then `.venv/bin/python scripts/start_demo.py` (Windows: `.venv\Scripts\python.exe`). Configure `.env` locally first; no credentials or cloud accounts are bundled. See [startup/readiness scope and verification](docs/stage2/STARTUP_READINESS.zh-CN.md).
 

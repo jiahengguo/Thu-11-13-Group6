@@ -1,8 +1,8 @@
 # 默认演示账户和供应数据
 
-2026-10-27 实际核查：云与模型联合连接预检已经通过，但当前云端准备函数返回 HTTP 404 / PGRST202，完成的 demo setup/seed 记录均为零。本脚本代码存在不代表 tutor 已有可登录默认账户；需先确认新增 migration 与 REST schema cache，再实际准备账户及数据。下方历史模型未连通结论已被本次预检取代；范围详见 [验证审计](PR_VALIDATION_AUDIT_2026-10-27.zh-CN.md)。
+2026-10-27 最新结果：已在用户确认的项目实际部署 `202610270001_demo_profiles.sql`，真实 RPC 返回 demoProvisioning=1，原 404/PGRST202 已解除。数据库权限检查为 anon=false、authenticated=false、service_role=true。四类专用云账户实际登录及角色/会员校验通过，七个供应案件、两个待确认客户草稿完成准备；重复执行未重复业务记录或更换密码。见 [脱敏云端验证记录](cloud-demo-init-evidence-2026-10-27.json) 和 [验证审计](PR_VALIDATION_AUDIT_2026-10-27.zh-CN.md)。
 
-本入口复用 Supabase Auth、现有私有 RPC、Operations 和 Supplier 服务。它不会启动角色切换工作台，不会自动批准报价，也不会创建已采用或 Active 的行程。真实云端执行尚未验收，Supabase 凭据交付安排仍待用户与 tutor 确认；本批没有替团队创建云账户或应用 migration。
+本入口复用 Supabase Auth、现有私有 RPC、Operations 和 Supplier 服务。它不会启动角色切换工作台，不会自动批准报价，也不会创建已采用或 Active 的行程。云端初始化已完成上述限定验证，完整旅行/恢复业务尚待验收；Supabase 凭据交付给 tutor 的安排仍待确认。
 
 ## 准备与启动
 
@@ -25,6 +25,8 @@ Windows 使用 `.venv\Scripts\python.exe`。默认日期为执行当天悉尼日
 
 四个账号为 `stage2-demo.free@example.invalid`、`stage2-demo.paid@example.invalid`、`stage2-demo.supplier@example.invalid`、`stage2-demo.operator@example.invalid`。密码各自随机生成，保存在权限 0600 的 `.demo-accounts.local.json`，不会打印；此文件已被 Git 忽略，必须排除于最终 ZIP、PR、日志和截图。它只是本地演示登录资料，不替代 tutor 尚待确认的云密钥安排。不要把 `--manifest` 指向受版本控制的文件。
 
+当前已准备场景为 namespace `stage2-demo` / scenario `demo`，行程日期 2026-11-07 至 2026-11-09，报价覆盖 11 月 5 日演示期间。新机器没有原密码 manifest 时，不要覆盖既有身份；可选新的 `--namespace` 创建独立专用测试身份，或由项目管理员按团队确定的方式提供现有测试账号登录资料。
+
 账户准备操作仅针对带匹配服务器 demo 标记的专用身份，付费模拟账号有效期 30 天，不修改普通用户。重新执行复用已有身份和密码。若中途失败保留 manifest；若已创建身份但本地保存失败，需管理员核实恢复，不能通过覆盖其他账号或批量删除用户来重试。
 
 ## 演示步骤
@@ -42,8 +44,8 @@ Windows 使用 `.venv\Scripts\python.exe`。默认日期为执行当天悉尼日
 
 ## 验证范围
 
-6 项新增测试通过：账号可恢复准备、随机密码与文件权限、身份标记防篡改、角色先决条件、重复执行与无关数据保留、日期失效拒绝、经人工审核生成完整方案，以及受限条款保持待批准。测试用 FakeCloud 替代云传输，实际调用现有业务服务；不代表 migration 已在真实 PostgreSQL 应用，也不代表真实云账户或模型已可用。
+6 项新增测试通过：账号可恢复准备、随机密码与文件权限、身份标记防篡改、角色先决条件、重复执行与无关数据保留、日期失效拒绝、经人工审核生成完整方案，以及受限条款保持待批准。这批自动化测试用 FakeCloud 替代云传输；后续真实云初始化、登录、角色和重复执行已单独验证，不能混为同一次测试。
 
-完整回归 273 项全部通过（156.569 秒），包含 main 合入后的既有 248 项基线。真实 Supabase 私有存储 RPC 的只读健康检查已通过；课程模型实际探测仍为 `TOOL_UNAVAILABLE`，云端账号准备及新增 migration 尚未执行。
+历史完整回归 273 项全部通过（156.569 秒），包含 main 合入后的既有 248 项基线。此后真实云/模型联合连接及有界模型规划已通过，当前账号准备也已实际执行。账户初始化验证不等于 Operator 审核、客户确认、模型规划及恢复流程已连续验收；这些仍需下一步执行。
 
 管理员接口依据：[Supabase 创建用户说明](https://supabase.com/docs/reference/python/auth-admin-createuser) 和 [管理员接口权限](https://supabase.com/docs/reference/python/admin-api)。未制作 ZIP 或执行解压部署验收。
