@@ -40,6 +40,16 @@ class Portal:
         from tripmate.planning.review import planning_reviewer
         self.planning = SharedPlanningRepository(self.operations.repository)
         connect_planning(self.operations, self.supplier, planning_reviewer(self.operations, self.supplier), self.planning)
+        from tripmate.exception_handling.integration import connect_exception
+        from tripmate.exception_handling.portal import PortalExceptionContexts
+        from tripmate.exception_handling.shared_repository import SharedExceptionRepository
+        from tripmate.exception_handling.project_ports import ProjectSupplier, ProjectPlanning, ProjectComplaintFindings
+        from tripmate.exception_handling.review import exception_reviewer
+        self.exception_contexts = PortalExceptionContexts(self.operations)
+        self.exception = connect_exception(self.operations, self.exception_contexts,
+            SharedExceptionRepository(self.operations.repository), ProjectSupplier(self.supplier), ProjectPlanning(),
+            reviewer=exception_reviewer(lambda: self.operations.clock()),
+            complaint_findings=ProjectComplaintFindings(self.planning, self.supplier))
 
     def ops_actor(self, actor):
         return actor  # Only Handler's verified server identity can reach this adapter.
@@ -151,6 +161,9 @@ def make_server(cloud, port=8780, origin=None, bind='127.0.0.1', supplier_pricin
                 actor=user['id']
                 if path == '/api/supplier/assessment' and set(query) == {'caseId'} and len(query['caseId']) == 1:
                     return self.send(200, app.supplier.view(actor, query['caseId'][0]))
+                if path == '/api/exception/investigation' and set(query) == {'caseId'} and len(query['caseId']) == 1:
+                    evidence = app.exception_contexts.view(actor, query['caseId'][0])
+                    return self.send(200, dict(evidence, investigation=app.exception.investigation(actor, query['caseId'][0])))
                 if path == '/api/demo/fixtures' and not query:
                     if user['role'] != 'OPERATOR':
                         raise OperationsError('ACCESS_DENIED', 'Only operators can inspect the shared simulation catalog.')
@@ -261,6 +274,8 @@ def make_server(cloud, port=8780, origin=None, bind='127.0.0.1', supplier_pricin
                 app.rate.check(('write',user['id']),limit=60)
                 if path in ('/api/supplier/review', '/api/supplier/decision'):
                     return self.send(200, app.supplier.mutate(user['id'], path.rsplit('/', 1)[1], body))
+                if path == '/api/exception/evidence':
+                    return self.send(200, app.exception_contexts.record(user['id'], body))
                 if path == '/api/demo/fixtures/reset':
                     if user['role'] != 'OPERATOR' or body:
                         raise OperationsError('ACCESS_DENIED', 'Only operators can reset the isolated simulation catalog.')

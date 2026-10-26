@@ -91,6 +91,9 @@ class ExceptionBridge:
             rec['exceptionStage'] = 'AWAITING_CLARIFICATION' if result['status'] == 'REVISION_REQUIRED' else 'HUMAN_TAKEOVER'
 
     def _current(self, snapshot):
+        current_check = getattr(self.runtime.contexts.source, 'ensure_current', None)
+        if current_check is not None:
+            current_check(snapshot)
         result, proposal = snapshot['result'], snapshot['proposal']
         at = instant(self.operations.clock())
         if (not proposal or not result['review'] or result['review']['outcome'] != 'PASS'
