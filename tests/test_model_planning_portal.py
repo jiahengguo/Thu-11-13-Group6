@@ -55,7 +55,7 @@ class ModelPlanningPortalTests(unittest.TestCase):
             confirmed = app.operations.confirm(paid, 'confirm', draft['id'], draft['revision'], draft['intents'], True)
             cid = confirmed['caseIds'][0]
             result = app.operations.dispatch(paid, 'dispatch', cid, 1)
-            factory.assert_called_with(timeout=20, max_completion_tokens=1024)
+            factory.assert_called_with(timeout=25, max_completion_tokens=2048)
             return app, result, app.operations.repository.read('case', cid), client
 
     def test_model_proposal_is_validated_and_saved_without_identity_in_prompt(self):
