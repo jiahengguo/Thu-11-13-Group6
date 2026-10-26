@@ -19,7 +19,7 @@ def main():
     if result.returncode:
         parser.exit(result.returncode, 'Startup checks failed. Correct the reported configuration; no reset was performed.\n')
     return subprocess.call([sys.executable, '-m', 'tripmate.portal.server', '--env-file', str(root / '.env'),
-                            '--port', str(args.port), '--demo-pricing'], cwd=root)
+                            '--port', str(args.port), '--demo-pricing', '--model-planning'], cwd=root)
 
 
 if __name__ == '__main__':
