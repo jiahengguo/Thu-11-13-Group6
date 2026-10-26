@@ -790,6 +790,10 @@ release them. One running dependency per coordinator prevents unbounded threads.
             value['recoveryOptions'] = delivered['recoveryOptions']
             value['canSelectRecovery'] = (rec.get('exceptionStage') == 'AWAITING_TRAVELLER_DECISION'
                                            and rec['case']['status'] == 'AWAITING_REQUESTER')
+        if (not operator and delivered and rec['case']['status'] == 'CLOSED'
+                and rec['case']['caseType'] in {'TRAVEL_PLANNING', 'PLAN_REVISION'}):
+            value['planVersionIds'] = [ref['subjectId'] for ref in rec.get('specialistResult', {}).get('subjects', [])
+                                       if ref['subjectType'] == 'ItineraryVersion']
         return value
 
     def select_exception(self, actor, key, case_id, revision, run_id, option_id, confirmed):
@@ -929,6 +933,18 @@ release them. One running dependency per coordinator prevents unbounded threads.
         output = {"version": deepcopy(record["version"]),
                 "comparison": {k: deepcopy(comparison[k]) for k in ("baselineVersionId", "proposalVersionId", "costDelta", "journeyMinutesDelta", "changedRequirements", "addedOffers", "removedOffers", "changedOffers", "unchangedOffers", "scopeChanged", "dataRefresh", "attribution") if k in comparison},
                 "simulationOnly": True}
+        output['selectedVersionId'] = self.planning_repository.selected(record['version']['planId'])
+        output['metrics'] = {k: deepcopy(record.get('metrics', {})[k]) for k in
+                             ('cost', 'journeyMinutes', 'transfers', 'comfort', 'reliability', 'terms')
+                             if k in record.get('metrics', {})}
+        if record['version']['baselineVersionId']:
+            baseline = self._plan_record(actor, record['version']['baselineVersionId'])['version']
+            fields = ('offerId', 'offerVersion', 'productType', 'quantity', 'quotedPrice',
+                      'startAt', 'endAt', 'origin', 'destination')
+            before, after = [{item['offerId']: {k: deepcopy(item[k]) for k in fields}
+                              for item in version['items']} for version in (baseline, record['version'])]
+            output['comparison']['itineraryChanges'] = [dict(offerId=key, before=before.get(key), after=after.get(key))
+                for key in sorted(before.keys() | after.keys()) if before.get(key) != after.get(key)]
         if 'dailySchedule' in record:
             daily = record['dailySchedule']
             output['dailySchedule'] = {k: deepcopy(daily[k]) for k in ['timeline', 'days', 'additionalCost', 'journeyMinutes', 'transfers']}
@@ -955,14 +971,22 @@ release them. One running dependency per coordinator prevents unbounded threads.
         decision.update(tripDates=dates, planVersionId=version_id)
         if decision["outcome"] != "ALLOWED":
             raise OperationsError("ENTITLEMENT_DENIED", "Current membership does not allow adoption.")
-        # Planning owns the atomic selected-baseline/idempotency transaction and
-        # revalidation of offers/review. Never hold an Operations write lock here.
-        adopted = self._dependency(lambda: self.adopt(actor, version_id, expected_baseline, accepted=True))
-        if adopted["version"]["versionId"] != version_id or adopted["version"]["travellerId"] != actor:
-            raise OperationsError("INVALID_CONTRACT", "Adoption returned a mismatched version.")
+        def accept():
+            adopted = self.adopt(actor, version_id, expected_baseline, accepted=True)
+            if adopted["version"]["versionId"] != version_id or adopted["version"]["travellerId"] != actor:
+                raise OperationsError("INVALID_CONTRACT", "Adoption returned a mismatched version.")
+            return adopted
+        # Shared storage joins the command's single commit. Independent adapters
+        # retain their existing transaction and bounded dependency call.
+        atomic = (getattr(self.planning_repository, 'adopt_atomically', None)
+                  if getattr(self.planning_repository, 'repository', None) is self.repository else None)
+        if atomic is None:
+            self._dependency(accept)
         case_id = record["version"]["caseId"]
         def persist(records):
             rec = self._owned(records, actor, case_id)
+            if atomic is not None:
+                atomic(records, accept)
             self._record_decision(records, rec, decision)
             records.put("lifecycle", record["version"]["planId"], {"planId": record["version"]["planId"],
                         "travellerId": actor, "planStatus": "PLANNED", "selectedVersionId": version_id})

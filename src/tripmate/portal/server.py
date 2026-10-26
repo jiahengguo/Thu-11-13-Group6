@@ -12,6 +12,7 @@ from tripmate.api.settings import Settings
 from tripmate.api.server import Workbench
 from tripmate.operations import OperationsService
 from tripmate.operations.common import OperationsError, safe_text
+from tripmate.planning.common import PlanningError
 from .auth import Sessions, RateLimit
 from .repository import SupabaseOperationsRepository, NoUserFixtures
 from .supabase import Supabase
@@ -34,6 +35,11 @@ class Portal:
         from tripmate.fixtures.shared import SharedFixtureCatalog
         self.supplier = SupplierGateway(self.operations, supplier_pricing, supplier_policy)
         self.fixtures = SharedFixtureCatalog(self.operations.repository)
+        from tripmate.operations.integration import connect_planning
+        from tripmate.planning.shared_repository import SharedPlanningRepository
+        from tripmate.planning.review import planning_reviewer
+        self.planning = SharedPlanningRepository(self.operations.repository)
+        connect_planning(self.operations, self.supplier, planning_reviewer(self.operations, self.supplier), self.planning)
 
     def ops_actor(self, actor):
         return actor  # Only Handler's verified server identity can reach this adapter.
@@ -169,7 +175,7 @@ def make_server(cloud, port=8780, origin=None, bind='127.0.0.1', supplier_pricin
                 if path == '/api/partners' and not query and user['role'] in ('TRAVELLER','OPERATOR'):
                     return self.send(200,{'applications':app.cloud.rpc('tripmate_partner_list',{'actor':actor})})
                 return self.send(404,{'error':'NOT_FOUND'})
-            except OperationsError as exc:
+            except (OperationsError, PlanningError) as exc:
                 return self.failure(exc)
             except Exception:
                 return self.send(503,{'error':'SERVICE_UNAVAILABLE','message':'Unable to load this page. Try again later.'})
@@ -273,7 +279,7 @@ def make_server(cloud, port=8780, origin=None, bind='127.0.0.1', supplier_pricin
                         raise OperationsError('INVALID_CONTRACT','Choose Approve or Reject.')
                     return self.send(200,app.cloud.rpc('tripmate_partner_review',{'actor':user['id'],'applicant':applicant,'decision':body['decision'],'review_reason':safe_text(body['reason'],1000)}))
                 return self.send(404,{'error':'NOT_FOUND'})
-            except OperationsError as exc:
+            except (OperationsError, PlanningError) as exc:
                 return self.failure(exc)
             except Exception:
                 return self.send(503,{'error':'SERVICE_UNAVAILABLE','message':'The action could not complete. Reload before retrying.'})
@@ -288,11 +294,15 @@ def main():
     parser.add_argument('--port',type=int,default=8780)
     parser.add_argument('--bind',default='127.0.0.1')
     parser.add_argument('--env-file',type=Path,default=Path('.env'))
+    parser.add_argument('--demo-pricing',action='store_true',
+                        help='Use explicit simulated pricing: 10%% markup, AUD 15 minimum margin; not a production policy')
     args=parser.parse_args()
     Settings.load(args.env_file)
     cloud=Supabase.from_env()
     cloud.rpc('tripmate_snapshot')  # Fail startup clearly if migration/credentials are missing.
-    server=make_server(cloud,args.port,os.environ.get('TRIPMATE_PUBLIC_ORIGIN'),args.bind)
+    from tripmate.supplier.common import PricingPolicy
+    policy = PricingPolicy('0.10', '15.00', 'demo-2026-10-24') if args.demo_pricing else None
+    server=make_server(cloud,args.port,os.environ.get('TRIPMATE_PUBLIC_ORIGIN'),args.bind,supplier_policy=policy)
     print(f'TripMate portals | http://127.0.0.1:{server.server_port}',flush=True)
     try:
         server.serve_forever()
