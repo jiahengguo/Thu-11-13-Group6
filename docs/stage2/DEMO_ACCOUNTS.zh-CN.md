@@ -1,5 +1,7 @@
 # 默认演示账户和供应数据
 
+2026-10-27 实际核查：云与模型联合连接预检已经通过，但当前云端准备函数返回 HTTP 404 / PGRST202，完成的 demo setup/seed 记录均为零。本脚本代码存在不代表 tutor 已有可登录默认账户；需先确认新增 migration 与 REST schema cache，再实际准备账户及数据。下方历史模型未连通结论已被本次预检取代；范围详见 [验证审计](PR_VALIDATION_AUDIT_2026-10-27.zh-CN.md)。
+
 本入口复用 Supabase Auth、现有私有 RPC、Operations 和 Supplier 服务。它不会启动角色切换工作台，不会自动批准报价，也不会创建已采用或 Active 的行程。真实云端执行尚未验收，Supabase 凭据交付安排仍待用户与 tutor 确认；本批没有替团队创建云账户或应用 migration。
 
 ## 准备与启动
