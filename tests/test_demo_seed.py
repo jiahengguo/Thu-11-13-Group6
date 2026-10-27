@@ -1,12 +1,15 @@
 """Explicit demo identity provisioning and domain-service seed data, without cloud writes."""
 import json
+import os
 from pathlib import Path
+import subprocess
 import tempfile
 import unittest
+from unittest.mock import patch
 from uuid import UUID
 
 from test_portals import FakeCloud
-from tripmate.portal.demo import prepare_accounts, seed_data, supplier_inputs
+from tripmate.portal.demo import prepare_accounts, seed_data, supplier_inputs, save_manifest
 from tripmate.portal.server import Portal
 from tripmate.fixtures.b03 import FIXTURE_TIME
 from tripmate.supplier.common import PricingPolicy
@@ -56,7 +59,22 @@ class DemoSeedTests(unittest.TestCase):
         again = prepare_accounts(self.cloud, 'stage2-test', self.path)
         self.assertEqual(self.cloud.created, 4)
         self.assertEqual(again, before)
-        self.assertEqual(self.path.stat().st_mode & 0o777, 0o600)
+        if os.name == 'nt':
+            script = """
+$ErrorActionPreference = 'Stop'
+$acl = [System.IO.File]::GetAccessControl($env:TRIPMATE_MANIFEST_ACL_PATH)
+$sid = [System.Security.Principal.WindowsIdentity]::GetCurrent().User.Value
+$rules = @($acl.GetAccessRules($true, $true, [System.Security.Principal.SecurityIdentifier]))
+if (!$acl.AreAccessRulesProtected -or $rules.Count -ne 1 -or
+    $rules[0].IdentityReference.Value -ne $sid -or $rules[0].IsInherited -or
+    $rules[0].AccessControlType -ne 'Allow' -or $rules[0].FileSystemRights -ne 'FullControl') { exit 1 }
+"""
+            result = subprocess.run(['powershell.exe', '-NoProfile', '-NonInteractive', '-Command', script],
+                env=dict(os.environ, TRIPMATE_MANIFEST_ACL_PATH=str(self.path)), capture_output=True,
+                creationflags=subprocess.CREATE_NO_WINDOW)
+            self.assertEqual(result.returncode, 0, 'Manifest must grant only the current Windows user access')
+        else:
+            self.assertEqual(self.path.stat().st_mode & 0o777, 0o600)
         self.assertEqual(len({a['password'] for a in again['accounts'].values()}), 4)
         for account in again['accounts'].values():
             UUID(account['id'])
@@ -68,6 +86,14 @@ class DemoSeedTests(unittest.TestCase):
         self.cloud.demo_users[actor]['app_metadata']['tripmate_demo'] = 'different-test'
         with self.assertRaises(ValueError):
             prepare_accounts(self.cloud, 'stage2-test', self.path)
+
+    def test_permission_failure_does_not_write_secrets_or_replace_existing_manifest(self):
+        before = self.path.read_bytes()
+        with patch('tripmate.portal.demo.protect_manifest', side_effect=OSError('ACL unavailable')):
+            with self.assertRaises(OSError):
+                save_manifest(self.path, {'password': 'must-not-be-written'})
+        self.assertEqual(self.path.read_bytes(), before)
+        self.assertEqual(self.path.with_name(self.path.name + '.tmp').read_bytes(), b'')
 
     def test_seed_requires_real_role_evidence_and_does_not_assign_it(self):
         self.cloud.accounts[self.manifest['accounts']['supplier']['id']]['role'] = 'TRAVELLER'

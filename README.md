@@ -1,12 +1,12 @@
 # TripMate AI
 
-Current validation and remaining Sprint 2 work: [27 October PR/provider audit](docs/stage2/PR_VALIDATION_AUDIT_2026-10-27.zh-CN.md). Real cloud/model preflights and dedicated demo-account/data provisioning pass on the current development branch; the complete real-cloud travel/recovery walkthrough remains unaccepted. Main includes PR18/19; PR20–24 are still under review.
+Current implementation, fixes, branch inventory and validation: [27 October project list](docs/stage2/PROJECT_LIST_2026-10-27.zh-CN.md). Main now includes PR20–24 as well as PR18/19. Historical real cloud/model preflights and demo-account provisioning are documented separately from local regression; the complete real-cloud travel/recovery walkthrough remains unaccepted. Older dated handoffs below describe their original branch scope; use the project list for current integration status.
 
 Setup and explicit provider preflights: `python3 scripts/setup_demo.py`, then `.venv/bin/python scripts/start_demo.py` (Windows: `.venv\Scripts\python.exe`). Configure `.env` locally first; no credentials or cloud accounts are bundled. See [startup/readiness scope and verification](docs/stage2/STARTUP_READINESS.zh-CN.md).
 
 Dedicated demo accounts and repeatable supplier data: [preconditions, dry-run/apply commands and walkthrough](docs/stage2/DEMO_ACCOUNTS.zh-CN.md). Provisioning is explicit and requires the demo migration plus administrator configuration; local passwords must be excluded from delivery artifacts. [Authenticated cancellation recovery](docs/exception/PORTAL_INTEGRATION.zh-CN.md) now connects the default portals to shared evidence, review and persistence.
 
-Sprint 2 authenticated Planning integration: [scope, demo pricing, tests and remaining work](docs/planning/Authenticated_Portal_Integration.zh-CN.md). The default portal composes Planning with current reviewed Supplier records and private shared storage; released options support comparison, explicit adoption and confirmed revisions. Default Exception composition exists in the pending integration branch; complete release acceptance remains pending.
+Sprint 2 authenticated Planning integration: [scope, demo pricing, tests and remaining work](docs/planning/Authenticated_Portal_Integration.zh-CN.md). The default portal composes Planning with current reviewed Supplier records and private shared storage; released options support comparison, explicit adoption and confirmed revisions. Default Exception composition is also integrated; complete release acceptance remains pending.
 
 Customer Exception EXC-01/EXC-02: [local simulated prototype and demonstration guide](docs/exception/README.md). Two buttons are available in the explicit `--workbench` web mode; results and traces persist locally.
 
