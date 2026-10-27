@@ -7,7 +7,7 @@
 - 第 11 周：四个 Agent 在同一个可运行原型中完成可重复演示的业务闭环。
 - 第 12 周：完成下述冻结的核心功能集合；可选功能按剩余容量选择，不追求全部实现。
 - Week 9 / Laboratory 8 明确要求：使用 Jira；按 sprint 管理工作；举行 Planning、Daily Stand-up、Review、Retrospective；user story 使用 “As a [user], I want [goal], so that [reason].”；每条 story 定义 Definition of Done 和测试方式；用 MoSCoW 分类。
-- 产品依据为仓库 README、Stage 1 计划、当前本地需求稿 `docs/diagrams/TripMate AI.md`、Operations 用例和 Supplier 需求。尚未核实在线 Project Requirement 或 Stage 2 评分标准。获得后应在 W9 检查遗漏，不据此擅自删减课程必交项。
+- 产品依据为仓库 README、保留的 `docs/TripMate_AI_stage1_report.pdf` 和现有模块需求。尚未核实在线 Project Requirement 或 Stage 2 评分标准。获得后应在 W9 检查遗漏，不据此擅自删减课程必交项。
 - 仓库当前主要包含模型和文档，未发现应用源码或构建配置；因此按从基础原型开始估算。若已有其他分支或独立代码库，可缩短基础工作。
 
 **执行原则：先交付跨 Agent 的完整流程，再扩展场景；从第 9 周起持续集成。**
@@ -259,6 +259,6 @@ All 20 CSV cards are now written in English. Fields include Summary (title), Des
 ## Sources
 
 - 本周 lab：`/Volumes/jiaheng/Data Memory/学校/USYD/研究生/2026sem2/5620/week9/ELEC5620-Lab-Note-8.pdf`（两页）。
-- 本地项目基线：`README.zh-CN.md`、`docs/Stage1_Modeling_Task_List.md`、`docs/diagrams/TripMate AI.md`。
-- 详细规则：UC-05、UC-07 和 `docs/supplier/Supplier_Requirements.md`。
+- 本地项目基线：`README.zh-CN.md`、`docs/TripMate_AI_stage1_report.pdf`。
+- 详细规则：保留报告中的 UC-05、UC-06、UC-07、UC-08。
 - Jira 产品能力：上文链接的 Atlassian 官方文档（2026-10-08 核对）。
