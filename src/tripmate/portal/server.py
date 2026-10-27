@@ -43,8 +43,8 @@ class Portal:
         if model_planning:
             from tripmate.adapters.campus import CampusClient
             from tripmate.planning.campus import ModelPlanningEngine
-            CampusClient(timeout=20, max_completion_tokens=1024)  # Validate configuration before startup; no network call.
-            planner_factory = lambda: ModelPlanningEngine(CampusClient(timeout=20, max_completion_tokens=1024),
+            CampusClient(timeout=25, max_completion_tokens=2048)  # Validate configuration before startup; no network call.
+            planner_factory = lambda: ModelPlanningEngine(CampusClient(timeout=25, max_completion_tokens=2048),
                                                           lambda: self.operations.clock())
         connect_planning(self.operations, self.supplier, planning_reviewer(self.operations, self.supplier), self.planning,
                          planner_factory=planner_factory)

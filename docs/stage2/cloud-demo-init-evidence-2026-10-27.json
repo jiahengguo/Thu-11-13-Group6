@@ -1,0 +1,51 @@
+{
+  "realCloud": true,
+  "scenario": "demo",
+  "startDate": "2026-11-07",
+  "logins": {
+    "free": {
+      "role": "TRAVELLER",
+      "membership": "FREE",
+      "verified": true
+    },
+    "paid": {
+      "role": "TRAVELLER",
+      "membership": "PAID",
+      "verified": true
+    },
+    "supplier": {
+      "role": "SUPPLIER",
+      "membership": "FREE",
+      "verified": true
+    },
+    "operator": {
+      "role": "OPERATOR",
+      "membership": "FREE",
+      "verified": true
+    }
+  },
+  "repeatPreservedBusinessRecords": true,
+  "repeatPreservedPasswords": true,
+  "supplierCases": 7,
+  "travellerDrafts": 2,
+  "statuses": {
+    "stay": "UNDER_REVIEW",
+    "coach": "UNDER_REVIEW",
+    "expired": "EXPIRED",
+    "express": "UNDER_REVIEW",
+    "activity": "UNDER_REVIEW",
+    "restricted": "UNDER_REVIEW",
+    "zero-stock": "REVISION_REQUIRED"
+  },
+  "normalSellingPriceAUD": "198.00",
+  "automaticApprovals": false,
+  "verificationDate": "2026-10-27",
+  "simulationOnly": true,
+  "migration": "202610270001_demo_profiles.sql",
+  "functionPermissions": {
+    "anonExecute": false,
+    "authenticatedExecute": false,
+    "serviceRoleExecute": true
+  },
+  "fullTravelRecoveryAcceptance": false
+}
