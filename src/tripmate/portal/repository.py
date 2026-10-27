@@ -15,6 +15,16 @@ class CloudRecords:
         self.data = {(r['kind'], r['id']): r['payload'] for r in snapshot['records']}
         self.writes, self.events = {}, []
 
+    @contextmanager
+    def savepoint(self):
+        """Undo a failed specialist import before recording the coordinator failure."""
+        before = deepcopy((self.data, self.writes, self.events))
+        try:
+            yield
+        except Exception:
+            self.data, self.writes, self.events = before
+            raise
+
     def get(self, kind, key):
         return deepcopy(self.data.get((kind, key)))
 
