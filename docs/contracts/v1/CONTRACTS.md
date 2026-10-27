@@ -7,10 +7,8 @@ schema bundle are versioned together. No member approval is inferred from tests.
 ## Authority and naming
 
 Primary design baseline: `docs/TripMate_AI_stage1_report.pdf`, sections 2–7 and
-G-04/G-05 (pages 30–31, enlarged G-04 on page 47). The current model companion is
-`docs/diagrams/Elementary_Structure/G-04_Current_Model.md`. The older class
-inventory explicitly identifies itself as historical and is not the implementation
-baseline. The report's UC-05 creates an ExternalRequest before confirmation and
+G-04/G-05 (pages 30–31, enlarged G-04 on page 47). Separate Stage 1 modelling working files were removed during documentation cleanup;
+the retained report is the design reference. The report's UC-05 creates an ExternalRequest before confirmation and
 CustomerCase/SupplierCase afterwards; the historical timing conflict is resolved
 in the report, not reproduced in this contract.
 

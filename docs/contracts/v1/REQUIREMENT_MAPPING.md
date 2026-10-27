@@ -2,7 +2,7 @@
 
 Baseline: Stage 1 report dated September 2026, supplied locally on 10 October
 2026. The current IDs are read from report sections 3 and 6 and UC-01–UC-08.
-Old IDs come from `docs/Stage1_Modeling_Task_List.md` section 3. This records
+Old IDs refer to the historical modelling checklist, removed during documentation cleanup. This records
 semantic relationships; **no historical requirement has been renumbered**.
 
 | Current requirement | Use cases | Agent owner | B01 boundary | Implementation cards |

@@ -1,219 +1,125 @@
 # TripMate AI
 
-Main includes PR18–25. The [live multi-account walkthrough and remaining release work](docs/stage2/LIVE_WORKFLOW.zh-CN.md) records real model planning, revision, activation, recovery and separate human approvals, plus two integration fixes on `codex/live-workflow-acceptance` that still need merging. Broader functionality and final release acceptance remain incomplete. The [27 October project list](docs/stage2/PROJECT_LIST_2026-10-27.zh-CN.md) and older dated handoffs retain their original verification scope.
+[简体中文](README.zh-CN.md) · [Documentation index](docs/index.md)
 
-Setup and explicit provider preflights: `python3 scripts/setup_demo.py`, then `.venv/bin/python scripts/start_demo.py` (Windows: `.venv\Scripts\python.exe`). Configure `.env` locally first; no credentials or cloud accounts are bundled. See [startup/readiness scope and verification](docs/stage2/STARTUP_READINESS.zh-CN.md).
+TripMate is a travel-service prototype with authenticated Traveller, Supplier and Operator portals. Operations coordinates three specialist agents: Supplier validates quotations, Planning proposes and checks itineraries, and Exception investigates disruptions and prepares recovery recommendations.
 
-Dedicated demo accounts and repeatable supplier data: [preconditions, dry-run/apply commands and walkthrough](docs/stage2/DEMO_ACCOUNTS.zh-CN.md). Provisioning is explicit and requires the demo migration plus administrator configuration; local passwords must be excluded from delivery artifacts. [Authenticated cancellation recovery](docs/exception/PORTAL_INTEGRATION.zh-CN.md) now connects the default portals to shared evidence, review and persistence.
-
-Sprint 2 authenticated Planning integration: [scope, demo pricing, tests and remaining work](docs/planning/Authenticated_Portal_Integration.zh-CN.md). The default portal composes Planning with current reviewed Supplier records and private shared storage; released options support comparison, explicit adoption and confirmed revisions. Default Exception composition is also integrated; complete release acceptance remains pending.
-
-Customer Exception EXC-01/EXC-02: [local simulated prototype and demonstration guide](docs/exception/README.md). Two buttons are available in the explicit `--workbench` web mode; results and traces persist locally.
-
-The follow-up [Operations integration guide](docs/exception/INTEGRATION.md) covers confirmed cases, project Supplier/Planning adapters, scoped human decisions, traveller selection, same-case revisions and the remaining Jira acceptance dependencies.
-
-Travel Planning now connects to the merged Operations ports and B03 catalog. See [Planning integration/API handoff](docs/planning/Travel_Planning_API_Handoff.zh-CN.md) and [main integration notes](docs/planning/Main_Integration.zh-CN.md). The course model adapter implements the shared `LLMService` port. Supplier/Reviewer production integration remains pending.
-
-**Authenticated portals branch (13 October 2026):** `portal-supabase-integration`
-adds a public website and separate Traveller `/app`, Supplier `/supplier`, and
-Operator `/admin` portals. Supabase Auth verifies real accounts; backend role and
-ownership checks protect private cloud Operations records. The default web entry
-now runs authenticated portals. The B02/B03 role-switching workbench requires
-explicit `--workbench` and remains isolated development tooling.
-
-```sh
-python -m pip install -e .
-# Configure the new project's keys in the ignored .env; apply migrations first.
-python -m tripmate.portal.server --port 8780
-```
-
-See [delivery report](docs/portal/DELIVERY_REPORT.md), [portal setup and boundaries](docs/portal/PORTAL_HANDOFF.md) and
-[portal verification](docs/portal/TEST_RESULTS.md). Auth and cloud persistence are
-real; specialist travel processing and financial transactions retain the report's
-prototype boundaries. Do not treat a portal deployment as four-agent completion.
-
-**Operations Agent branch (13 October 2026):** Run the existing local server and open
-`/operations` for confirmed request intake, simulated membership/access checks, tracked
-case coordination, operator review and controlled response delivery. See the
-[Operations handoff](docs/operations/OPERATIONS_HANDOFF.md) and
-[acceptance evidence](docs/operations/TEST_RESULTS.md). Planning/Supplier/Exception and
-automatic Reviewer dependencies remain explicitly injected; this branch does not merge
-the separate Travel Planning PR or claim four-agent completion.
-
-**B08 Supplier assessment:** UC-06 source validation, versioned pricing/review/approval
-and approved-offer lookup now connect to confirmed requests in the authenticated
-Supplier/Operator portals and private shared Supabase records. Operators review
-the offer and separately decide restricted terms; Operations retains external delivery.
-Actual pricing requires B04 and a configured policy. See the
-[Supabase adaptation and tests](docs/stage2/SUPABASE_ADAPTATION.md) and
-[B08 handoff](docs/stage2/B08_SUPPLIER_HANDOFF.zh-CN.md).
-
-**Supplier Partnership B02/B03 branch (13 October 2026):** Local-only Web API/SQLite foundation, replayable synthetic supplier/traveller/disruption fixtures, controlled reset, and a model-smoke endpoint have been added. [Handoff](docs/stage2/B02_B03_HANDOFF.md). Four-agent workflows are **not** integrated. Planning demonstrations and campus model integration are enabled only after their separate provider implementation is merged; until then, the page reports them as unavailable.
-
-[English](README.md) | [简体中文](README.zh-CN.md)
-
-TripMate AI is an ELEC5620 project exploring whether one human founder can operate a useful travel service with four collaborating AI agents. The project focuses on Australian domestic trips and uses simulated supplier, booking, payment, and disruption data.
-
-The Stage 1 report is the design baseline. **Stage 2 B01 now has a shared contract and modular project framework**, pending four-member review. B02 provides a local-only Web/API and SQLite workspace; a real campus LLM check requires the separately supplied provider adapter and network/credentials.
-
-Start with the [project framework and local checks](#project-framework), [v1.0.0 contracts](docs/contracts/v1/CONTRACTS.md), [requirement mapping](docs/contracts/v1/REQUIREMENT_MAPPING.md), and [B01 acceptance record](docs/contracts/v1/B01_ACCEPTANCE.md).
-
-## Product idea
-
-Travel planning is fragmented across transport, accommodation, activities, prices, weather, and policies. TripMate AI combines these inputs into feasible itinerary options, explains trade-offs, revises plans when circumstances change, and keeps a human operator responsible for high-impact decisions.
-
-The system is a One-Person AI Company rather than a single travel chatbot. Each team member owns one agent direction:
-
-| Agent | Business responsibility |
-| --- | --- |
-| Operations Agent | Customer acquisition, front-desk service, intent collection, membership checks, and routing |
-| Travel Planning Agent | Transport, accommodation, and activity planning; constraint checking; comparison and revision |
-| Customer Exception Agent | Disruption recovery, complaint handling, evidence gathering, and escalation |
-| Supplier Partnership Agent | Supplier offers, inventory terms, price and margin validation |
-
-A shared Reviewer/Guardrail checks constraints, evidence, pricing, policy, and approval requirements. The human founder/operator supervises the company and makes decisions that should not be delegated.
-
-## Core workflow
-
-1. The Operations Agent receives a lead or customer request, collects missing information, checks membership rules, and routes the case.
-2. The Travel Planning Agent retrieves eligible offers and builds complete itinerary options.
-3. Deterministic tools validate budget, timing, availability, price, margin, and other hard constraints.
-4. The Reviewer/Guardrail checks the proposal before it is shown to the traveller.
-5. The Customer Exception Agent handles disruptions or complaints and asks for human review when necessary.
-6. The system records decisions, tool results, plan versions, costs, and outcomes for evaluation.
-
-## Product baseline
-
-- Initial scenario: a short Sydney-to-Melbourne trip.
-- Travel modes: Comfort, Value, and Budget.
-- Free membership: at most two simultaneous planned or active trips and five days per trip; labelled advertising may be shown.
-- Paid membership: no free-tier trip-count or duration limit, no advertising, and access to route maps and approved premium features.
-- Revenue model: supplier margin, paid membership, and advertising for free users.
-- Human approval remains required for real publication or spending, supplier commitments, payments, refunds or compensation, and other high-impact actions.
-
-## Project framework
-
-The framework follows the Stage 1 report's four-agent architecture, UC-01–UC-08,
-G-04/G-05 and the B01 shared-contract requirements. The 10 October 2026 delivery
-covers contracts and module boundaries. Python 3.9+ is the backend skeleton's
-implementation choice; the report does not prescribe a language. B02 now provides
-a local HTTP/static frontend and SQLite workspace, and B03 provides resettable
-synthetic fixtures. A real model check requires the separately merged campus
-adapter, a local key and campus/VPN access. Four-agent business integration is pending.
-
-### Application structure
-
-```text
-Traveller / Supplier                    Human Founder / Operator
-        |                                           |
-        +------ Shared web interface: intake, plans, operator workspace [B02]
-                              |
-                     API / Orchestrator
-                              |
-                    Operations (Jiaheng)
-                 +------------+-------------+
-          Planning (Moore) Exception (wrd) Supplier (Jason)
-                 +------------+-------------+
-                Shared Reviewer / Guardrail (wrd)
-                              |
-           Entitlement/access, constraints, pricing, LLM/tool adapters
-                              |
-                One database, trace and human approval records
-```
-
-The four agents are internal modules in one application. Operations confirms
-requests, coordinates work and delivers external responses. Specialists return
-proposals rather than independently making commitments to Travellers. The
-Reviewer is a shared control service, not a fifth business agent. Human
-assistance, scoped approval and real transaction execution are distinct concepts.
-
-```text
-src/tripmate/
-  __main__.py          Framework inspection and JSON example validation
-  orchestrator.py      Composition root for the four agents
-  agents/              Member-owned modules and shared handle_case protocol
-  contracts/           Schema loader, validator and v1/schemas.json
-  services/ports.py    Entitlement, constraint, pricing, review and access ports
-  adapters/ports.py    LLM and approved-offer lookup ports
-  persistence/ports.py Trace and approval repository ports
-  api/                 B02 HTTP boundary
-api/static/            B02 frontend assets (inside src/tripmate/)
-docs/
-  contracts/v1/        Contracts, mappings, review evidence and JSON examples
-tests/                 B01 success and rejection-path tests
-```
-
-These ports are unimplemented protocols. They do not save data or call models.
-Agent stubs return `executionMode=STUB`, `status=FAILURE` and `NOT_IMPLEMENTED`.
-FIXTURE in the JSON examples identifies synthetic contract messages, not business
-results executed by the application.
-
-### Local checks
-
-Run from the repository root. Initial dependency installation requires network
-access. Configuration templates contain no credentials.
-
-```bash
-python3 -m venv .venv
-.venv/bin/python -m pip install --upgrade pip
-.venv/bin/python -m pip install -e .
-.venv/bin/python -m tripmate
-.venv/bin/python -m tripmate --validate-examples docs/contracts/v1/examples
-.venv/bin/python -m unittest discover -s tests -v
-```
-
-If the project itself is not installed, install `jsonschema[format]>=4.23,<5`
-and prefix the last three commands with `PYTHONPATH=src`. The B02 server reads
-`.env`; the framework-inspection CLI does not. Start the workbench with
-`python -m tripmate.api.server --workbench --port 8765`. B02 supports FIXTURE and STUB business
-modes; use the separate model-smoke action to record a live call or its blocker.
-
-### B01 deliverables
-
-- [Contracts v1.0.0](docs/contracts/v1/CONTRACTS.md): fields, states, errors, evidence and approval semantics.
-- [Requirement mapping](docs/contracts/v1/REQUIREMENT_MAPPING.md): requirements, use cases, owners and confirmed/unresolved PLAN/TP relationships.
-- [B01 acceptance record](docs/contracts/v1/B01_ACCEPTANCE.md): actual test evidence and pending member reviews.
-- [Schema bundle](src/tripmate/contracts/v1/schemas.json): language-neutral machine-readable contracts.
-
-Public schemas reject unknown fields and require explicit sources, validation
-results, errors and approval flags. Money uses two-decimal AUD strings; timestamps
-must include a timezone. Schema validation does not establish budget, inventory,
-entitlement, offer expiry, margin or itinerary feasibility. Implement those rules
-in B04/B07/B08/B09.
-
-### Member handoff
-
-| Owner | Next work |
-| --- | --- |
-| Jiaheng | B06 creates Cases after confirmation; B07 adds entitlement/access and controlled external responses |
-| Moore | B04 deterministic validation; B09 planning; keep version assessment separate from trip lifecycle |
-| wrd | B05 persisted trace; B10 review and human approval scoped to subject version and authority |
-| Jason | B02 shared web/backend/database/LLM; B03 simulated fixtures; B08 offers and B16 campaigns |
-
-Preserve caseId/correlationId/sourceReferences and validate inputs and outputs.
-Report failed saves explicitly. Approvals must match the current subject version;
-material changes require fresh review and approval. B04 must document the rounding
-tie rule left unspecified by the report. Example amounts are not global policies.
-
-B01 code and documentation are ready for review. All four member confirmations
-remain pending, so B01 cannot yet be marked Done.
-
-## Documentation
-
-- [Stage 1 plan](docs/Stage1_Modeling_Task_List.md): deliverables, four-agent ownership, modelling rules, sequence, and completion checks.
-- [Current project requirement](https://unisydneyedu-my.sharepoint.com/:w:/r/personal/jguo9172_uni_sydney_edu_au/_layouts/15/doc.aspx?sourcedoc=%7Bdb7e1c58-8a31-419c-a0cf-9058e8145514%7D&action=edit): the current product-requirement baseline.
-- [Stage 1 marking criteria](docs/ELEC5620_Project_Stage_1_Marking_Criteria.pdf): assessment requirements and individual/group deliverables.
-
-The README contains the project overview, framework, startup and handoff instructions. Detailed contracts, requirement mappings and acceptance evidence remain in docs/contracts/v1.
+Supabase provides real authentication and private persistent records. The course `campus-qwen` model supports extraction and itinerary proposals. Deterministic rules enforce prices, availability, membership, constraints and approval boundaries. Travel inventory, cancellations and transactions are simulated; the prototype does not book, charge, refund or rebook travel.
 
 ## Current scope
 
-Stage 1 covers the requirement baseline, agent roles, use cases, architecture, UML models, traceability, presentation, and contribution evidence. Stage 2 will implement a demonstrable subset of these models. Real bookings, payments, advertising publication, and supplier contracts are outside the prototype.
+- Supplier quotations, explicit Operator review and deterministic AUD pricing.
+- Confirmed travel requests, model-assisted plan comparison, explicit adoption and immutable revisions.
+- Traveller-confirmed trip activation; adopting a revision preserves Active status and the original start time.
+- Cancellation evidence recorded by an Operator, Supplier/Planning recovery recommendations, separate proposal/response approvals and controlled delivery.
+- Role/ownership checks, private case histories, idempotent commands and durable audit trails.
 
-## Contributing
+PRs through #26 are integrated. The last implementation regression passed **283 tests**; real cloud accounts and the course model were exercised on the supported planning/recovery flow. This does not constitute fresh-machine or final ZIP acceptance. See [workflow and limits](docs/stage2/LIVE_WORKFLOW.zh-CN.md); dated handoffs describe their original scope, including historical pre-merge status.
 
-Keep requirement IDs, use-case IDs, and diagram IDs stable. Changes to an agent's scope should be reflected first in the current project requirement, then in the Stage 1 plan and affected models. Record individual contributions through commits, pull requests, and the final contribution table.
+## Quick start
 
-## Course notice
+Run commands from the source root. Requirements: **Python 3.9+**, Internet access for installation/Supabase, and campus network or USYD VPN access to the course model. No Docker setup is required.
 
-TripMate AI is an educational feasibility prototype for ELEC5620. It is not a live travel agency or booking service.
+### 1. Install
+
+macOS / Linux:
+
+```sh
+python3 scripts/setup_demo.py
+```
+
+Windows PowerShell:
+
+```powershell
+py -3 scripts/setup_demo.py
+```
+
+This creates `.venv`, installs the package and creates `.env` from `.env.example` only if it is missing. Existing configuration and data are preserved. Installation does not deploy database migrations or create accounts.
+
+### 2. Configure one file
+
+Edit **the root `.env` only** for the authenticated demo. All agents use the same server configuration; do not edit individual modules or put keys in browser code.
+
+```dotenv
+SUPABASE_URL=https://YOUR_PROJECT.supabase.co
+SUPABASE_PUBLISHABLE_KEY=YOUR_PROJECT_PUBLISHABLE_KEY
+SUPABASE_SECRET_KEY=YOUR_PROJECT_SERVER_SECRET
+TRIPMATE_LLM_PROVIDER=elec5620
+TRIPMATE_LLM_MODEL=campus-qwen
+ELEC5620_API_KEY=YOUR_COURSE_KEY
+ELEC5620_BASE_URL=http://10.167.60.148:8000/v1
+ELEC5620_MODEL=campus-qwen
+```
+
+The three Supabase values must belong to the same project. Leave other template settings unchanged for the supported local demo. The starter explicitly enables simulated pricing: 10% markup, AUD 15 minimum margin, policy `demo-2026-10-24`. Without that flag, a direct server launch needs an explicitly configured pricing policy.
+
+For a **fresh Supabase project**, an administrator must apply the SQL files in `supabase/migrations/` in filename order. An existing prepared project should not replay the initial table-creation migration. See [cloud setup](docs/portal/PORTAL_HANDOFF.md) and [demo provisioning](docs/stage2/DEMO_ACCOUNTS.zh-CN.md). Supplying keys alone does not create the database schema. Tutor credential delivery is still to be agreed.
+
+### 3. Prepare demo accounts and inventory, if needed
+
+Preview without cloud writes:
+
+```sh
+.venv/bin/python -m tripmate.portal.demo
+```
+
+Explicitly prepare a named simulated scenario in the configured project:
+
+```sh
+.venv/bin/python -m tripmate.portal.demo --apply --confirm-project https://YOUR_PROJECT.supabase.co --start-date 2026-11-07
+```
+
+Use `.venv\Scripts\python.exe` instead on Windows. Choose future travel dates for your rehearsal. The four account types are Free/Paid Traveller, Supplier and Operator. Random passwords are saved only in the ignored `.demo-accounts.local.json`. New machines without the original manifest must use an agreed credential handoff or a new `--namespace` and separate manifest; never overwrite existing identities. A new `--scenario` creates a separate rehearsal while retaining history.
+
+Provisioning does not approve quotations, confirm traveller requests or activate trips. Expired, zero-stock and restricted examples intentionally remain blocked/pending. Normal planning uses the four ordinary quotations after Operator review.
+
+### 4. Check and start
+
+macOS / Linux:
+
+```sh
+.venv/bin/python scripts/start_demo.py
+```
+
+Windows:
+
+```powershell
+.venv\Scripts\python.exe scripts/start_demo.py
+```
+
+Open **http://127.0.0.1:8780**. The starter checks cloud storage, explicit demo pricing and a real model smoke call before starting the authenticated portal with model planning enabled. To change the port, add `--port 8781`.
+
+| Portal | Route | Purpose |
+| --- | --- | --- |
+| Traveller | `/app` | Confirm requirements, compare/adopt/revise plans, start a trip and select reviewed recovery options |
+| Supplier | `/supplier` | Submit quotations and inspect assessments |
+| Operator | `/admin` | Review quotations, record simulated cancellation evidence, approve and release responses, inspect traces |
+
+Use accounts with the appropriate backend role; ordinary registration creates a Traveller, not staff access. Follow the [walkthrough](docs/stage2/LIVE_WORKFLOW.zh-CN.md) for the review/delivery sequence.
+
+## Checks and troubleshooting
+
+```sh
+.venv/bin/python -m tripmate.portal.doctor --demo-pricing --check-cloud --check-model
+.venv/bin/python -m unittest discover -s tests -v
+```
+
+- **Cloud check fails:** verify matching project keys, project availability and applied migrations. The server secret stays server-side.
+- **Model check fails:** connect campus network/VPN and check the course key. A skipped probe or fixture run is not a successful live-model check.
+- **Accounts cannot be prepared:** verify the demo-profile migration and the manifest's project/namespace. Do not clear the shared database to retry.
+- **Plans unavailable:** normal offers need current stock, validity and Operator review; incomplete or pending results are intentionally hidden.
+- **After restart:** sign in again. Sessions are process-local; cloud business records persist.
+
+## Repository and remaining work
+
+| Path | Contents |
+| --- | --- |
+| `src/tripmate/` | Portal, Operations, Supplier, Planning, Exception, shared services/contracts and adapters |
+| `scripts/` | Setup/start and verification entry points |
+| `supabase/migrations/` | Ordered database migrations |
+| `tests/` | Automated regression tests, including explicitly isolated transport doubles |
+| `docs/` | [Indexed implementation guides and historical handoffs](docs/index.md) |
+
+Trusted complaint-policy integration, restricted supplier offers in Planning, remaining state-machine/reminder behavior, Campaign and full membership benefits remain incomplete. Production pagination/scaling is also outside the current single-process demo. The private snapshot has a bounded 32 MB limit.
+
+New-machine acceptance, team release rehearsals, final documentation/contribution statements and final ZIP extraction/deployment checks remain pending. Never include `.env`, `.demo-accounts*.json`, virtual environments or local databases in the submitted source package. The retained [Stage 1 report](docs/TripMate_AI_stage1_report.pdf) is the design reference; separate modelling drafts and UML files have been removed.
