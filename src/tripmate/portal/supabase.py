@@ -6,6 +6,11 @@ from urllib.parse import urlencode, urlsplit
 from urllib.request import Request, urlopen
 from tripmate.operations.common import OperationsError
 
+MAX_RESPONSE_BYTES = 4_000_000
+# The private snapshot includes immutable case history, traces and command results.
+# A small multi-account rehearsal already exceeds the ordinary provider-body cap.
+MAX_SNAPSHOT_BYTES = 32_000_000
+
 
 class Supabase:
     def __init__(self, url, public_key, secret_key):
@@ -30,7 +35,12 @@ class Supabase:
         data = json.dumps(body).encode() if body is not None else None
         try:
             with urlopen(Request(self.url + path, data=data, headers=headers, method=method), timeout=15) as response:
-                raw = response.read(4_000_000)
+                limit = MAX_SNAPSHOT_BYTES if admin and path == '/rest/v1/rpc/tripmate_snapshot' else MAX_RESPONSE_BYTES
+                raw = response.read(limit + 1)
+                if len(raw) > limit:
+                    raise OperationsError('CLOUD_UNAVAILABLE',
+                        'The cloud response exceeds the supported demo size. Ask the project administrator '
+                        'to review storage before retrying; no records were deleted.')
                 return json.loads(raw) if raw else None
         except HTTPError as exc:
             # Read only a stable code to classify conflicts. Do not expose provider errors.
@@ -45,6 +55,8 @@ class Supabase:
             if exc.code == 429:
                 raise OperationsError('RATE_LIMITED', 'Too many attempts. Wait before trying again.') from None
             raise OperationsError('CLOUD_UNAVAILABLE', 'The cloud service could not complete this request. No success is claimed.') from None
+        except OperationsError:
+            raise
         except (URLError, TimeoutError, OSError, ValueError):
             raise OperationsError('CLOUD_UNAVAILABLE', 'The cloud service is unavailable. Try again later.') from None
 

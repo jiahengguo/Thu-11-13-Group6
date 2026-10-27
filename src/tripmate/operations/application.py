@@ -5,6 +5,7 @@ Absent dependencies never fabricate a completed workflow.
 """
 import hashlib
 import json
+from contextlib import nullcontext
 from copy import deepcopy
 from decimal import Decimal
 from threading import BoundedSemaphore, RLock, Thread
@@ -88,7 +89,10 @@ release them. One running dependency per coordinator prevents unbounded threads.
         box = {}
         def run():
             try:
-                box["value"] = operation()
+                # ContextVars do not propagate into a new thread. Give cloud
+                # specialists their own request cache, never the caller's cache.
+                with getattr(self.repository, 'scope', nullcontext)():
+                    box["value"] = operation()
             except Exception as exc:
                 box["error"] = exc
             finally:

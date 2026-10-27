@@ -1,6 +1,6 @@
 # TripMate AI
 
-Current implementation, fixes, branch inventory and validation: [27 October project list](docs/stage2/PROJECT_LIST_2026-10-27.zh-CN.md). Main now includes PR20–24 as well as PR18/19. Historical real cloud/model preflights and demo-account provisioning are documented separately from local regression; the complete real-cloud travel/recovery walkthrough remains unaccepted. Older dated handoffs below describe their original branch scope; use the project list for current integration status.
+Main includes PR18–25. The [live multi-account walkthrough and remaining release work](docs/stage2/LIVE_WORKFLOW.zh-CN.md) records real model planning, revision, activation, recovery and separate human approvals, plus two integration fixes on `codex/live-workflow-acceptance` that still need merging. Broader functionality and final release acceptance remain incomplete. The [27 October project list](docs/stage2/PROJECT_LIST_2026-10-27.zh-CN.md) and older dated handoffs retain their original verification scope.
 
 Setup and explicit provider preflights: `python3 scripts/setup_demo.py`, then `.venv/bin/python scripts/start_demo.py` (Windows: `.venv\Scripts\python.exe`). Configure `.env` locally first; no credentials or cloud accounts are bundled. See [startup/readiness scope and verification](docs/stage2/STARTUP_READINESS.zh-CN.md).
 
