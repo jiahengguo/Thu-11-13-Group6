@@ -1,5 +1,7 @@
 # TripMate AI
 
+**2026-10-27 当前状态：** PR #20–#24 已并入 main，认证门户已接入 Supplier、Planning、Exception 和 Operations。完整功能、已修复 Bug、分支覆盖、测试结果及未完成项见 [项目清单](docs/stage2/PROJECT_LIST_2026-10-27.zh-CN.md)。下方较早的分支交接描述保留为历史记录；当前集成范围以项目清单为准。真实云端完整业务链仍待验收。
+
 Customer Exception EXC-01/EXC-02：[本地模拟原型与演示说明](docs/exception/README.md)。使用 `--workbench` 启动后，可在网页点击航班取消和延误投诉两个按钮，处理记录会保存在本地。
 
 逐日规划扩展：运行 `python -m tripmate.planning.daily_demo` 验证多城市、天气、交通延误、路线、体力、用餐休息和预约规则。

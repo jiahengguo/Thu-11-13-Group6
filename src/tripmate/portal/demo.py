@@ -3,9 +3,11 @@ import argparse
 import hashlib
 from datetime import date, datetime, timedelta
 import json
+import os
 from pathlib import Path
 import re
 import secrets
+import subprocess
 from uuid import UUID
 from zoneinfo import ZoneInfo
 
@@ -26,17 +28,39 @@ def namespace_value(value):
     return value
 
 
+def protect_manifest(path):
+    """Restrict credentials to the current owner using the host's permission model."""
+    if os.name != 'nt':
+        path.chmod(0o600)
+        return
+    script = """
+$ErrorActionPreference = 'Stop'
+$sid = [System.Security.Principal.WindowsIdentity]::GetCurrent().User
+$acl = New-Object System.Security.AccessControl.FileSecurity
+$acl.SetOwner($sid)
+$acl.SetAccessRuleProtection($true, $false)
+$rule = New-Object System.Security.AccessControl.FileSystemAccessRule($sid, 'FullControl', 'Allow')
+$acl.AddAccessRule($rule)
+[System.IO.File]::SetAccessControl($env:TRIPMATE_MANIFEST_ACL_PATH, $acl)
+"""
+    result = subprocess.run(['powershell.exe', '-NoProfile', '-NonInteractive', '-Command', script],
+        env=dict(os.environ, TRIPMATE_MANIFEST_ACL_PATH=str(path.resolve())),
+        capture_output=True, creationflags=subprocess.CREATE_NO_WINDOW)
+    if result.returncode:
+        raise OSError('Could not restrict demo credential file permissions.')
+
+
 def save_manifest(path, data):
     if path.is_symlink():
         raise ValueError('Credential manifest cannot be a symlink.')
     temporary = path.with_name(path.name + '.tmp')
     # Exclusive creation prevents following pre-existing paths when writing secrets.
     with temporary.open('x') as stream:
-        temporary.chmod(0o600)
+        protect_manifest(temporary)
         json.dump(data, stream, indent=2)
         stream.write('\n')
     temporary.replace(path)
-    path.chmod(0o600)
+    protect_manifest(path)
 
 
 def prepare_accounts(cloud, namespace, manifest_path):
