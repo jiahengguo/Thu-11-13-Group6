@@ -22,7 +22,7 @@ COOKIE = 'tripmate_session'
 
 
 class Portal:
-    def __init__(self, cloud, supplier_pricing=None, supplier_policy=None):
+    def __init__(self, cloud, supplier_pricing=None, supplier_policy=None, model_planning=False):
         self.cloud, self.sessions, self.rate = cloud, Sessions(cloud), RateLimit()
         self.operations = OperationsService(SupabaseOperationsRepository(cloud), NoUserFixtures(), seed_profiles=False)
         if os.environ.get('ELEC5620_API_KEY') not in (None, '', 'REPLACE_LOCALLY'):
@@ -39,7 +39,15 @@ class Portal:
         from tripmate.planning.shared_repository import SharedPlanningRepository
         from tripmate.planning.review import planning_reviewer
         self.planning = SharedPlanningRepository(self.operations.repository)
-        connect_planning(self.operations, self.supplier, planning_reviewer(self.operations, self.supplier), self.planning)
+        planner_factory = None
+        if model_planning:
+            from tripmate.adapters.campus import CampusClient
+            from tripmate.planning.campus import ModelPlanningEngine
+            CampusClient(timeout=20, max_completion_tokens=1024)  # Validate configuration before startup; no network call.
+            planner_factory = lambda: ModelPlanningEngine(CampusClient(timeout=20, max_completion_tokens=1024),
+                                                          lambda: self.operations.clock())
+        connect_planning(self.operations, self.supplier, planning_reviewer(self.operations, self.supplier), self.planning,
+                         planner_factory=planner_factory)
         from tripmate.exception_handling.integration import connect_exception
         from tripmate.exception_handling.portal import PortalExceptionContexts
         from tripmate.exception_handling.shared_repository import SharedExceptionRepository
@@ -62,8 +70,8 @@ class Portal:
     _save_analysis = staticmethod(Workbench._save_analysis)
 
 
-def make_server(cloud, port=8780, origin=None, bind='127.0.0.1', supplier_pricing=None, supplier_policy=None):
-    app, static = Portal(cloud, supplier_pricing, supplier_policy), Path(__file__).with_name('static')
+def make_server(cloud, port=8780, origin=None, bind='127.0.0.1', supplier_pricing=None, supplier_policy=None, model_planning=False):
+    app, static = Portal(cloud, supplier_pricing, supplier_policy, model_planning), Path(__file__).with_name('static')
     configured_origin = origin
     if origin:
         p = urlsplit(origin)
@@ -311,13 +319,16 @@ def main():
     parser.add_argument('--env-file',type=Path,default=Path('.env'))
     parser.add_argument('--demo-pricing',action='store_true',
                         help='Use explicit simulated pricing: 10%% markup, AUD 15 minimum margin; not a production policy')
+    parser.add_argument('--model-planning',action='store_true',
+                        help='Use course-model proposals with deterministic validation; no offline fallback')
     args=parser.parse_args()
     Settings.load(args.env_file)
     cloud=Supabase.from_env()
     cloud.rpc('tripmate_snapshot')  # Fail startup clearly if migration/credentials are missing.
     from tripmate.supplier.common import PricingPolicy
     policy = PricingPolicy('0.10', '15.00', 'demo-2026-10-24') if args.demo_pricing else None
-    server=make_server(cloud,args.port,os.environ.get('TRIPMATE_PUBLIC_ORIGIN'),args.bind,supplier_policy=policy)
+    server=make_server(cloud,args.port,os.environ.get('TRIPMATE_PUBLIC_ORIGIN'),args.bind,supplier_policy=policy,
+                       model_planning=args.model_planning)
     print(f'TripMate portals | http://127.0.0.1:{server.server_port}',flush=True)
     try:
         server.serve_forever()
