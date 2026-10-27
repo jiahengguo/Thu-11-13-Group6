@@ -8,7 +8,7 @@ from http.cookiejar import CookieJar
 from urllib.error import HTTPError
 from urllib.request import Request, build_opener, HTTPCookieProcessor
 from uuid import uuid4
-from tripmate.portal.server import make_server
+from tripmate.portal.server import make_server, Portal
 from tripmate.portal.repository import SupabaseOperationsRepository
 from tripmate.operations.common import OperationsError
 
@@ -97,6 +97,51 @@ class Browser:
         self.start();result=self.call('/api/auth/login',{'email':actor+'@example.invalid','password':'test-password-long'})
         if result[0]==200:self.start()
         return result
+
+
+class DependencyScopeTests(unittest.TestCase):
+    def test_worker_caches_cloud_reads_but_rechecks_next_dependency(self):
+        class CountedCloud(FakeCloud):
+            def __init__(self):
+                super().__init__()
+                self.snapshots = 0
+                self.profiles = 0
+            def rpc(self, name, body=None):
+                if name == 'tripmate_snapshot':
+                    self.snapshots += 1
+                return super().rpc(name, body)
+            def profile(self, actor):
+                self.profiles += 1
+                return super().profile(actor)
+        cloud = CountedCloud()
+        actor, _ = cloud.add()
+        app = Portal(cloud)
+        repo = app.operations.repository
+        def read_many():
+            return [(repo.read('missing', 'id'), repo.read('profile', actor)['membership']) for _ in range(10)]
+        with repo.scope():
+            repo.read('profile', actor)  # Caller cache must not cross the thread boundary.
+            cloud.accounts[actor]['membership'] = 'PAID'
+            self.assertTrue(all(p == (None, 'PAID') for p in app.operations._dependency(read_many)))
+            self.assertEqual(cloud.snapshots, 1)
+            self.assertEqual(cloud.profiles, 2)
+            cloud.accounts[actor]['membership'] = 'FREE'
+            self.assertTrue(all(p == (None, 'FREE') for p in app.operations._dependency(read_many)))
+            self.assertEqual(cloud.snapshots, 2)
+            self.assertEqual(cloud.profiles, 3)
+
+    def test_worker_commit_invalidates_its_cache_and_failure_keeps_next_run_fresh(self):
+        app = Portal(FakeCloud())
+        repo = app.operations.repository
+        def write_then_fail():
+            self.assertIsNone(repo.read('test', 'id'))
+            with repo.transaction() as rows:
+                rows.put('test', 'id', {'saved': True})
+            self.assertEqual(repo.read('test', 'id'), {'saved': True})
+            raise ValueError('Controlled dependency failure')
+        with self.assertRaises(ValueError):
+            app.operations._dependency(write_then_fail)
+        self.assertEqual(app.operations._dependency(lambda: repo.read('test', 'id')), {'saved': True})
 
 
 class PortalHTTPTests(unittest.TestCase):
