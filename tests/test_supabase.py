@@ -13,8 +13,8 @@ class SupabaseResponseTests(unittest.TestCase):
     def setUp(self):
         self.cloud = Supabase('https://demo.supabase.co', 'test-public', 'test-server')
 
-    def cancelled(self, code='57014'):
-        return HTTPError('https://demo.supabase.co', 500, 'Internal error', {},
+    def cancelled(self, code='57014', status=500):
+        return HTTPError('https://demo.supabase.co', status, 'Provider error', {},
                          BytesIO(json.dumps({'code': code, 'message': 'private-provider-detail'}).encode()))
 
     def test_cancelled_private_snapshot_can_be_read_once_more(self):
@@ -44,6 +44,17 @@ class SupabaseResponseTests(unittest.TestCase):
             with self.assertRaises(OperationsError):
                 self.cloud.rpc('tripmate_snapshot')
         self.assertEqual(request.call_count, 1)
+
+    def test_business_conflicts_require_refresh_without_replaying_writes(self):
+        for code in ('PT409', '40001'):
+            with self.subTest(code=code), patch('tripmate.portal.supabase.urlopen',
+                    side_effect=self.cancelled(code, 409 if code == 'PT409' else 500)) as request:
+                with self.assertRaises(OperationsError) as caught:
+                    self.cloud.rpc('tripmate_commit', {'expected_version': 0})
+            self.assertEqual(request.call_count, 1)
+            self.assertEqual(caught.exception.code, 'UNCONFIRMED_REQUEST')
+            self.assertIn('Reload', str(caught.exception))
+            self.assertNotIn('private-provider-detail', str(caught.exception))
 
     def test_private_snapshot_larger_than_old_limit_is_parsed_completely(self):
         snapshot = dict(version=7, records=[], traces=[], commands=[], history='x' * MAX_RESPONSE_BYTES)

@@ -55,7 +55,7 @@ class Supabase:
                     continue
                 if code == '57014' and attempts == 2:
                     raise OperationsError('CLOUD_UNAVAILABLE', 'Cloud records could not be read in time. Refresh before retrying; no success is claimed.') from None
-                if code == '40001':
+                if code in ('PT409', '40001'):
                     raise OperationsError('UNCONFIRMED_REQUEST', 'Another request changed the data. Reload before retrying.') from None
                 if exc.code in (400, 401, 403, 422) and path.startswith('/auth/'):
                     raise OperationsError('AUTH_FAILED', 'Unable to verify this account. Check your credentials and email verification.') from None
