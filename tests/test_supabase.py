@@ -3,6 +3,7 @@ from io import BytesIO
 import json
 import unittest
 from unittest.mock import patch
+from urllib.error import HTTPError
 
 from tripmate.operations.common import OperationsError
 from tripmate.portal.supabase import Supabase, MAX_RESPONSE_BYTES
@@ -11,6 +12,38 @@ from tripmate.portal.supabase import Supabase, MAX_RESPONSE_BYTES
 class SupabaseResponseTests(unittest.TestCase):
     def setUp(self):
         self.cloud = Supabase('https://demo.supabase.co', 'test-public', 'test-server')
+
+    def cancelled(self, code='57014'):
+        return HTTPError('https://demo.supabase.co', 500, 'Internal error', {},
+                         BytesIO(json.dumps({'code': code, 'message': 'private-provider-detail'}).encode()))
+
+    def test_cancelled_private_snapshot_can_be_read_once_more(self):
+        snapshot = dict(version=9, records=[], traces=[], commands=[])
+        with patch('tripmate.portal.supabase.urlopen', side_effect=[self.cancelled(), BytesIO(json.dumps(snapshot).encode())]) as request:
+            self.assertEqual(self.cloud.rpc('tripmate_snapshot'), snapshot)
+        self.assertEqual(request.call_count, 2)
+
+    def test_repeated_snapshot_cancellation_stops_after_two_attempts(self):
+        with patch('tripmate.portal.supabase.urlopen', side_effect=[self.cancelled(), self.cancelled()]) as request:
+            with self.assertRaises(OperationsError) as caught:
+                self.cloud.rpc('tripmate_snapshot')
+        self.assertEqual(request.call_count, 2)
+        self.assertEqual(caught.exception.code, 'CLOUD_UNAVAILABLE')
+        self.assertNotIn('private-provider-detail', str(caught.exception))
+
+    def test_cancelled_writes_other_rpcs_and_public_requests_are_never_retried(self):
+        for path, admin in [('/rest/v1/rpc/tripmate_commit', True), ('/auth/v1/token', False),
+                            ('/rest/v1/rpc/other', True), ('/rest/v1/rpc/tripmate_snapshot', False)]:
+            with self.subTest(path=path, admin=admin), patch('tripmate.portal.supabase.urlopen', side_effect=self.cancelled()) as request:
+                with self.assertRaises(OperationsError):
+                    self.cloud.request(path, method='POST', body={}, admin=admin)
+            self.assertEqual(request.call_count, 1)
+
+    def test_other_snapshot_provider_errors_are_not_retried(self):
+        with patch('tripmate.portal.supabase.urlopen', side_effect=self.cancelled('XX000')) as request:
+            with self.assertRaises(OperationsError):
+                self.cloud.rpc('tripmate_snapshot')
+        self.assertEqual(request.call_count, 1)
 
     def test_private_snapshot_larger_than_old_limit_is_parsed_completely(self):
         snapshot = dict(version=7, records=[], traces=[], commands=[], history='x' * MAX_RESPONSE_BYTES)
