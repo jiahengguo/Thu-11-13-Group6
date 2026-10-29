@@ -26,6 +26,20 @@ on all seven new tables. Migrations were applied through the dashboard, not the 
 repair/record those versions before later using CLI migration replay on this project.
 Do not blindly rerun the initial table-creation migration on the configured database.
 
+Apply subsequent migrations in filename order. An existing prepared project needs
+only missing migrations, including `202610290001_commit_conflict.sql`. This replaces
+the commit function without deleting records or changing its grants. Ordinary
+optimistic-version conflicts return `PT409` / HTTP 409: reload the current case
+before deciding whether to retry; do not replay a write automatically.
+The former custom `40001` can trigger repeated PostgREST retries, as described in
+[Supabase's troubleshooting guide](https://supabase.com/kb/troubleshooting/high-cpu-and-infinite-transaction-retries-when-using-custom-error-codes-in-rpc-functions).
+If old retries persist after migration, inspect active `tripmate_commit` calls and
+match their backend IDs to the error logs before an administrator stops them.
+Do not terminate unrelated sessions or disable the version check. The configured
+project received this migration through SQL Editor on 2026-10-29; a deliberately
+stale empty commit returned HTTP 409 in 1.186 seconds, with no active commit calls
+observed at the subsequent check. This does not certify overall query performance.
+
 Supabase Auth URL Configuration for this local installation:
 
 - Site URL: `http://127.0.0.1:8780/auth/callback`.
