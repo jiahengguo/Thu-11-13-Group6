@@ -729,7 +729,7 @@ release them. One running dependency per coordinator prevents unbounded threads.
             if rec["case"]["caseType"] in {"TRAVEL_PLANNING", "PLAN_REVISION"} and rec.get("specialistResult"):
                 for ref in rec["specialistResult"]["subjects"]:
                     if ref["subjectType"] == "ItineraryVersion":
-                        v = self._plan_record(actor, ref["subjectId"])["version"]
+                        v = self._plan_record(rec["case"]["requesterId"], ref["subjectId"])["version"]
                         if self._decision(records, rec, "PRESENT_PLAN", dict(v["travelDates"], planId=v["planId"]))["outcome"] != "ALLOWED":
                             rec["case"]["status"] = "AWAITING_PLAN_ACCESS_DECISION"
                             rec["revision"] += 1

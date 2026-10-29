@@ -98,6 +98,21 @@ class PlanningPortalTests(unittest.TestCase):
         body = dict(versionId=vid, expectedBaseline=baseline, accepted=True, requestKey=key or str(uuid4()))
         return self.clients[self.traveller].call('/api/operations/adopt', body), body
 
+    def test_operator_delivers_reviewed_plan_for_confirmed_requester(self):
+        cid, ids, generated = self.generate()
+        reviewed = self.post(self.operator, 'review', dict(caseId=cid, revision=generated['revision'],
+                           decision='APPROVE', reason='Checked the exact requester plan and its review.'))
+        body = dict(caseId=cid, revision=reviewed['revision'], requestKey=str(uuid4()))
+        self.assertEqual(self.clients[self.other].call('/api/operations/deliver', body)[0], 403)
+        status, delivered, _ = self.clients[self.operator].call('/api/operations/deliver', body)
+        self.assertEqual(status, 200, delivered)
+        self.assertTrue(delivered['delivered'])
+        saved = self.clients[self.traveller].call('/api/operations/case?caseId=' + cid)[1]
+        self.assertEqual(saved['case']['status'], 'CLOSED')
+        self.assertEqual(self.clients[self.traveller].call('/api/operations/plan?versionId=' + ids[0])[0], 200)
+        self.assertEqual(self.clients[self.other].call('/api/operations/plan?versionId=' + ids[0])[0], 403)
+        self.assertEqual(self.clients[self.operator].call('/api/operations/plan?versionId=' + ids[0])[0], 403)
+
     def test_authenticated_plan_options_adoption_revision_and_restart(self):
         cid, ids, result = self.generate()
         self.assertGreater(len(ids), 1)
