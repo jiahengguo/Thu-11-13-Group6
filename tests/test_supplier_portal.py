@@ -200,6 +200,37 @@ class SupplierPortalTests(unittest.TestCase):
         self.assertEqual(retry[0], 200, retry)
         self.assertEqual(self.server.app.supplier.repository.current(self.view(case_id)['offer']['offerId'])['storageRevision'], revision)
 
+    def test_dispatch_final_save_failure_never_replays_specialist_or_releases_offer(self):
+        intents = [{'caseType': 'OFFER', 'fields': {'details': 'Synthetic interruption rehearsal.',
+                                                  'supplierOffer': self.submission()}}]
+        intake = self.operation('intake', {'text': 'Assess a synthetic quotation.', 'intents': intents})
+        confirmed = self.operation('confirm', {'intakeId': intake['id'], 'revision': intake['revision'],
+                                               'intents': intents, 'confirmed': True})
+        case_id = confirmed['caseIds'][0]
+        body = dict(requestKey=str(uuid4()), caseId=case_id, revision=1)
+        original = self.cloud.rpc
+        def fail_final_save(name, payload=None):
+            if name == 'tripmate_commit' and any(row['kind'] == 'case' and row['payload'].get('completedRun')
+                                                  for row in (payload or {}).get('writes', [])):
+                from tripmate.operations.common import OperationsError
+                raise OperationsError('CLOUD_UNAVAILABLE', 'Injected final coordination save failure')
+            return original(name, payload)
+        specialist = self.server.app.supplier
+        with patch.object(specialist, 'handle_case', wraps=specialist.handle_case) as handle:
+            with patch.object(self.cloud, 'rpc', side_effect=fail_final_save):
+                self.assertEqual(self.browser.call('/api/operations/dispatch', body)[0], 503)
+            status, saved, _ = self.browser.call('/api/operations/dispatch', body)
+            self.assertEqual(status, 200)
+            self.assertEqual(saved['case']['status'], 'IN_PROGRESS')
+            self.assertIsNone(saved['response'])
+            self.assertEqual(handle.call_count, 1)
+        self.assertEqual(self.server.app.supplier.find_selectable({}, AT), [])
+        for _ in range(2):
+            saved = self.operation('case-action', dict(caseId=case_id, revision=saved['revision'],
+                              action='HUMAN', reason='Processing was interrupted; request manual handling.'))
+        self.assertEqual(saved['case']['status'], 'HUMAN_ASSISTANCE')
+        self.assertIsNone(saved['response'])
+
     def test_cloud_fixture_reset_preserves_accounts_cases_offers_and_pending_decisions(self):
         case_id = self.assess()
         self.login(self.operator)
