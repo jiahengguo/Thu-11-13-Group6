@@ -33,32 +33,39 @@ class Supabase:
         elif admin and key.startswith('eyJ'):
             headers['Authorization'] = 'Bearer ' + key
         data = json.dumps(body).encode() if body is not None else None
-        try:
-            with urlopen(Request(self.url + path, data=data, headers=headers, method=method), timeout=15) as response:
-                limit = MAX_SNAPSHOT_BYTES if admin and path == '/rest/v1/rpc/tripmate_snapshot' else MAX_RESPONSE_BYTES
-                raw = response.read(limit + 1)
-                if len(raw) > limit:
-                    raise OperationsError('CLOUD_UNAVAILABLE',
-                        'The cloud response exceeds the supported demo size. Ask the project administrator '
-                        'to review storage before retrying; no records were deleted.')
-                return json.loads(raw) if raw else None
-        except HTTPError as exc:
-            # Read only a stable code to classify conflicts. Do not expose provider errors.
+        attempts = 2 if admin and path == '/rest/v1/rpc/tripmate_snapshot' else 1
+        for attempt in range(attempts):
             try:
-                code = json.loads(exc.read(8192)).get('code')
-            except (ValueError, AttributeError):
-                code = None
-            if code == '40001':
-                raise OperationsError('UNCONFIRMED_REQUEST', 'Another request changed the data. Reload before retrying.') from None
-            if exc.code in (400, 401, 403, 422) and path.startswith('/auth/'):
-                raise OperationsError('AUTH_FAILED', 'Unable to verify this account. Check your credentials and email verification.') from None
-            if exc.code == 429:
-                raise OperationsError('RATE_LIMITED', 'Too many attempts. Wait before trying again.') from None
-            raise OperationsError('CLOUD_UNAVAILABLE', 'The cloud service could not complete this request. No success is claimed.') from None
-        except OperationsError:
-            raise
-        except (URLError, TimeoutError, OSError, ValueError):
-            raise OperationsError('CLOUD_UNAVAILABLE', 'The cloud service is unavailable. Try again later.') from None
+                with urlopen(Request(self.url + path, data=data, headers=headers, method=method), timeout=15) as response:
+                    limit = MAX_SNAPSHOT_BYTES if admin and path == '/rest/v1/rpc/tripmate_snapshot' else MAX_RESPONSE_BYTES
+                    raw = response.read(limit + 1)
+                    if len(raw) > limit:
+                        raise OperationsError('CLOUD_UNAVAILABLE',
+                            'The cloud response exceeds the supported demo size. Ask the project administrator '
+                            'to review storage before retrying; no records were deleted.')
+                    return json.loads(raw) if raw else None
+            except HTTPError as exc:
+                # Read only a stable code to classify conflicts. Do not expose provider errors.
+                try:
+                    code = json.loads(exc.read(8192)).get('code')
+                except (ValueError, AttributeError):
+                    code = None
+                if code == '57014' and attempt + 1 < attempts:
+                    # The cancelled snapshot is read-only; never replay a write.
+                    continue
+                if code == '57014' and attempts == 2:
+                    raise OperationsError('CLOUD_UNAVAILABLE', 'Cloud records could not be read in time. Refresh before retrying; no success is claimed.') from None
+                if code == '40001':
+                    raise OperationsError('UNCONFIRMED_REQUEST', 'Another request changed the data. Reload before retrying.') from None
+                if exc.code in (400, 401, 403, 422) and path.startswith('/auth/'):
+                    raise OperationsError('AUTH_FAILED', 'Unable to verify this account. Check your credentials and email verification.') from None
+                if exc.code == 429:
+                    raise OperationsError('RATE_LIMITED', 'Too many attempts. Wait before trying again.') from None
+                raise OperationsError('CLOUD_UNAVAILABLE', 'The cloud service could not complete this request. No success is claimed.') from None
+            except OperationsError:
+                raise
+            except (URLError, TimeoutError, OSError, ValueError):
+                raise OperationsError('CLOUD_UNAVAILABLE', 'The cloud service is unavailable. Try again later.') from None
 
     def rpc(self, name, body=None):
         return self.request('/rest/v1/rpc/' + name, 'POST', body or {}, admin=True)
