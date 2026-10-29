@@ -888,6 +888,14 @@ release them. One running dependency per coordinator prevents unbounded threads.
                     "rankingAffected": False, "simulationOnly": True}
         return self._command(actor, "premium", key, [action, member_offer_id], save)
 
+    def case_summaries(self, actor):
+        """List authorised cards without fetching each private detail/inbox."""
+        records = [r for r in self.repository.list('case')
+                   if self.access.authorise(actor, 'READ_CASE', r['case'])]
+        records.sort(key=lambda r: instant(r['case']['createdAt']), reverse=True)
+        return [{'case': {key: r['case'][key] for key in
+                         ('caseId', 'caseType', 'status', 'createdAt')}} for r in records]
+
     def cases(self, actor):
         return [self.case_view(actor, rec["id"]) for rec in self.repository.list("case")
                 if self.access.authorise(actor, "READ_CASE", rec["case"])]

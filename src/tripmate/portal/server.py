@@ -177,7 +177,7 @@ def make_server(cloud, port=8780, origin=None, bind='127.0.0.1', supplier_pricin
                         raise OperationsError('ACCESS_DENIED', 'Only operators can inspect the shared simulation catalog.')
                     return self.send(200, app.fixtures.summary())
                 if path == '/api/operations/cases' and not query:
-                    return self.send(200,{'cases':app.operations.cases(actor)})
+                    return self.send(200,{'cases':app.operations.case_summaries(actor)})
                 if path == '/api/trips' and not query and user['role']=='TRAVELLER':
                     return self.send(200,{'trips':app.operations.trips(actor)})
                 if path == '/api/intakes' and not query and user['role']!='OPERATOR':
