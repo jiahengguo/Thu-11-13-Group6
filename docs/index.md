@@ -104,6 +104,7 @@
 - [TripMate AI 项目功能与 Bug 清单](stage2/PROJECT_LIST_2026-10-27.zh-CN.md)
 - [PR 验证与 Sprint 2 剩余工作审计](stage2/PR_VALIDATION_AUDIT_2026-10-27.zh-CN.md)
 - [初始化入口与课程模型就绪检查](stage2/STARTUP_READINESS.zh-CN.md)
+- [Supabase 快照读取超时修复与验证](stage2/SNAPSHOT_TIMEOUT_FIX.zh-CN.md)
 - [Supplier B02/B03/B08 adaptation — 13 October 2026](stage2/SUPABASE_ADAPTATION.md)
 - [cloud-demo-init-evidence-2026-10-27.json](stage2/cloud-demo-init-evidence-2026-10-27.json)
 

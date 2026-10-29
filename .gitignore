@@ -10,6 +10,7 @@ dist/
 .env.*
 !.env.example
 node_modules/
+supabase/.temp/
 coverage/
 output/
 tmp/
