@@ -59,7 +59,7 @@ class FakeCloud:
         if name == 'tripmate_read_records':
             return [deepcopy(r['payload']) for r in self.state['records']
                     if r['kind'] == body['record_kind'] and
-                    ('record_id' not in body or r['id'] == body['record_id'])]
+                    (body.get('record_id') is None or r['id'] == body['record_id'])]
         if name == 'tripmate_read_traces':
             return [deepcopy(e) for e in self.state['traces'] if e['caseId'] == body['requested_case']]
         if name=='tripmate_snapshot':
@@ -111,6 +111,14 @@ class Browser:
 
 
 class DependencyScopeTests(unittest.TestCase):
+    def test_missing_record_key_cannot_become_a_kind_wide_lookup(self):
+        class NoReadCloud:
+            def rpc(self, *args, **kwargs):
+                raise AssertionError('Missing key must not call the kind reader.')
+        repo = SupabaseOperationsRepository(NoReadCloud())
+        self.assertIsNone(repo.read('approval', None))
+        self.assertIsNone(repo.read('case', None))
+
     def test_worker_caches_cloud_reads_but_rechecks_next_dependency(self):
         class CountedCloud(FakeCloud):
             def __init__(self):

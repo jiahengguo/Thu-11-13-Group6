@@ -74,6 +74,8 @@ class SupabaseOperationsRepository:
                 if exc.code == 'ACCESS_DENIED':
                     return None
                 raise
+        if key is None:
+            return None
         rows = self._scoped_read('tripmate_read_records', {'record_kind': kind, 'record_id': key})
         return deepcopy(rows[0]) if rows else None
 
