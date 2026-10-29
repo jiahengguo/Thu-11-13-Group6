@@ -14,7 +14,43 @@ Supabase 提供真实认证和私有持久化，课程 `campus-qwen` 模型用�
 - Operator 录入取消证据，Supplier/Planning 协作生成恢复建议，提案批准与响应审核分离，经 Operations 交付。
 - 角色和所有权检查、私有案件历史、幂等命令、重启后可读取的业务记录。
 
-截至 PR #26 已合入，最近一次实现回归 **283 项通过**，受支持的规划与恢复链已通过真实云账户和课程模型演练。新电脑及最终 ZIP 部署验收仍未完成。详见[集成流程与限制](docs/stage2/LIVE_WORKFLOW.zh-CN.md)；带日期的旧交接文件保留当时验证范围，其中“尚未合并”等表述属于历史状态。
+PR #34 后的云端按需读取修复已进入main。完整回归 **292项通过**；其后Supabase边界9项、门户28项专项通过。已实际演练真实账户、课程模型、恢复批准及重启读取，最终未修改的交付ZIP仍需验收。详见[集成流程与限制](docs/stage2/LIVE_WORKFLOW.zh-CN.md)；带日期的旧交接文件保留当时验证范围，其中“尚未合并”等表述属于历史状态。
+
+## 从 ZIP 开始：第一次操作指引
+
+以下根据10月29日实际ZIP初始化与页面演练整理；详见[Demo案例与验证边界](docs/stage2/DEMO_SCENARIOS.zh-CN.md)。最终未修改的交付ZIP仍需再验收。
+
+1. **先解压，再打开终端。** 找到同时包含 `README.md`、`pyproject.toml` 和 `scripts` 的文件夹，这才是项目根目录；不要在 ZIP 预览窗口内运行。
+2. **进入根目录。** macOS 可输入 `cd ` 后把解压文件夹拖进终端再回车；Windows 在该文件夹打开 PowerShell。路径有空格时保留引号。出现“找不到 scripts/setup_demo.py”通常是当前目录不对。
+3. **先执行下方安装步骤。** 看到安装完成提示后再编辑 `.env`。该文件可能被隐藏；macOS Finder 可用 Command+Shift+. 显示隐藏文件。保持文件名恰好为 `.env`，不要保存成 `.env.txt`；使用纯文本编辑器，不用 Word。
+4. **新电脑不等于新数据库。** 如果小组提供的是已准备好的 Supabase 项目，填写配置即可，不重复建表。若没有已有账户的密码文件，按照下面“独立演练账户”命令准备另一组专用账户。
+5. **启动后保留终端窗口。** 看到 `TripMate portals | http://127.0.0.1:8780` 后，在浏览器打开该地址。程序持续运行、终端没有返回输入提示是正常现象；Ctrl+C 会停止服务。只关闭网页不会停止服务。
+6. **登录资料在哪里？** 打开本次命令指定的本地 `.demo-accounts…json`，在 `accounts` 中找到 `free`、`paid`、`supplier` 或 `operator`，使用其 `email` 和 `password`。文件只是读取登录资料，不要修改角色、密码或 ID，也不要提交或截图它。普通“Create an account”不会创建 Supplier／Operator。
+7. **角色如何切换？** 先 Sign out 再登录另一角色。同一浏览器的普通标签页共享登录状态；同时演示多个角色时使用独立浏览器配置文件或不同浏览器。不要靠打开 `/admin` 给自己授予权限。
+
+### 独立演练账户：没有原密码文件时
+
+先完成下方安装和 `.env` 配置。将 `yourname` 换成你自己的小写字母／数字标记，避免与共享项目中已有 namespace 冲突；同一组账户重跑时保持 namespace 和 manifest 不变。日期示例用于 2026 年 11 月 5 日 Demo，之后使用时应选择新的有效旅行日期及场景。
+
+macOS / Linux：
+
+```sh
+.venv/bin/python -m tripmate.portal.demo --apply --confirm-project https://YOUR_PROJECT.supabase.co --namespace demo-yourname-20261105 --scenario rehearsal-one --manifest .demo-accounts-rehearsal.local.json --start-date 2026-11-07
+```
+
+Windows PowerShell：
+
+```powershell
+.venv\Scripts\python.exe -m tripmate.portal.demo --apply --confirm-project https://YOUR_PROJECT.supabase.co --namespace demo-yourname-20261105 --scenario rehearsal-one --manifest .demo-accounts-rehearsal.local.json --start-date 2026-11-07
+```
+
+`--confirm-project` 必须与 `.env` 的 `SUPABASE_URL` 完全相同，不能粘贴 dashboard 网页地址。密码文件丢失时不要删除云用户、覆盖原身份或反复换密码；改用独立 namespace，或联系小组管理员。初始化失败时保留已生成的密码文件以便接续。
+
+### 页面打开后为什么还没有方案？
+
+初始化只准备数据，不代替用户确认或人工审批。先由 Supplier 查看报价、Operator 审核普通资源，再由 Traveller 打开自己的草稿并确认、开始处理；模型生成后仍需 Operator 审核与交付，客户才可比较和采用。采用方案后还需要旅客明确点击开始行程。过期／零库存／受限样例不能当作普通可用资源。
+
+模型处理期间等待当前操作结束，不连续重复点击；若显示失败或人工处理，保留案件并按提示操作，不能当作成功。端口被占用时可给启动命令加 `--port 8781`，浏览器也须打开对应端口；不要停止不认识的其他进程。修改 `.env` 后停止自己启动的服务并重新运行启动脚本，再重新登录。
 
 ## 简单初始化
 
@@ -123,3 +159,7 @@ Windows：
 默认门户的可信投诉政策、受限报价进入规划、剩余状态流转／提醒、营销和完整会员权益仍未全部完成。当前是单进程教学演示，私有快照有 32 MB 上限，分页、扩容和生产运维尚未实现。
 
 后续还需新电脑启动复现、小组发布演练、完整交付说明／贡献声明，以及最终 ZIP 解压部署验收。提交包不得包含 `.env`、`.demo-accounts*.json`、虚拟环境和本地数据库。Stage 1 仅保留[报告 PDF](docs/TripMate_AI_stage1_report.pdf)作为设计依据，独立建模草稿和 UML 文件已清理。
+
+### 云端操作报错时怎么办
+
+等待按钮恢复后，重新打开同一个请求并查看Request history，再决定是否重试。曾出现决定已保存、后续刷新失败的情况，不能连续重复批准或重新创建案件。同一浏览器配置文件尽量只保留一个演示页。当前云项目已部署按需读取迁移；其他项目需按文件名顺序补齐缺失迁移。见[读取修复说明](docs/stage2/SCOPED_CLOUD_READS.zh-CN.md)。不要清空数据或关闭审核来解决失败。

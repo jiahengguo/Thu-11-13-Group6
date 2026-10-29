@@ -14,7 +14,43 @@ Supabase provides real authentication and private persistent records. The course
 - Cancellation evidence recorded by an Operator, Supplier/Planning recovery recommendations, separate proposal/response approvals and controlled delivery.
 - Role/ownership checks, private case histories, idempotent commands and durable audit trails.
 
-PRs through #26 are integrated. The last implementation regression passed **283 tests**; real cloud accounts and the course model were exercised on the supported planning/recovery flow. This does not constitute fresh-machine or final ZIP acceptance. See [workflow and limits](docs/stage2/LIVE_WORKFLOW.zh-CN.md); dated handoffs describe their original scope, including historical pre-merge status.
+The cloud read fix is on main after PR #34. A full **292-test** regression passed; subsequent provider boundary and portal suites passed 9 and 28 tests respectively. Real accounts, the course model, recovery approval and restart reads were exercised. This does not constitute final unmodified submission-ZIP acceptance. See [workflow and limits](docs/stage2/LIVE_WORKFLOW.zh-CN.md); dated handoffs describe their original scope, including historical pre-merge status.
+
+## First run from a ZIP: practical guide
+
+This guide incorporates the October 29 ZIP installation and real portal rehearsal. See [demo scenarios and verification limits](docs/stage2/DEMO_SCENARIOS.zh-CN.md); final unmodified submission-ZIP acceptance remains pending.
+
+1. Extract the ZIP first. The project root contains `README.md`, `pyproject.toml` and `scripts`. Do not run from an archive preview.
+2. Open a terminal in that folder. On macOS, type `cd `, drag the extracted folder into Terminal and press Return; on Windows, open PowerShell in the folder. Keep quotes around paths containing spaces. A missing `scripts/setup_demo.py` usually means the wrong working directory.
+3. Run installation below before editing `.env`. Finder can show hidden files with Command+Shift+Period. Use a plain-text editor, keep the exact name `.env`, and avoid `.env.txt` or Word documents.
+4. A new computer does not require a new database. With the team's prepared Supabase project, configure access without replaying table creation. Without the original account password manifest, prepare separate rehearsal accounts below.
+5. Keep the server terminal open. After `TripMate portals | http://127.0.0.1:8780`, open that address in a browser. The terminal remaining busy is normal; Ctrl+C stops the server. Closing the browser does not stop it.
+6. Find credentials in the local `.demo-accounts…json` chosen during preparation: under `accounts`, select `free`, `paid`, `supplier` or `operator`, then use its `email` and `password`. Do not edit IDs, roles or passwords, commit the file or screenshot it. Ordinary registration does not create Supplier/Operator access.
+7. Sign out before switching roles. Ordinary tabs in one browser share cookies; use separate browser profiles or different browsers for simultaneous roles. Opening `/admin` does not grant staff access.
+
+### Separate rehearsal accounts without the original manifest
+
+Complete installation and `.env` configuration first. Replace `yourname` with your own lowercase letters/digits to avoid an existing namespace. Keep the namespace and manifest unchanged when resuming the same accounts. The example travel dates suit the 5 November 2026 demo; later rehearsals need valid dates and a new scenario.
+
+macOS / Linux:
+
+```sh
+.venv/bin/python -m tripmate.portal.demo --apply --confirm-project https://YOUR_PROJECT.supabase.co --namespace demo-yourname-20261105 --scenario rehearsal-one --manifest .demo-accounts-rehearsal.local.json --start-date 2026-11-07
+```
+
+Windows PowerShell:
+
+```powershell
+.venv\Scripts\python.exe -m tripmate.portal.demo --apply --confirm-project https://YOUR_PROJECT.supabase.co --namespace demo-yourname-20261105 --scenario rehearsal-one --manifest .demo-accounts-rehearsal.local.json --start-date 2026-11-07
+```
+
+The confirmation URL must exactly match `SUPABASE_URL`, not the dashboard URL. If a manifest is lost, use a separate namespace or contact the team administrator; do not delete cloud users, overwrite identities or repeatedly reset passwords. Retain a partially created manifest after failure so preparation can resume.
+
+### Why are there no plans yet?
+
+Preparation creates data without requester confirmation or Operator approval. Supplier inspects the quotes; Operator reviews ordinary inventory; Traveller opens and confirms a draft and starts processing. Generated plans still require review and controlled delivery before comparison/adoption. Starting the trip is a separate explicit Traveller action. Expired, zero-stock and restricted examples are not ordinary selectable inventory.
+
+Wait for the current model operation rather than repeatedly clicking. A failure or human-assistance state is not success. If the port is occupied, add `--port 8781` and open the matching browser port; do not kill unfamiliar processes. After changing `.env`, stop your own server and restart it using the starter, then sign in again.
 
 ## Quick start
 
@@ -123,3 +159,7 @@ Use accounts with the appropriate backend role; ordinary registration creates a 
 Trusted complaint-policy integration, restricted supplier offers in Planning, remaining state-machine/reminder behavior, Campaign and full membership benefits remain incomplete. Production pagination/scaling is also outside the current single-process demo. The private snapshot has a bounded 32 MB limit.
 
 New-machine acceptance, team release rehearsals, final documentation/contribution statements and final ZIP extraction/deployment checks remain pending. Never include `.env`, `.demo-accounts*.json`, virtual environments or local databases in the submitted source package. The retained [Stage 1 report](docs/TripMate_AI_stage1_report.pdf) is the design reference; separate modelling drafts and UML files have been removed.
+
+### If a cloud action appears to fail
+
+Wait until processing finishes, then reopen the same request and inspect its history before repeating a write: a decision may have saved even if the following refresh failed. Use one active rehearsal tab per browser profile. The configured cloud already has the scoped-read migration; a different project must apply all missing migrations in filename order. See [cloud read fix](docs/stage2/SCOPED_CLOUD_READS.zh-CN.md). Do not clear records, disable approval or repeatedly click processing.

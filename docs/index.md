@@ -109,3 +109,6 @@
 - [cloud-demo-init-evidence-2026-10-27.json](stage2/cloud-demo-init-evidence-2026-10-27.json)
 
 本索引覆盖版本控制中的文档与示例；本机临时交接、账户密码、未提交的个人材料不属于交付文档。
+
+- [Demo操作路径、截图与人工验收边界](stage2/DEMO_SCENARIOS.zh-CN.md)
+- [云端按需读取修复](stage2/SCOPED_CLOUD_READS.zh-CN.md)
