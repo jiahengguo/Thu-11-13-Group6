@@ -61,6 +61,11 @@ class SupabaseResponseTests(unittest.TestCase):
         with patch('tripmate.portal.supabase.urlopen', return_value=BytesIO(json.dumps(snapshot).encode())):
             self.assertEqual(self.cloud.rpc('tripmate_snapshot'), snapshot)
 
+    def test_private_transaction_state_keeps_bounded_large_response_support(self):
+        state = dict(version=7, records=[], commands=[], payload='x' * MAX_RESPONSE_BYTES)
+        with patch('tripmate.portal.supabase.urlopen', return_value=BytesIO(json.dumps(state).encode())):
+            self.assertEqual(self.cloud.rpc('tripmate_state'), state)
+
     def test_oversized_snapshot_has_explicit_recovery_action_without_payload(self):
         with patch('tripmate.portal.supabase.MAX_SNAPSHOT_BYTES', 100), \
              patch('tripmate.portal.supabase.urlopen', return_value=BytesIO(b'private-data' * 20)):

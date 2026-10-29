@@ -56,9 +56,9 @@ class SupabaseOperationsRepository:
     def snapshot(self):
         context = self.context.get()
         if context is None:
-            return self.cloud.rpc('tripmate_snapshot')
+            return self.cloud.rpc('tripmate_state')
         if 'snapshot' not in context:
-            context['snapshot'] = self.cloud.rpc('tripmate_snapshot')
+            context['snapshot'] = self.cloud.rpc('tripmate_state')
         return context['snapshot']
 
     def read(self, kind, key):
@@ -74,12 +74,23 @@ class SupabaseOperationsRepository:
                 if exc.code == 'ACCESS_DENIED':
                     return None
                 raise
-        return CloudRecords(self.snapshot()).get(kind, key)
+        rows = self._scoped_read('tripmate_read_records', {'record_kind': kind, 'record_id': key})
+        return deepcopy(rows[0]) if rows else None
 
     def list(self, kind):
         if kind == 'profile':
             raise OperationsError('ACCESS_DENIED', 'Identity enumeration is unavailable in the authenticated portal.')
-        return CloudRecords(self.snapshot()).all(kind)
+        return deepcopy(self._scoped_read('tripmate_read_records', {'record_kind': kind}))
+
+    def _scoped_read(self, name, body):
+        context = self.context.get()
+        if context is None:
+            return self.cloud.rpc(name, body)
+        reads = context.setdefault('reads', {})
+        key = (name, tuple(sorted(body.items())))
+        if key not in reads:
+            reads[key] = self.cloud.rpc(name, body)
+        return reads[key]
 
     def _commit(self, snapshot, records, entry=None):
         if records.writes or records.events or entry:
@@ -87,6 +98,7 @@ class SupabaseOperationsRepository:
             context = self.context.get()
             if context is not None:
                 context.pop('snapshot', None)
+                context.pop('reads', None)
 
     @contextmanager
     def transaction(self):
@@ -114,7 +126,7 @@ class SupabaseOperationsRepository:
         return (True, previous['result']) if previous else (False, None)
 
     def find_by_case(self, case_id):
-        return [e for e in self.snapshot()['traces'] if e['caseId'] == case_id]
+        return deepcopy(self._scoped_read('tripmate_read_traces', {'requested_case': case_id}))
 
     def append(self, event):
         with self.transaction() as records:

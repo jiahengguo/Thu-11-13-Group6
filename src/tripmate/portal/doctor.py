@@ -22,8 +22,8 @@ def readiness(*, demo_pricing=False, check_cloud=False, check_model=False):
             raise ValueError()
         cloud = Supabase(*keys)
         if check_cloud:
-            snapshot = cloud.rpc('tripmate_snapshot')
-            if not isinstance(snapshot, dict) or not {'version', 'records', 'traces', 'commands'} <= snapshot.keys():
+            snapshot = cloud.rpc('tripmate_read_records', {'record_kind': '__readiness__'})
+            if not isinstance(snapshot, list) or snapshot:
                 raise ValueError()
         add('cloud', 'VERIFIED' if check_cloud else 'CONFIGURED',
             'Private storage RPC is reachable.' if check_cloud else 'Credentials configured; connectivity not tested.')

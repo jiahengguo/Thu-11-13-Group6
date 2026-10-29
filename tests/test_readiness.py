@@ -41,13 +41,13 @@ class ReadinessTests(unittest.TestCase):
             self.assertEqual(next(c for c in report['checks'] if c['component'] == 'pricing')['status'], 'BLOCKED')
 
     def test_live_checks_verify_schema_valid_extraction_and_private_rpc(self):
-        snapshot = dict(version=0, records=[], traces=[], commands=[])
+        snapshot = []
         with patch.dict('os.environ', CONFIG, clear=True), \
                 patch('tripmate.portal.supabase.Supabase.rpc', return_value=snapshot) as rpc, \
                 patch('tripmate.adapters.campus.CampusLLMService.extract', return_value={'partySize': 2}) as extract:
             report = readiness(demo_pricing=True, check_cloud=True, check_model=True)
         self.assertTrue(report['ready'])
-        rpc.assert_called_once_with('tripmate_snapshot')
+        rpc.assert_called_once_with('tripmate_read_records', {'record_kind': '__readiness__'})
         self.assertEqual(extract.call_args.args[0], 'Two travellers are requesting a simulated trip.')
         self.assertEqual([c['status'] for c in report['checks']], ['VERIFIED', 'CONFIGURED', 'VERIFIED'])
 

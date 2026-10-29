@@ -324,7 +324,7 @@ def main():
     args=parser.parse_args()
     Settings.load(args.env_file)
     cloud=Supabase.from_env()
-    cloud.rpc('tripmate_snapshot')  # Fail startup clearly if migration/credentials are missing.
+    cloud.rpc('tripmate_read_records', {'record_kind': '__readiness__'})  # Verify private read migration without downloading history.
     from tripmate.supplier.common import PricingPolicy
     policy = PricingPolicy('0.10', '15.00', 'demo-2026-10-24') if args.demo_pricing else None
     server=make_server(cloud,args.port,os.environ.get('TRIPMATE_PUBLIC_ORIGIN'),args.bind,supplier_policy=policy,

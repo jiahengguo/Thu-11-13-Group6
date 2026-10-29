@@ -37,7 +37,7 @@ class Supabase:
         for attempt in range(attempts):
             try:
                 with urlopen(Request(self.url + path, data=data, headers=headers, method=method), timeout=15) as response:
-                    limit = MAX_SNAPSHOT_BYTES if admin and path == '/rest/v1/rpc/tripmate_snapshot' else MAX_RESPONSE_BYTES
+                    limit = MAX_SNAPSHOT_BYTES if admin and path in ('/rest/v1/rpc/tripmate_snapshot', '/rest/v1/rpc/tripmate_state') else MAX_RESPONSE_BYTES
                     raw = response.read(limit + 1)
                     if len(raw) > limit:
                         raise OperationsError('CLOUD_UNAVAILABLE',

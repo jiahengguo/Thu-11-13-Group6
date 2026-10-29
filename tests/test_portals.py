@@ -56,8 +56,19 @@ class FakeCloud:
 
     def rpc(self,name,body=None):
         body=body or {}
+        if name == 'tripmate_read_records':
+            return [deepcopy(r['payload']) for r in self.state['records']
+                    if r['kind'] == body['record_kind'] and
+                    ('record_id' not in body or r['id'] == body['record_id'])]
+        if name == 'tripmate_read_traces':
+            return [deepcopy(e) for e in self.state['traces'] if e['caseId'] == body['requested_case']]
         if name=='tripmate_snapshot':
             return deepcopy(self.state)
+        if name=='tripmate_state':
+            state=deepcopy(self.state)
+            state.pop('traces')
+            state['records']=[r for r in state['records'] if r['kind']!='history']
+            return state
         if name=='tripmate_commit':
             if self.fail_commit:
                 raise OperationsError('CLOUD_UNAVAILABLE','Injected cloud failure.')
@@ -105,10 +116,13 @@ class DependencyScopeTests(unittest.TestCase):
             def __init__(self):
                 super().__init__()
                 self.snapshots = 0
+                self.scoped_reads = 0
                 self.profiles = 0
             def rpc(self, name, body=None):
                 if name == 'tripmate_snapshot':
                     self.snapshots += 1
+                if name == 'tripmate_read_records':
+                    self.scoped_reads += 1
                 return super().rpc(name, body)
             def profile(self, actor):
                 self.profiles += 1
@@ -123,11 +137,13 @@ class DependencyScopeTests(unittest.TestCase):
             repo.read('profile', actor)  # Caller cache must not cross the thread boundary.
             cloud.accounts[actor]['membership'] = 'PAID'
             self.assertTrue(all(p == (None, 'PAID') for p in app.operations._dependency(read_many)))
-            self.assertEqual(cloud.snapshots, 1)
+            self.assertEqual(cloud.snapshots, 0)
+            self.assertEqual(cloud.scoped_reads, 1)
             self.assertEqual(cloud.profiles, 2)
             cloud.accounts[actor]['membership'] = 'FREE'
             self.assertTrue(all(p == (None, 'FREE') for p in app.operations._dependency(read_many)))
-            self.assertEqual(cloud.snapshots, 2)
+            self.assertEqual(cloud.snapshots, 0)
+            self.assertEqual(cloud.scoped_reads, 2)
             self.assertEqual(cloud.profiles, 3)
 
     def test_worker_commit_invalidates_its_cache_and_failure_keeps_next_run_fresh(self):
