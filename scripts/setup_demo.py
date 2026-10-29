@@ -17,6 +17,9 @@ def main():
         parser.exit(1, 'Python 3.9 or later is required.\n')
     if not python.is_file():
         venv.EnvBuilder(with_pip=True).create(environment)
+    # Python 3.9's bundled pip can predate pyproject editable-build support.
+    # pip selects a release compatible with the environment's Python version.
+    subprocess.run([str(python), '-m', 'pip', 'install', '--upgrade', 'pip'], cwd=root, check=True)
     subprocess.run([str(python), '-m', 'pip', 'install', '-e', str(root)], cwd=root, check=True)
     config = root / '.env'
     if not config.exists():
