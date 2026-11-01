@@ -82,11 +82,13 @@ class PlanningPortalTests(unittest.TestCase):
                 self.assertEqual(status, 200, data)
             self.assertEqual(data['status'], 'APPROVED', data)
 
-    def generate(self, baseline=None, budget='900.00'):
+    def generate(self, baseline=None, budget='900.00', member_quote=None):
         fields = dict(origin='Sydney Central', destination='Melbourne Centre', partySize=1,
                       budgetCeiling=dict(amount=budget, currency='AUD'),
                       travelDates=dict(startDate='2026-10-20', endDate='2026-10-22'),
                       rankingMode='VALUE', preferences=[], constraints=[])
+        if member_quote:
+            fields['memberQuoteId'] = member_quote
         if baseline:
             fields['baselineVersionId'] = baseline
         cid = self.confirm(self.traveller, 'PLAN_REVISION' if baseline else 'TRAVEL_PLANNING', fields)
@@ -293,3 +295,69 @@ class PlanningPortalTests(unittest.TestCase):
         self.assertEqual(failed['planningAssessment']['state'], 'INFEASIBLE')
         restarted = Portal(self.cloud, supplier_policy=self.policy)
         self.assertEqual(restarted.operations.case_view(self.operator, cid)['planningAssessment']['state'], 'INFEASIBLE')
+
+    def test_factor_input_is_operator_only_persisted_and_bound_to_confirmation(self):
+        from tripmate.planning.daily_demo import daily_fixture
+        case, context, runtime = daily_fixture()
+        self.addCleanup(runtime.repository.close)
+        cid = self.confirm(self.traveller, 'TRAVEL_PLANNING', dict(origin='Sydney Central', destination='Melbourne Centre',
+            partySize=1, budgetCeiling=dict(amount='900.00', currency='AUD'),
+            travelDates=dict(startDate='2026-10-20', endDate='2026-10-22'), rankingMode='VALUE', preferences=[], constraints=[]))
+        data = deepcopy(runtime.factors.data)
+        body = dict(requestKey=str(uuid4()), caseId=cid, revision=1, data=data, confirmed=True)
+        self.assertEqual(self.clients[self.traveller].call('/api/planning/factors', body)[0], 403)
+        status, saved, _ = self.clients[self.operator].call('/api/planning/factors', body)
+        self.assertEqual(status, 200, saved)
+        self.assertEqual(self.clients[self.operator].call('/api/planning/factors', body)[0], 200)
+        restarted = Portal(self.cloud, supplier_policy=self.policy)
+        self.assertEqual(restarted.factor_inputs.view(self.operator, cid)['snapshot']['data'], data)
+        self.assertEqual(len(self.app.operations.repository.list('travel_factor_history')), 1)
+        request=self.app.operations.load_context(cid)['request']
+        self.assertEqual(self.app.factor_inputs.snapshot(request, [], FIXTURE_TIME), data)
+        self.cloud.accounts[self.operator]['role']='TRAVELLER'
+        with self.assertRaises(ValueError):
+            self.app.factor_inputs.snapshot(request, [], FIXTURE_TIME)
+
+
+    def test_member_discount_reaches_plan_and_revocation_blocks_adoption(self):
+        from test_campaigns import DraftModel
+        from tripmate.supplier.campaigns import INTROS
+        self.app.operations.llm = DraftModel()
+        offer = self.app.supplier.find_selectable({}, FIXTURE_TIME)[0]['offer']['offerId']
+        brief = dict(objective='Approved travel benefit', audience='Free travellers', audienceTiers=['FREE'],
+            channel='SIMULATED_EMAIL', startAt='2026-10-12T10:01:00+11:00', endAt='2026-10-15T10:00:00+11:00',
+            budget='50.00', units=20, restrictions=['No personal targeting','No guaranteed outcomes'], offerIds=[offer],
+            memberOffer=dict(eligibleTiers=['FREE'], discount='2.00', validFrom='2026-10-12T10:01:00+11:00', validUntil='2026-10-14T10:00:00+11:00'))
+        def campaign(action, body):
+            status, value, _ = self.clients[self.operator].call('/api/campaigns/'+action, dict(body, requestKey=str(uuid4())))
+            self.assertEqual(status,200,value)
+            return value
+        saved=campaign('save',dict(campaignId=None,revision=0,confirmed=True,brief=brief))
+        reviewed=campaign('evaluate',dict(campaignId=saved['campaignId'],revision=saved['revision']))
+        approved=campaign('decide',dict(campaignId=saved['campaignId'],revision=reviewed['revision'],decision='APPROVE',reason='Approve exact simulated benefit.'))
+        at='2026-10-12T10:02:00+11:00'
+        self.app.operations.clock=lambda:at
+        self.app.operations.entitlement.clock=lambda:at
+        self.app.supplier.pricing.clock=lambda:at
+        status, quoted, _=self.clients[self.traveller].call('/api/campaigns/quote',dict(requestKey=str(uuid4()),memberOfferRuleId=approved['memberOfferRuleId'],offerId=offer))
+        self.assertEqual(status,200,quoted)
+        quote_id=quoted['quotation']['priceBreakdownId']
+        cid, ids, view=self.generate(member_quote=quote_id)
+        record=self.app.planning.get_version(ids[0])
+        wrong_owner=deepcopy(record['request']);wrong_owner['travellerId']=self.other
+        with self.assertRaises(ValueError):
+            self.app.planning_offers.find_selectable(wrong_owner,at)
+        self.assertEqual(record['version']['totalPrice']['amount'],'592.00')
+        self.assertEqual(sum(q['price']['discountAmount']['amount']=='2.00' for q in record['quotes']),1)
+        self.release(cid,view['revision'])
+        adopted=self.post(self.traveller,'adopt',dict(versionId=ids[0],expectedBaseline=None,accepted=True))
+        self.assertIsNotNone(adopted)
+        revised_cid, revised_ids, revised = self.generate(baseline=ids[0], budget='850.00', member_quote=quote_id)
+        self.assertEqual(self.app.planning.get_version(revised_ids[0])['version']['totalPrice']['amount'], '592.00')
+        self.release(revised_cid, revised['revision'])
+        latest=self.clients[self.operator].call('/api/campaigns/view?campaignId='+approved['campaignId'])[1]
+        campaign('save',dict(campaignId=approved['campaignId'],revision=latest['revision'],confirmed=True,brief=dict(brief,budget='60.00')))
+        refused, _ = self.adopt(revised_ids[0], ids[0])
+        self.assertNotEqual(refused[0], 200)
+        with self.assertRaises(ValueError):
+            self.app.operations.validate_planning_release(record)

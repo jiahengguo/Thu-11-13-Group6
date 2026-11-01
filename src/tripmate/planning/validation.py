@@ -112,7 +112,10 @@ class PlanningValidator:
                 record("AVAILABILITY", offer["availableQuantity"] >= item["quantity"] == offer["quotedQuantity"]
                        and product["partySize"] == request["partySize"],
                        "Inventory and complete-package party size must match; no implicit price scaling", ids)
-                errors = price_errors(offer, price)
+                member = q.get('memberQuote')
+                member_valid = bool(member and member.get('travellerId') == request['travellerId'] and member.get('price') == price
+                    and self.spec['constraintBindings'].get('member_quote', {}).get('value', {}).get('quoteId') == price['priceBreakdownId'])
+                errors = price_errors(offer, price, member_quote=member_valid)
                 record("PRICE", not errors and offer["mandatoryChargesIncluded"], "; ".join(errors) or "Price reconciles on the quoted package basis", ids)
                 total += amount(item["quotedPrice"])
                 local_start = timestamp(item["startAt"]).astimezone(ZoneInfo("Australia/Sydney")).date()
@@ -186,6 +189,10 @@ class PlanningValidator:
                     passed = bool(arrivals) and max(arrivals) <= timestamp(value)
                 elif kind == "TRANSFER_LIMIT" and type(value) is int and value >= 0:
                     passed = (self.daily["transfers"] if self.daily is not None else 0) <= value
+                elif kind == 'OTHER' and constraint['constraintId'] == 'member_quote' and isinstance(value, dict) and value.get('version') == 'member-quote-1':
+                    passed = any(q.get('memberQuote', {}).get('travellerId') == request['travellerId']
+                                 and q['price']['priceBreakdownId'] == value.get('quoteId')
+                                 and q['offer']['offerId'] in {i['offerId'] for i in version['items']} for q in self.quotes)
                 elif kind == "OTHER" and self.daily is not None and value == self.daily["policy"]:
                     passed = True
                 else:

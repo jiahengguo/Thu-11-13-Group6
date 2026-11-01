@@ -257,12 +257,22 @@ class DailyPlanningEngine:
         self.facts, self.clock, self.client = facts, clock, client
         self.max_candidates, self.max_attempts = max_candidates, max_attempts
 
-    def generate(self, request, quotes, spec, baseline=None):
+    def recover(self, request, quotes, spec, baseline):
+        from .engine import CHANGE_FIELDS
+        if (not baseline or request['baselineVersionId'] != baseline['version']['versionId']
+                or request['travellerId'] != baseline['request']['travellerId']
+                or request['confirmedChangedFields'] or spec != baseline['spec']
+                or any(request[k] != baseline['request'][k] for k in CHANGE_FIELDS)):
+            raise PlanningError('UNCONFIRMED_REQUEST', 'Recovery must preserve confirmed daily requirements', 'recovery')
+        return self.generate(request, quotes, spec, baseline, recovery=True)
+
+    def generate(self, request, quotes, spec, baseline=None, *, recovery=False):
         policy = policy_from(request,spec)
         if policy is None:
             raise PlanningError('UNCONFIRMED_REQUEST','Daily policy missing','daily')
         if baseline:
-            validate_revision(request,baseline)
+            if not recovery:
+                validate_revision(request,baseline)
             if spec['roundTrip'] != baseline['spec']['roundTrip']:
                 raise PlanningError('UNCONFIRMED_REQUEST','Confirm route topology through the shared contract','daily')
         elif request['baselineVersionId'] is not None:

@@ -22,15 +22,15 @@ COOKIE = 'tripmate_session'
 
 
 class Portal:
-    def __init__(self, cloud, supplier_pricing=None, supplier_policy=None, model_planning=False, benefits=None):
+    def __init__(self, cloud, supplier_pricing=None, supplier_policy=None, model_planning=False, benefits=None, travel_factors=None, llm_service=None):
         self.cloud, self.sessions, self.rate = cloud, Sessions(cloud), RateLimit()
         self.operations = OperationsService(SupabaseOperationsRepository(cloud), NoUserFixtures(), seed_profiles=False, benefits=benefits)
-        if os.environ.get('ELEC5620_API_KEY') not in (None, '', 'REPLACE_LOCALLY'):
-            try:
-                from tripmate.adapters.campus import CampusLLMService
-                self.operations.llm = CampusLLMService(timeout=20)
-            except (ImportError, ValueError):
-                pass
+        self.model_service = llm_service
+        if self.model_service is None and (model_planning or os.environ.get('ELEC5620_API_KEY') not in (None, '', 'REPLACE_LOCALLY')):
+            from tripmate.adapters.campus import CampusLLMService
+            self.model_service = CampusLLMService(timeout=25, max_completion_tokens=2048)
+        if self.model_service is not None:
+            self.operations.llm = self.model_service
         from tripmate.supplier.gateway import SupplierGateway
         from tripmate.fixtures.shared import SharedFixtureCatalog
         self.supplier = SupplierGateway(self.operations, supplier_pricing, supplier_policy)
@@ -41,15 +41,18 @@ class Portal:
         from tripmate.planning.shared_repository import SharedPlanningRepository
         from tripmate.planning.review import planning_reviewer
         self.planning = SharedPlanningRepository(self.operations.repository)
+        from .factors import StoredTravelFactors
+        self.factor_inputs = StoredTravelFactors(self.operations)
+        travel_factors = travel_factors if travel_factors is not None else self.factor_inputs
+        self.travel_factors = travel_factors
         planner_factory = None
         if model_planning:
-            from tripmate.adapters.campus import CampusClient
             from tripmate.planning.campus import ModelPlanningEngine
-            CampusClient(timeout=25, max_completion_tokens=2048)  # Validate configuration before startup; no network call.
-            planner_factory = lambda: ModelPlanningEngine(CampusClient(timeout=25, max_completion_tokens=2048),
-                                                          lambda: self.operations.clock())
-        connect_planning(self.operations, self.supplier, planning_reviewer(self.operations, self.supplier), self.planning,
-                         planner_factory=planner_factory)
+            planner_factory = lambda: ModelPlanningEngine(self.model_service, lambda: self.operations.clock())
+        from tripmate.planning.member_offers import MemberPlanningOffers
+        self.planning_offers = MemberPlanningOffers(self.operations, self.supplier, self.campaigns)
+        connect_planning(self.operations, self.planning_offers, planning_reviewer(self.operations, self.planning_offers, travel_factors), self.planning,
+                         planner_factory=planner_factory, factors=travel_factors)
         from tripmate.exception_handling.integration import connect_exception
         from tripmate.exception_handling.portal import PortalExceptionContexts
         from tripmate.exception_handling.shared_repository import SharedExceptionRepository
@@ -57,7 +60,7 @@ class Portal:
         from tripmate.exception_handling.review import exception_reviewer
         self.exception_contexts = PortalExceptionContexts(self.operations)
         self.exception = connect_exception(self.operations, self.exception_contexts,
-            SharedExceptionRepository(self.operations.repository), ProjectSupplier(self.supplier), ProjectPlanning(),
+            SharedExceptionRepository(self.operations.repository), ProjectSupplier(self.planning_offers), ProjectPlanning(travel_factors),
             reviewer=exception_reviewer(lambda: self.operations.clock()),
             complaint_findings=ProjectComplaintFindings(self.planning, self.supplier))
 
@@ -72,8 +75,8 @@ class Portal:
     _save_analysis = staticmethod(Workbench._save_analysis)
 
 
-def make_server(cloud, port=8780, origin=None, bind='127.0.0.1', supplier_pricing=None, supplier_policy=None, model_planning=False, benefits=None):
-    app, static = Portal(cloud, supplier_pricing, supplier_policy, model_planning, benefits), Path(__file__).with_name('static')
+def make_server(cloud, port=8780, origin=None, bind='127.0.0.1', supplier_pricing=None, supplier_policy=None, model_planning=False, benefits=None, travel_factors=None, llm_service=None):
+    app, static = Portal(cloud, supplier_pricing, supplier_policy, model_planning, benefits, travel_factors, llm_service), Path(__file__).with_name('static')
     configured_origin = origin
     if origin:
         p = urlsplit(origin)
@@ -183,6 +186,8 @@ def make_server(cloud, port=8780, origin=None, bind='127.0.0.1', supplier_pricin
                     return self.send(200, app.campaigns.benefits(actor))
                 if path == '/api/campaigns/view' and set(query) == {'campaignId'} and len(query['campaignId']) == 1:
                     return self.send(200, app.campaigns.view(actor, query['campaignId'][0]))
+                if path == '/api/planning/factors' and set(query) == {'caseId'} and len(query['caseId']) == 1:
+                    return self.send(200, app.factor_inputs.view(actor, query['caseId'][0]))
                 if path == '/api/supplier/assessment' and set(query) == {'caseId'} and len(query['caseId']) == 1:
                     return self.send(200, app.supplier.view(actor, query['caseId'][0]))
                 if path == '/api/exception/investigation' and set(query) == {'caseId'} and len(query['caseId']) == 1:
@@ -296,6 +301,8 @@ def make_server(cloud, port=8780, origin=None, bind='127.0.0.1', supplier_pricin
                     return self.send(200,{'message':'Signed out.'},sid='')
                 user=app.sessions.identity(session)
                 app.rate.check(('write',user['id']),limit=60)
+                if path == '/api/planning/factors':
+                    return self.send(200, app.factor_inputs.record(user['id'], body))
                 if path in ('/api/campaigns/save', '/api/campaigns/evaluate', '/api/campaigns/decide'):
                     return self.send(200, app.campaigns.mutate(user['id'], path.rsplit('/', 1)[1], body))
                 if path == '/api/campaigns/quote':

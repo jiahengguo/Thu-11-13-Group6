@@ -60,7 +60,7 @@ class ComplaintPortalTests(unittest.TestCase):
         self.assertIsNone(view['response'])
 
     def test_itinerary_complaint_collects_findings_and_refers(self):
-        body=self.prepare();body['complaintCategory']='ITINERARY'
+        body=self.prepare();body['complaintCategory']='ITINERARY';body.pop('actualArrival')
         self.assertEqual(self.f.clients[self.f.operator].call('/api/exception/evidence',body)[0],200)
         view=self.dispatch()
         self.assertEqual(view['case']['status'],'HUMAN_ASSISTANCE',view)

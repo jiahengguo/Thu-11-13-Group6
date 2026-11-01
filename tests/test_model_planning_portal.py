@@ -38,7 +38,7 @@ class ModelPlanningPortalTests(unittest.TestCase):
     def prepare(self, mode):
         client = ProposalClient(mode)
         with patch.dict('os.environ', {'ELEC5620_API_KEY': 'test-only', 'TRIPMATE_LLM_PROVIDER': 'elec5620'}, clear=True), \
-             patch('tripmate.adapters.campus.CampusClient', return_value=client) as factory:
+             patch('tripmate.adapters.campus.CampusLLMService', return_value=client) as factory:
             app = Portal(self.cloud, supplier_policy=PricingPolicy('0.10', '15.00', 'demo-2026-10-24'), model_planning=True)
             app.operations.clock = app.operations.entitlement.clock = lambda: FIXTURE_TIME
             app.supplier.runtime.clock = app.supplier.pricing.clock = lambda: FIXTURE_TIME

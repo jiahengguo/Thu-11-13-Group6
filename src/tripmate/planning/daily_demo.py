@@ -89,6 +89,8 @@ def main():
         data={'notice':'SIMULATED supplier/weather/traffic/routes/venues/reviewer. No real reservations. Fixed clock '+FIXTURE_TIME,
               'result':result,'options':records}
         args.output.mkdir(parents=True,exist_ok=True)
+        (args.output/'daily-policy.json').write_text(json.dumps(context['spec']['constraintBindings']['daily']['value'], indent=2), encoding='utf-8')
+        (args.output/'travel-factors.json').write_text(json.dumps(runtime.factors.data, indent=2), encoding='utf-8')
         (args.output/'report.json').write_text(json.dumps(data,ensure_ascii=False,indent=2),encoding='utf-8')
         lines=['# Daily planning backend report','',data['notice'],'',result['status']]
         for r in records:

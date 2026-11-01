@@ -22,9 +22,17 @@ class ProjectSupplier:
 
 
 class ProjectPlanning:
+    def __init__(self, factors=None):
+        self.factors = factors
+
     def recover(self, context, quotes):
         planning = context['planningContext']
         engine = PlanningEngine(lambda: context['assessedAt'])
+        from tripmate.planning.daily import policy_from, DailyPlanningEngine
+        from tripmate.planning.factors import load_factors
+        if policy_from(planning['request'], planning['spec']):
+            facts = load_factors(self.factors, planning['request'], quotes, context['assessedAt'], 'FIXTURE')
+            engine = DailyPlanningEngine(facts, lambda: context['assessedAt'])
         records, excluded = engine.recover(planning['request'], quotes, planning['spec'], planning['baseline'])
         return records, excluded
 

@@ -43,12 +43,14 @@ class PortalExceptionContexts:
         required = {'requestKey', 'caseId', 'revision', 'itemId', 'sourceReference', 'validUntil',
                     'sunkCost', 'confidence', 'restricted', 'legalConcern', 'safetyConcern', 'confirmed'}
         if complaint:
-            required |= {'complaintCategory', 'actualArrival', 'policyAction', 'policyReference'}
-            if body['complaintCategory'] not in {'DELAY', 'ITINERARY', 'SUPPLIER_TERMS'} or body['policyAction'] not in {'EXPLAIN_AND_APOLOGISE', 'HUMAN_REVIEW_REFUND'}:
+            required |= {'complaintCategory', 'policyAction', 'policyReference'}
+            if body.get('complaintCategory') == 'DELAY' or 'actualArrival' in body:
+                required.add('actualArrival')
+            if body.get('complaintCategory') not in {'DELAY', 'ITINERARY', 'SUPPLIER_TERMS'} or body.get('policyAction') not in {'EXPLAIN_AND_APOLOGISE', 'HUMAN_REVIEW_REFUND'}:
                 raise OperationsError('INVALID_CONTRACT', 'Select a supported complaint category and simulated policy.')
-            safe_text(body['policyReference'], 1000)
+            safe_text(body.get('policyReference'), 1000)
             try:
-                if instant(body['actualArrival']) > instant(self.operations.clock()):
+                if 'actualArrival' in required and instant(body.get('actualArrival')) > instant(self.operations.clock()):
                     raise ValueError()
             except (ValueError, TypeError, AttributeError):
                 raise OperationsError('INVALID_CONTRACT', 'Observed arrival must be a valid past timestamp.')
@@ -80,7 +82,7 @@ class PortalExceptionContexts:
                          safetyConcern=body['safetyConcern'], recordedBy=actor,
                          baselineVersionId=baseline['version']['versionId'], confirmedRequest=rec['case']['confirmedRequest'])
             if complaint:
-                saved.update({k: body[k] for k in ('complaintCategory', 'actualArrival', 'policyAction', 'policyReference')})
+                saved.update({k: body[k] for k in ('complaintCategory', 'actualArrival', 'policyAction', 'policyReference') if k in body})
             rows.put('exception_evidence', rec['id'], saved)
             if rec.get('exceptionRunId'):
                 self.operations.specialists['exception'].invalidate_confirmation(rows, rec)
@@ -145,8 +147,10 @@ class PortalExceptionContexts:
             context['issue']['requestedActions'] = ['REFUND'] if notice['policyAction'] == 'HUMAN_REVIEW_REFUND' else (['COMPENSATION'] if notice['restricted'] else [])
             context['complaintCategory'] = notice['complaintCategory']
             item = next(i for i in version['items'] if i['itemId'] == notice['itemId'])
-            evidence[-1]['assertions'] = [dict(key=notice['itemId'] + ':scheduledArrival', value=item['endAt']),
-                                         dict(key=notice['itemId'] + ':actualArrival', value=notice['actualArrival'])]
+            evidence[-1]['assertions'] = []
+            if notice['complaintCategory'] == 'DELAY':
+                evidence[-1]['assertions'] = [dict(key=notice['itemId'] + ':scheduledArrival', value=item['endAt']),
+                                             dict(key=notice['itemId'] + ':actualArrival', value=notice['actualArrival'])]
             evidence[-1]['note'] = 'Operator-confirmed simulated service observations.'
             policy_source = deepcopy(notice['source'])
             policy_source.update(sourceId=notice['source']['sourceId'] + '-policy', sourceReference=notice['policyReference'])

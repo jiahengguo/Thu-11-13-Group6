@@ -48,6 +48,19 @@ class DailyPlanningTests(unittest.TestCase):
         for a,b in zip(timeline,timeline[1:]):
             self.assertLessEqual(a['endAt'],b['startAt'])
 
+    def test_daily_recovery_preserves_confirmed_requirements(self):
+        from tripmate.planning.daily import DailyPlanningEngine
+        baseline = self.record()
+        request = deepcopy(baseline['request'])
+        request.update(baselineVersionId=baseline['version']['versionId'], confirmedChangedFields=[])
+        engine = DailyPlanningEngine(self.facts, self.runtime.clock)
+        records, _ = engine.recover(request, self.runtime.offers.quotes, baseline['spec'], baseline)
+        self.assertTrue(records)
+        self.assertTrue(all(r['version']['baselineVersionId'] == baseline['version']['versionId'] for r in records))
+        request['budgetCeiling'] = money('9999')
+        with self.assertRaises(PlanningError):
+            engine.recover(request, self.runtime.offers.quotes, baseline['spec'], baseline)
+
     def test_delay_breaks_interchange(self):
         self.facts['delays'][0]['arrivalDelayMinutes']=60
         result=self.assert_rejected()
@@ -168,14 +181,14 @@ class DailyPlanningTests(unittest.TestCase):
         from tripmate.operations import OperationsService, OperationsRepository
         from tripmate.operations.integration import connect_planning
         from tripmate.planning.repository import PlanningRepository
-        from tripmate.planning.integration import WorkbenchFixtureReviewer
+        from tripmate.planning.review import planning_reviewer
         with tempfile.TemporaryDirectory() as tmp:
             path=Path(tmp)/'daily.sqlite3'
             fixtures=FixtureRepository(path);fixtures.ensure_seeded()
             repo=PlanningRepository(path)
             try:
                 ops=OperationsService(OperationsRepository(path),fixtures,clock=self.runtime.clock)
-                connect_planning(ops,self.runtime.offers,WorkbenchFixtureReviewer(ops.clock),repo,factors=self.runtime.factors)
+                connect_planning(ops,self.runtime.offers,planning_reviewer(ops,self.runtime.offers,self.runtime.factors),repo,factors=self.runtime.factors)
                 req=self.context['request']
                 fields={k:deepcopy(req[k]) for k in ['origin','destination','partySize','budgetCeiling','travelDates','rankingMode','preferences']}
                 fields['constraints']=[{'kind':'OTHER','description':'Confirmed daily policy','value':deepcopy(self.policy)}]

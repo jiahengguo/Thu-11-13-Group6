@@ -51,7 +51,7 @@ def trace(result, event_type, summary, at, ref=None, parent=None):
 def lookup(runtime, request):
     quotes = deepcopy(runtime.offers.find_selectable(deepcopy(request), runtime.clock()))
     for q in quotes:
-        if not {"offer", "price", "product"} <= set(q) or set(q) - {"offer", "price", "product", "approval"}:
+        if not {"offer", "price", "product"} <= set(q) or set(q) - {"offer", "price", "product", "approval", "memberQuote"}:
             raise PlanningError("INVALID_CONTRACT", "Supplier adapter must return offer/price/product bundles", "lookup")
         validate("SupplierOffer", q["offer"])
         validate("PriceBreakdown", q["price"])

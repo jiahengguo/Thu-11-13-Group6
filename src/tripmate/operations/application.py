@@ -22,7 +22,7 @@ ROUTES = {"TRAVEL_PLANNING": "planning", "PLAN_REVISION": "planning",
           "OFFER": "supplier", "PRICE_NEGOTIATION": "supplier",
           "MEMBERSHIP": "operations", "ROUTINE_ENQUIRY": "operations"}
 SUPPLIER_TYPES = {k for k, v in ROUTES.items() if v == "supplier"}
-TRAVEL_FIELDS = {"origin", "destination", "partySize", "budgetCeiling", "travelDates", "rankingMode",
+TRAVEL_FIELDS = {"memberQuoteId", "origin", "destination", "partySize", "budgetCeiling", "travelDates", "rankingMode",
                  "preferences", "constraints", "roundTrip", "baselineVersionId"}
 REQUIRED = {k: ["details"] for k in ROUTES}
 REQUIRED.update(TRAVEL_PLANNING=["origin", "destination", "partySize", "budgetCeiling", "travelDates", "rankingMode"],
@@ -222,7 +222,7 @@ release them. One running dependency per coordinator prevents unbounded threads.
                     fields['supplierOffer'] = normalise_submission(fields['supplierOffer'])
                 except ValueError as exc:
                     raise OperationsError('INVALID_CONTRACT', str(exc)) from None
-            for k in {"origin", "destination", "details", "baselineVersionId", "planId"} & fields.keys():
+            for k in {"memberQuoteId", "origin", "destination", "details", "baselineVersionId", "planId"} & fields.keys():
                 fields[k] = safe_text(fields[k], 1000)
             if "preferences" in fields:
                 if not isinstance(fields["preferences"], list) or len(fields["preferences"]) > 12:
@@ -420,6 +420,11 @@ release them. One running dependency per coordinator prevents unbounded threads.
             request["hardConstraints"].append({"constraintId": key, "kind": value["kind"],
                                               "description": description, "confirmed": True})
             spec["constraintBindings"][key] = {"description": description, "value": value["value"]}
+        if f.get('memberQuoteId'):
+            value = {'version': 'member-quote-1', 'quoteId': f['memberQuoteId']}
+            description = 'Confirmed member quotation: ' + json.dumps(value, sort_keys=True)
+            request['hardConstraints'].append(dict(constraintId='member_quote', kind='OTHER', description=description, confirmed=True))
+            spec['constraintBindings']['member_quote'] = dict(description=description, value=value)
         if baseline:
             keys = ["origin", "destination", "partySize", "budgetCeiling", "travelDates", "rankingMode", "preferences", "hardConstraints"]
             request["confirmedChangedFields"] = [k for k in keys if request[k] != baseline["request"][k]]

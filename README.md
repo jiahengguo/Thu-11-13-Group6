@@ -161,10 +161,13 @@ Use accounts with the appropriate backend role; ordinary registration creates a 
 | `tests/` | Automated regression tests, including explicitly isolated transport doubles |
 | `docs/` | [Indexed implementation guides and historical handoffs](docs/index.md) |
 
-Trusted complaint-policy integration, restricted supplier offers in Planning, remaining state-machine/reminder behavior and full membership benefits remain incomplete. UC-08 has isolated automated and local browser evidence; real cloud/model and final team acceptance remain pending. Production pagination/scaling is also outside the current single-process demo. The private snapshot has a bounded 32 MB limit.
+The portal supports explicit simulated complaint-policy input, restricted approved supplier quotes, assessment/recovery lifecycle controls, daily travel-factor input and member quotations in planning/adoption. See [interface integration](docs/stage2/INTERFACE_INTEGRATION.zh-CN.md) for supported inputs and limits. Real cloud/model and final team acceptance remain pending. Production pagination/scaling is also outside the current single-process demo. The private snapshot has a bounded 32 MB limit.
 
 New-machine acceptance, team release rehearsals, final documentation/contribution statements and final ZIP extraction/deployment checks remain pending. Never include `.env`, `.demo-accounts*.json`, virtual environments or local databases in the submitted source package. The retained [Stage 1 report](docs/TripMate_AI_stage1_report.pdf) is the design reference; separate modelling drafts and UML files have been removed.
 
 ### If a cloud action appears to fail
 
 Wait until processing finishes, then reopen the same request and inspect its history before repeating a write: a decision may have saved even if the following refresh failed. Use one active rehearsal tab per browser profile. The configured cloud already has the scoped-read migration; a different project must apply all missing migrations in filename order. See [cloud read fix](docs/stage2/SCOPED_CLOUD_READS.zh-CN.md). Do not clear records, disable approval or repeatedly click processing.
+
+
+2026-11-01 integration update: see [portal interface integration](docs/stage2/INTERFACE_INTEGRATION.zh-CN.md), [lifecycle implementation](docs/stage2/LIFECYCLE_IMPLEMENTATION.md) and [shared demo model configuration](docs/stage2/DEMO_MODEL_KEYS.zh-CN.md). These supersede older implementation-gap statements about restricted offers, daily portal wiring, member quotation adoption and complaint input. Real-environment release acceptance remains separate.

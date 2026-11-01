@@ -117,3 +117,8 @@
 
 - [Demo操作路径、截图与人工验收边界](stage2/DEMO_SCENARIOS.zh-CN.md)
 - [云端按需读取修复](stage2/SCOPED_CLOUD_READS.zh-CN.md)
+
+
+- [2026-11-01 门户接口与模拟数据接入](stage2/INTERFACE_INTEGRATION.zh-CN.md)
+- [演示模型统一配置](stage2/DEMO_MODEL_KEYS.zh-CN.md)
+- [规划与恢复状态机](stage2/LIFECYCLE_IMPLEMENTATION.md)
