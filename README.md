@@ -2,6 +2,9 @@
 
 [简体中文](README.zh-CN.md) · [Documentation index](docs/index.md)
 
+[2026-11-01 live browser acceptance](docs/testing/2026-11-01-browser-acceptance.zh-CN.md): campaign approval and member quotation passed; complaint checks are partial and refund approval remains untested. This is not full release sign-off.
+
+
 TripMate is a travel-service prototype with authenticated Traveller, Supplier and Operator portals. Operations coordinates three specialist agents: Supplier validates quotations, Planning proposes and checks itineraries, and Exception investigates disruptions and prepares recovery recommendations.
 
 Supabase provides real authentication and private persistent records. The course `campus-qwen` model supports extraction and itinerary proposals. Deterministic rules enforce prices, availability, membership, constraints and approval boundaries. Travel inventory, cancellations and transactions are simulated; the prototype does not book, charge, refund or rebook travel.
@@ -9,6 +12,15 @@ Supabase provides real authentication and private persistent records. The course
 Authenticated request queues now use bundled React components for search, status filtering, selection and Operator metrics. The shipped demo still installs and starts with Python only; Node is needed only to develop/rebuild the frontend. See [frontend development](web/README.md).
 
 Automated checks and source ZIP delivery are defined in `.github/workflows/ci.yml`. See the [CI and release guide](docs/stage2/CI_RELEASE.zh-CN.md) for triggers, artifacts and acceptance boundaries.
+
+## Stage 2
+
+- [Stage 2 Group Contribution Statement](Stage%202%20Group%20Contribution%20Statement.md)
+- [Jira project — WN5620](https://elec5619-5-group-1.atlassian.net/jira/software/projects/WN5620/summary)
+- [GitHub repository](https://github.com/jiahengguo/Thu-11-13-Group6)
+- [Browser acceptance results and remaining checks](docs/testing/2026-11-01-browser-acceptance.zh-CN.md)
+
+For Canvas assessment, download the agreed final version from GitHub and extract the ZIP before following the setup instructions below. The contribution statement and acceptance report are included through relative file links; Jira and GitHub require Internet access. Keep credentials and local configuration out of the submitted ZIP.
 
 ## Current scope
 

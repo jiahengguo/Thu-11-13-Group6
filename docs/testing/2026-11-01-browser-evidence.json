@@ -1,0 +1,130 @@
+{
+  "date": "2026-11-01",
+  "timezone": "Australia/Sydney",
+  "testedCommit": "edab5e02d36b6e40a34d47a5a812ca27e80b928e",
+  "transport": "actual browser UI with real Supabase",
+  "businessData": "explicitly simulated",
+  "releaseAcceptance": false,
+  "stoppedAtUserRequest": true,
+  "cloudRecordsPreserved": true,
+  "browserChecks": [
+    {
+      "id": "BR-01",
+      "status": "PASS",
+      "scope": "campaign approval",
+      "reference": "c6ff24e2-9d8f-4080-920b-6d53f005e078",
+      "evidence": "evidence/2026-11-01/campaign-approved.png"
+    },
+    {
+      "id": "BR-02",
+      "status": "PASS",
+      "scope": "Free quotation AUD198 to AUD196",
+      "reference": "price-e59a3439-83cb-42c9-8114-53f0704403ef",
+      "evidence": "evidence/2026-11-01/free-member-quote-196.png"
+    },
+    {
+      "id": "BR-03",
+      "status": "PASS",
+      "scope": "future observed arrival rejected",
+      "reference": "04d7c40f",
+      "evidence": "evidence/2026-11-01/future-evidence-rejected.png"
+    },
+    {
+      "id": "BR-04",
+      "status": "PASS",
+      "scope": "missing evidence requests clarification",
+      "reference": "04d7c40f",
+      "evidence": "evidence/2026-11-01/complaint-missing-evidence.png"
+    },
+    {
+      "id": "BR-05",
+      "status": "PASS",
+      "scope": "human assistance after two requests",
+      "reference": "04d7c40f",
+      "evidence": "evidence/2026-11-01/complaint-human-assistance.png"
+    },
+    {
+      "id": "BR-06",
+      "status": "PASS",
+      "scope": "ITINERARY complaint referred to human handling",
+      "reference": "74a84c4d",
+      "evidence": "evidence/2026-11-01/complaint-itinerary-human.png"
+    },
+    {
+      "id": "BR-07",
+      "status": "PARTIAL",
+      "scope": "delay case confirmed and evidence saved; not processed",
+      "reference": "7b8a69d4",
+      "evidence": null
+    },
+    {
+      "id": "BR-08",
+      "status": "PARTIAL",
+      "scope": "refund case confirmed and evidence saved; not processed",
+      "reference": "d7892e0d",
+      "evidence": "evidence/2026-11-01/refund-stopped-before-processing.png"
+    }
+  ],
+  "screenshots": [
+    {
+      "path": "evidence/2026-11-01/campaign-approved.png",
+      "sha256": "7121c983d6a37af7c85115b6367ec6e44838bebc9baedef7f5bd35a96488b1c8",
+      "bytes": 338453
+    },
+    {
+      "path": "evidence/2026-11-01/complaint-human-assistance.png",
+      "sha256": "fbe522e7a4daa8bbc4cf2658a763267e445229d25a1c21601cd7c3f80fbc03d0",
+      "bytes": 111759
+    },
+    {
+      "path": "evidence/2026-11-01/complaint-itinerary-human.png",
+      "sha256": "a7e0d71e59402c30a5b8dd897ede7de635cfd23d66b9f54b0380578a6122127a",
+      "bytes": 279325
+    },
+    {
+      "path": "evidence/2026-11-01/complaint-missing-evidence.png",
+      "sha256": "3e86a18e3d16c80707e9ec59f479661dc484a122460cc1003b3e495036adfaf9",
+      "bytes": 125871
+    },
+    {
+      "path": "evidence/2026-11-01/free-member-quote-196.png",
+      "sha256": "59c12b550be40d4ee9ea985740b98ecd8d2cf02ead31af99b2be6ce0573dee71",
+      "bytes": 131520
+    },
+    {
+      "path": "evidence/2026-11-01/future-evidence-rejected.png",
+      "sha256": "79b9ba81465bd441d9d763048e1f59fcb2c18525110dd75ada87eb4926d30293",
+      "bytes": 188753
+    },
+    {
+      "path": "evidence/2026-11-01/refund-stopped-before-processing.png",
+      "sha256": "5e0baf9e1170529aaf8a4830681c0c8fd77b02d209f2125d82dd4641101a6135",
+      "bytes": 86832
+    }
+  ],
+  "isolatedRegression": {
+    "total": 383,
+    "passed": 383,
+    "seconds": 278.304,
+    "countsAsBrowserAcceptance": false
+  },
+  "notRun": [
+    "normal delay response review and delivery",
+    "refund proposal approval and separate response review/delivery",
+    "low confidence/legal/safety branches",
+    "restricted recovery approval/revision/rejection",
+    "traveller decline/operator takeover/final closure",
+    "waiting reminders/deadline/simulated completion browser checks"
+  ],
+  "issuesObserved": [
+    "intermittent cloud unavailability",
+    "tripmate_state statement timeout reported in supplied provider logs",
+    "post-confirmation intake read timeout",
+    "refund evidence write version conflict; refreshed and saved"
+  ],
+  "syntheticHistoricalFixture": {
+    "planId": "plan-f20b0cd4-46e8-4abd-8e35-13e2f094dc11",
+    "countsAsBrowserAcceptance": false,
+    "acceptanceServerClockChanged": false
+  }
+}
