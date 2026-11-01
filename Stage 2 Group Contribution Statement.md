@@ -8,7 +8,7 @@ Enter each of the four members’ names and Student IDs in the corresponding col
 
 | Assessment criterion | Member 1 | Member 2 | Member 3 | Member 4 | Row total |
 | --- | --- | --- | --- | --- | --- |
-| Student name | Jiaheng Guo | | | | |
+| Student name | Jiaheng Guo | Runda Weng | | | |
 | Student ID | 510423614 | | | | |
 | 1. Implementation of Stage 1 Requirements and Design (7 marks) | 25% | | | | **100%** |
 | 2. Demonstrating AI Agent Capabilities (4 marks) | 30% | | | | **100%** |
