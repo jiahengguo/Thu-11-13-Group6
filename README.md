@@ -6,6 +6,8 @@ TripMate is a travel-service prototype with authenticated Traveller, Supplier an
 
 Supabase provides real authentication and private persistent records. The course `campus-qwen` model supports extraction and itinerary proposals. Deterministic rules enforce prices, availability, membership, constraints and approval boundaries. Travel inventory, cancellations and transactions are simulated; the prototype does not book, charge, refund or rebook travel.
 
+Authenticated request queues now use bundled React components for search, status filtering, selection and Operator metrics. The shipped demo still installs and starts with Python only; Node is needed only to develop/rebuild the frontend. See [frontend development](web/README.md).
+
 ## Current scope
 
 - Supplier quotations, explicit Operator review and deterministic AUD pricing.

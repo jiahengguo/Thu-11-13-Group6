@@ -216,6 +216,27 @@ class PortalHTTPTests(unittest.TestCase):
         for path in ['/api/fixtures','/api/checks','/operations','/api/operations/status']:
             self.assertEqual(self.browser.call(path)[0],401)
 
+    def test_bundled_react_is_served_locally_without_relaxing_csp(self):
+        status, script, headers = self.browser.call('/portal-queue.js')
+        self.assertEqual(status, 200)
+        self.assertIn('text/javascript', headers['Content-Type'])
+        self.assertIn('TripMateQueue', script)
+        self.assertIn('mountQueue', script)
+        self.assertIn("script-src 'self'", headers['Content-Security-Policy'])
+        self.assertNotIn('unsafe-eval', headers['Content-Security-Policy'])
+        self.assertNotIn('unsafe-inline', headers['Content-Security-Policy'])
+
+    def test_each_role_loads_react_before_the_portal_and_declares_mount_ownership(self):
+        for actor, route in [(self.a, '/app'), (self.supplier, '/supplier'), (self.operator, '/admin')]:
+            browser = Browser(self.root)
+            self.assertEqual(browser.login(actor)[0], 200)
+            status, page, _ = browser.call(route)
+            self.assertEqual(status, 200)
+            self.assertLess(page.index('src="/portal-queue.js"'), page.index('src="/portal.js"'))
+            self.assertIn('id="case-list" data-react-root', page)
+            if route == '/admin':
+                self.assertIn('id="case-counts" data-react-root', page)
+
     def test_real_login_rotates_session_and_tokens_are_never_returned(self):
         _,_,before=self.browser.start();old_cookie=before['Set-Cookie']
         status,data,headers=self.browser.login(self.a)
