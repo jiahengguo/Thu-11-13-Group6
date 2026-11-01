@@ -22,6 +22,7 @@ class PlanningRuntime:
     execution_mode: str = "FIXTURE"
     llm: object = None  # Optional shared LLMService.explain; advisory text is never a gate.
     planner: object = None  # Optional model proposal loop, still subject to deterministic checks.
+    phase: object = None  # Optional durable, case-bound assessment progress callback.
     factors: object = None  # TravelFactorService required for confirmed daily-1 requests.
 
     def __post_init__(self):
@@ -50,7 +51,7 @@ def trace(result, event_type, summary, at, ref=None, parent=None):
 def lookup(runtime, request):
     quotes = deepcopy(runtime.offers.find_selectable(deepcopy(request), runtime.clock()))
     for q in quotes:
-        if set(q) != {"offer", "price", "product"}:
+        if not {"offer", "price", "product"} <= set(q) or set(q) - {"offer", "price", "product", "approval", "memberQuote"}:
             raise PlanningError("INVALID_CONTRACT", "Supplier adapter must return offer/price/product bundles", "lookup")
         validate("SupplierOffer", q["offer"])
         validate("PriceBreakdown", q["price"])
@@ -134,6 +135,13 @@ def run_case(runtime, case):
             result["validationResults"] = [r for e in excluded for r in e["checks"]]
             raise PlanningError("NO_FEASIBLE_ITINERARY", "No complete candidate passes within the supplied inventory; constraints unchanged", "validation")
         result["validationResults"] = deepcopy(records[0]["version"]["validationResults"])
+        if runtime.phase:
+            runtime.phase('FEASIBLE', result['runId'])
+            runtime.phase('UNDER_REVIEW', result['runId'])
+        for record in records:
+            record['assessmentHistory'] = [dict(state='FEASIBLE', at=runtime.clock()),
+                                           dict(state='UNDER_REVIEW', at=runtime.clock())]
+
         for record in records:
             step = "review"
             version = record["version"]
@@ -144,6 +152,7 @@ def run_case(runtime, case):
             if timestamp(reviewed["reviewedAt"]) > timestamp(runtime.clock()):
                 raise PlanningError("REVIEW_FAILED", "Review timestamp is invalid", "review")
             version["review"], version["assessmentState"] = reviewed, "REVIEWED"
+            record["assessmentHistory"].append(dict(state="REVIEWED", at=runtime.clock(), reviewId=reviewed["reviewId"]))
             validate("ItineraryVersion", version)
             record["executionMode"] = runtime.execution_mode
         step = "entitlement"
@@ -179,7 +188,15 @@ def run_case(runtime, case):
         result.update(status="FAILURE", proposedResponse=None, subjects=[], review=None,
                       errors=[{"code": code, "message": str(exc) if isinstance(exc, PlanningError) else "Planning dependency or input failed; inspect the integration boundary.",
                                "step": exc.step if isinstance(exc, PlanningError) else step, "retryable": code in {"TOOL_UNAVAILABLE", "PERSISTENCE_FAILED"}, "sourceIds": []}])
-        records = []
+        # Keep failed-review candidates as private immutable evidence, never release them.
+        if step == 'review':
+            for record in records:
+                record.setdefault('assessmentHistory', []).append(dict(state='REVISION_REQUIRED', at=runtime.clock()))
+                record['version']['assessmentState'] = 'REVISION_REQUIRED'
+                record['version']['review'] = None
+                record['executionMode'] = runtime.execution_mode
+        else:
+            records = []
         events = [trace(result, "FAILURE", result["errors"][0]["message"], runtime.clock())]
     try:
         runtime.repository.save_run(result, records, events)
@@ -205,6 +222,21 @@ def accept_proposal(runtime, traveller_id, proposal_id, expected_baseline, *, ac
     if version["baselineVersionId"] != expected_baseline:
         raise PlanningError("STALE_EVIDENCE", "Acceptance references a different baseline", "adoption")
     require_entitlement(runtime, request, "ADOPT_PLAN")
+    validate_saved_proposal(runtime, record)
+    try:
+        return runtime.repository.adopt(proposal_id, expected_baseline, runtime.clock())
+    except PlanningError:
+        raise
+    except Exception as exc:
+        raise PlanningError("PERSISTENCE_FAILED", "Adoption was not saved; selected version is unchanged", "adoption") from exc
+
+
+def validate_saved_proposal(runtime, record):
+    """Revalidate saved, reviewed candidate and live dependencies before any release."""
+    version, request = record['version'], record['request']
+    if (version['assessmentState'] != 'REVIEWED' or not version.get('review')
+            or version['review']['outcome'] != 'PASS' or version['review']['subject'] != subject(version)):
+        raise PlanningError('REVIEW_FAILED', 'Only an immutable reviewed candidate may be released', 'review')
     quotes = lookup(runtime, request)
     current = {q["offer"]["offerId"]: q for q in quotes}
     if any(current.get(q["offer"]["offerId"]) != q for q in record["quotes"]):
@@ -228,9 +260,3 @@ def accept_proposal(runtime, traveller_id, proposal_id, expected_baseline, *, ac
     validate("ItineraryVersion", checked_version)
     if timestamp(review["reviewedAt"]) > timestamp(runtime.clock()):
         raise PlanningError("REVIEW_FAILED", "Future-dated review cannot authorise adoption", "adoption")
-    try:
-        return runtime.repository.adopt(proposal_id, expected_baseline, runtime.clock())
-    except PlanningError:
-        raise
-    except Exception as exc:
-        raise PlanningError("PERSISTENCE_FAILED", "Adoption was not saved; selected version is unchanged", "adoption") from exc

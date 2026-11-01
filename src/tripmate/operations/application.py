@@ -22,7 +22,7 @@ ROUTES = {"TRAVEL_PLANNING": "planning", "PLAN_REVISION": "planning",
           "OFFER": "supplier", "PRICE_NEGOTIATION": "supplier",
           "MEMBERSHIP": "operations", "ROUTINE_ENQUIRY": "operations"}
 SUPPLIER_TYPES = {k for k, v in ROUTES.items() if v == "supplier"}
-TRAVEL_FIELDS = {"origin", "destination", "partySize", "budgetCeiling", "travelDates", "rankingMode",
+TRAVEL_FIELDS = {"memberQuoteId", "origin", "destination", "partySize", "budgetCeiling", "travelDates", "rankingMode",
                  "preferences", "constraints", "roundTrip", "baselineVersionId"}
 REQUIRED = {k: ["details"] for k in ROUTES}
 REQUIRED.update(TRAVEL_PLANNING=["origin", "destination", "partySize", "budgetCeiling", "travelDates", "rankingMode"],
@@ -183,6 +183,8 @@ class OperationsService:
     def _save(self, records, rec, kind="case"):
         if kind == "case":
             validate("Case", rec["case"])
+            from .lifecycle import record_planning_state
+            record_planning_state(self, records, rec)
         records.put(kind, rec["id"], rec)
 
     def _owned(self, records, actor, case_id, action="READ_CASE", revision=None):
@@ -223,7 +225,7 @@ class OperationsService:
                     fields['supplierOffer'] = normalise_submission(fields['supplierOffer'])
                 except ValueError as exc:
                     raise OperationsError('INVALID_CONTRACT', str(exc)) from None
-            for k in {"origin", "destination", "details", "baselineVersionId", "planId"} & fields.keys():
+            for k in {"memberQuoteId", "origin", "destination", "details", "baselineVersionId", "planId"} & fields.keys():
                 fields[k] = safe_text(fields[k], 1000)
             if "preferences" in fields:
                 if not isinstance(fields["preferences"], list) or len(fields["preferences"]) > 12:
@@ -421,6 +423,11 @@ class OperationsService:
             request["hardConstraints"].append({"constraintId": key, "kind": value["kind"],
                                               "description": description, "confirmed": True})
             spec["constraintBindings"][key] = {"description": description, "value": value["value"]}
+        if f.get('memberQuoteId'):
+            value = {'version': 'member-quote-1', 'quoteId': f['memberQuoteId']}
+            description = 'Confirmed member quotation: ' + json.dumps(value, sort_keys=True)
+            request['hardConstraints'].append(dict(constraintId='member_quote', kind='OTHER', description=description, confirmed=True))
+            spec['constraintBindings']['member_quote'] = dict(description=description, value=value)
         if baseline:
             keys = ["origin", "destination", "partySize", "budgetCeiling", "travelDates", "rankingMode", "preferences", "hardConstraints"]
             request["confirmedChangedFields"] = [k for k in keys if request[k] != baseline["request"][k]]
@@ -600,6 +607,8 @@ class OperationsService:
                 raise
             return
         rec["specialistResult"] = deepcopy(result)
+        if result["agent"] == "planning" and result["status"] != "SUCCESS":
+            rec["case"]["errors"] = deepcopy(result["errors"])
         if result['agent'] == 'supplier' and result['status'] == 'APPROVAL_PENDING':
             rec['case']['requiresApproval'] = True
             rec['case']['status'] = 'AWAITING_HUMAN_APPROVAL'
@@ -641,6 +650,7 @@ class OperationsService:
                 if d["outcome"] != "ALLOWED":
                     self._failure(rec, "ENTITLEMENT_DENIED", d["reason"])
                     return
+        rec.pop("planningDecisionState", None)
         rec["response"] = safe_text(result["proposedResponse"])
         rec["responseVersion"] += 1
         rec["review"] = None
@@ -689,6 +699,22 @@ class OperationsService:
                 self._event(records, rec, 'REVIEW', 'Exception proposal reviewed: ' + reason, actor=actor)
                 self._save(records, rec)
                 return {'caseId': case_id}
+            if rec['case']['caseType'] in {'TRAVEL_PLANNING', 'PLAN_REVISION'}:
+                if decision == 'APPROVE' and rec.get('planningDecisionState') in {'REJECTED', 'REVISION_REQUIRED'}:
+                    raise OperationsError('UNCONFIRMED_REQUEST', 'Reconfirm and regenerate the proposal before approval.')
+                if decision == 'APPROVE':
+                    result = rec.get('specialistResult') or {}
+                    if result.get('status') != 'SUCCESS' or not result.get('subjects'):
+                        raise OperationsError('REVIEW_FAILED', 'Regenerate a validated saved Planning result before approval.')
+                    for ref in result['subjects']:
+                        if ref['subjectType'] == 'ItineraryVersion':
+                            plan = self._plan_record(rec['case']['requesterId'], ref['subjectId'])
+                            if plan['version']['caseId'] != case_id or plan['version']['versionNo'] != ref['materialVersion']:
+                                raise OperationsError('STALE_EVIDENCE', 'Planning subject does not match this case/version.')
+                            if hasattr(self, 'validate_planning_release'):
+                                self.validate_planning_release(plan)
+                rec['planningDecisionState'] = {'APPROVE': None, 'REJECT': 'REJECTED',
+                    'REQUEST_REVISION': 'REVISION_REQUIRED', 'TAKE_OVER': 'AWAITING_HUMAN_REVIEW'}[decision]
             if edited_text is not None:
                 rec["response"] = safe_text(edited_text)
                 rec["responseVersion"] += 1
@@ -752,7 +778,10 @@ class OperationsService:
             if rec["case"]["caseType"] in {"TRAVEL_PLANNING", "PLAN_REVISION"} and rec.get("specialistResult"):
                 for ref in rec["specialistResult"]["subjects"]:
                     if ref["subjectType"] == "ItineraryVersion":
-                        v = self._plan_record(rec["case"]["requesterId"], ref["subjectId"])["version"]
+                        plan_record = self._plan_record(rec["case"]["requesterId"], ref["subjectId"])
+                        if hasattr(self, 'validate_planning_release'):
+                            self.validate_planning_release(plan_record)
+                        v = plan_record['version']
                         if self._decision(records, rec, "PRESENT_PLAN", dict(v["travelDates"], planId=v["planId"]))["outcome"] != "ALLOWED":
                             rec["case"]["status"] = "AWAITING_PLAN_ACCESS_DECISION"
                             rec["revision"] += 1
@@ -821,6 +850,12 @@ class OperationsService:
                  "response": rec["response"] if operator else delivered["response"] if delivered else None,
                  "responseVersion": rec["responseVersion"], "simulationOnly": True,
                  "review": rec["review"] if operator else None, "campaignId": rec["campaignId"], "sourceChannel": rec["sourceChannel"]}
+        value["planningAssessment"] = self.repository.read("planning_assessment", case_id)
+        if value["planningAssessment"] and not operator:
+            value["planningAssessment"] = {"state": value["planningAssessment"]["state"]}
+        value["recoveryReminders"] = rec.get("recoveryReminders", [])
+        value["recoveryWait"] = rec.get("recoveryWait")
+        value["recoveryCompletion"] = rec.get("recoveryCompletion") if operator else None
         if operator:
             value.update(membershipSnapshots=rec.get("membershipSnapshots", []), approvalId=rec["approvalId"])
             if rec.get('exceptionRunId'):
@@ -889,7 +924,10 @@ class OperationsService:
                                requiresApproval=False, validationResults=[], errors=[])
             rec.update(response=None, responseVersion=rec["responseVersion"]+1, review=None,
                        approvalId=None, dispatchStarted=False, completedRun=None, invokedRun=None)
+            if rec.get("specialistResult", {}).get("agent") == "planning":
+                rec.setdefault("planningPriorRuns", []).append(rec["specialistResult"]["runId"])
             rec.pop("specialistResult", None)
+            rec.pop("planningDecisionState", None)
             rec.pop("context", None)
             supplier = self.specialists.get('supplier')
             if rec['case']['caseKind'] == 'SUPPLIER' and hasattr(supplier, 'invalidate_confirmation'):

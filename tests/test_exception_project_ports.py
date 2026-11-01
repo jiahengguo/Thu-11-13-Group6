@@ -149,5 +149,40 @@ class ExceptionProjectPortTests(unittest.TestCase):
         self.assertIn('No agreed resolution policy', result['errors'][0]['message'])
 
 
-if __name__ == '__main__':
-    unittest.main()
+
+    def test_daily_recovery_reconciles_factor_based_meal_cost(self):
+        from tripmate.planning.daily_demo import daily_fixture
+        from tripmate.planning.daily import DailyPlanningEngine
+        from tripmate.planning.factors import FixtureTravelFactors
+        from tripmate.planning.common import money
+        _, daily, rt = daily_fixture()
+        self.addCleanup(rt.repository.close)
+        quotes = deepcopy(rt.offers.quotes)
+        alternate = deepcopy(quotes[0])
+        alternate['offer']['offerId'] = 'z-replacement'
+        alternate['offer']['review']['subject']['subjectId'] = 'z-replacement'
+        alternate['price']['offerId'] = 'z-replacement'
+        alternate['price']['priceBreakdownId'] = 'z-price'
+        alternate['offer']['priceBreakdownId'] = 'z-price'
+        quotes.append(alternate)
+        daily['spec']['constraintBindings']['daily']['value']['slots'][0]['offerIds'].append('z-replacement')
+        facts=deepcopy(rt.factors.data)
+        delay=deepcopy(facts['delays'][0]);delay['offerId']='z-replacement';facts['delays'].append(delay)
+        records,_=DailyPlanningEngine(facts,rt.clock).generate(daily['request'],quotes,daily['spec'])
+        baseline=next(r for r in records if r['version']['items'][0]['offerId']=='sydney-goulburn')
+        case,context,_=self.inputs()
+        case.update(caseId=daily['request']['caseId'],correlationId=daily['request']['correlationId'],requesterId=daily['request']['travellerId'])
+        context.update(caseId=case['caseId'],travellerId=case['requesterId'])
+        affected=baseline['version']['items'][0]
+        context['issue']['itemId']=affected['itemId']
+        context['itinerary'].update(versionId=baseline['version']['versionId'],travellerId=case['requesterId'],sunkCost='0.00',items=[dict(itemId=i['itemId'],kind={'TRANSPORT':'TRANSPORT','ACCOMMODATION':'HOTEL','ACTIVITY':'ACTIVITY'}[i['productType']],origin=i['origin'],destination=i['destination'],startAt=i['startAt'],endAt=i['endAt'],remainingCost=i['quotedPrice']['amount'],sourceIds=i['sourceIds']) for i in baseline['version']['items']])
+        context['evidence']=[dict(source=deepcopy(source),validUntil='2026-10-13T10:00:00+11:00',assertions=[],note='Simulated daily baseline.') for source in baseline['version']['sourceReferences']]
+        context['evidence'][0]['assertions']=[dict(key=affected['itemId']+':status',value='CANCELLED')]
+        request=deepcopy(daily['request']);request['baselineVersionId']=baseline['version']['versionId']
+        context['planningContext']=dict(request=request,spec=daily['spec'],baseline=baseline)
+        runtime=ExceptionRuntime(MemoryContext({case['caseId']:context}),self.repo,ProjectSupplier(FixtureOffers(quotes)),ProjectPlanning(FixtureTravelFactors(facts)),exception_reviewer(lambda:FIXTURE_TIME))
+        result=runtime.handle_case(case)
+        self.assertEqual(result['status'],'SUCCESS',result)
+        proposal=self.repo.get(result['runId'])['proposal']
+        self.assertEqual(proposal['options'][0]['additionalCost'],money('120.00'))
+        self.assertEqual(proposal['options'][0]['totalCost'],'851.50')

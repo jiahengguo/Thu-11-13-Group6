@@ -51,7 +51,7 @@ class DeterministicPricingService:
         return result
 
 
-def price_errors(offer, price):
+def price_errors(offer, price, member_quote=False):
     """Verify received arithmetic without replacing Supplier's configured policy."""
     failures = []
     cost, rate = amount(price["supplierCost"]), decimal(price["markupRate"])
@@ -59,7 +59,7 @@ def price_errors(offer, price):
     reduction = amount(price["discountAmount"])
     selling = amount(money(base - reduction))
     if (price["offerId"] != offer["offerId"] or price["offerVersion"] != offer["materialVersion"]
-            or price["priceBreakdownId"] != offer["priceBreakdownId"]
+            or (not member_quote and price["priceBreakdownId"] != offer["priceBreakdownId"])
             or price["quotedQuantity"] != offer["quotedQuantity"] or price["unitBasis"] != offer["unitBasis"]
             or price["supplierCost"] != offer["supplierCost"]):
         failures.append("Quote identity, quantity or cost basis differs from offer")
@@ -69,6 +69,6 @@ def price_errors(offer, price):
             or selling - cost < amount(price["minimumMargin"])):
         failures.append("Price arithmetic or minimum margin failed")
     # Reusable offers are base quotations. Context-specific discounts require B17 revalidation.
-    if reduction != 0 or price["memberOfferRuleId"] is not None or price["entitlementDecisionId"] is not None:
+    if not member_quote and (reduction != 0 or price["memberOfferRuleId"] is not None or price["entitlementDecisionId"] is not None):
         failures.append("Member quotation needs B17 eligibility revalidation; not supported by base-offer lookup")
     return failures

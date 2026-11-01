@@ -121,8 +121,16 @@ class ExceptionBridge:
                 current = {q['offer']['offerId']: q for q in self.runtime.supplier.alternatives(context)}
                 if any(current.get(q['offer']['offerId']) != q for q in record['quotes']):
                     raise OperationsError('STALE_EVIDENCE', 'Supplier resources or terms changed; investigate a new proposal before release.')
+                daily = None
+                if 'dailySchedule' in record:
+                    from tripmate.planning.daily import evaluate_daily
+                    from tripmate.planning.factors import load_factors
+                    facts = load_factors(self.runtime.planning.factors, record['request'], record['quotes'], self.operations.clock(), 'FIXTURE')
+                    if facts != record['factorSnapshot']:
+                        raise OperationsError('STALE_EVIDENCE', 'Travel factors changed; investigate the current daily arrangements.')
+                    daily = evaluate_daily(record['request'], record['quotes'], record['dailySchedule']['policy'], facts, self.operations.clock)
                 checks = PlanningValidator(record['request'], record['quotes'], record['spec'],
-                                            self.operations.clock).validate_plan(record['version'])
+                                            self.operations.clock, daily=daily).validate_plan(record['version'])
                 if any(c['outcome'] != 'PASS' for c in checks):
                     raise OperationsError('STALE_EVIDENCE', 'The saved Planning candidate no longer passes validation.')
 
@@ -168,6 +176,8 @@ class ExceptionBridge:
         return True
 
     def invalidate_confirmation(self, rows, rec):
+        rec.pop('recoveryWait', None)
+        rec.pop('recoveryCompletion', None)
         rec['exceptionRunId'] = None
         rec['exceptionApprovalId'] = None
         rec['exceptionDecisionId'] = None
@@ -192,7 +202,7 @@ class ExceptionBridge:
         if snapshot['proposal']['kind'] != 'RECOVERY':
             return None
         return dict(runId=rec['exceptionRunId'], subject=snapshot['proposal']['subject'], options=[
-            {k: deepcopy(option[k]) for k in ('offerId', 'totalCost', 'currency', 'arrivalChangeMinutes', 'terms', 'items')}
+            {k: deepcopy(option[k]) for k in ('offerId', 'totalCost', 'currency', 'arrivalChangeMinutes', 'terms', 'items', 'additionalCost') if k in option}
             for option in snapshot['proposal']['options']])
 
     def select(self, rows, rec, actor, run_id, option_id, confirmed):
@@ -201,6 +211,9 @@ class ExceptionBridge:
                 or rec.get('exceptionStage') != 'AWAITING_TRAVELLER_DECISION'
                 or rec['case']['status'] != 'AWAITING_REQUESTER'):
             raise OperationsError('UNCONFIRMED_REQUEST', 'Confirm a current presented recovery option as its traveller.')
+        wait = rec.get('recoveryWait')
+        if wait and wait['runId'] == run_id and instant(self.operations.clock()) >= instant(wait['deadline']):
+            raise OperationsError('UNCONFIRMED_REQUEST', 'The response deadline elapsed; request human follow-up.')
         self.ensure_release(rows, rec)
         snapshot = rows.get('exception_run', run_id)
         if option_id is None:
@@ -232,7 +245,8 @@ class ExceptionBridge:
             pending = snapshot['approvals'][0]
             if (not decision or decision['decision'] != 'APPROVE' or decision['status'] != 'DECIDED'
                     or decision['subject'] != snapshot['proposal']['subject']
-                    or decision['reviewId'] != pending['reviewId'] or decision['scope'] != pending['scope']):
+                    or decision['reviewId'] != pending['reviewId'] or decision['scope'] != pending['scope']
+                    or not self.operations.access.authorise(decision['operatorId'], 'REVIEW_CASE', rec['case'])):
                 raise OperationsError('APPROVAL_REQUIRED', 'This exact Exception proposal still needs human approval.')
 
     def investigation(self, actor, case_id):

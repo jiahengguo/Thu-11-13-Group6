@@ -298,6 +298,7 @@ class ExceptionRuntime:
                                   'sourceIds': []} for e in excluded]
         for record in records:
             version = record['version']
+            self._merge_sources(version['sourceReferences'], sources, sink, ctx, check)
             validate('ItineraryVersion', version)
             if (not unchanged <= {i['offerId'] for i in version['items']}
                     or any(c['outcome'] != 'PASS' for c in version['validationResults'])):
@@ -310,12 +311,12 @@ class ExceptionRuntime:
             items = [dict(itemId=i['itemId'], kind={'TRANSPORT':'TRANSPORT','ACCOMMODATION':'HOTEL','ACTIVITY':'ACTIVITY'}[i['productType']],
                           origin=i['origin'], destination=i['destination'], startAt=i['startAt'], endAt=i['endAt'],
                           remainingCost=i['quotedPrice']['amount'], sourceIds=i['sourceIds']) for i in version['items']]
-            replacement = next(i for i in version['items'] if products[i['offerId']]['product']['role'] == role)
+            replacement = next(i for i in version['items'] if i['offerId'] not in unchanged and products[i['offerId']]['product']['role'] == role)
             options.append(dict(offerId=version['versionId'], items=items, totalCost=f'{total:.2f}', currency='AUD',
                                 terms='; '.join(q['offer']['cancellationTerms'] for q in record['quotes']),
                                 sourceIds=[s['sourceId'] for s in version['sourceReferences']],
                                 arrivalChangeMinutes=int((instant(replacement['endAt'])-instant(affected[0]['endAt'])).total_seconds()/60),
-                                planningRecord=record))
+                                additionalCost=record.get('dailySchedule', {}).get('additionalCost', {'amount': '0.00', 'currency': 'AUD'}), planningRecord=record))
         event('TOOL_RESULT', 'Project Planning generated and validated candidates using the existing typed constraints and preference ranking.',
               actor='planning')
         check('EXC_PROJECT_FEASIBLE', bool(options), 'The project Planning engine must return a complete feasible recovery preserving confirmed requirements.',

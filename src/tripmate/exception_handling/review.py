@@ -18,13 +18,18 @@ def review_exception(proposal, evidence, policies):
             reasons.append('No validated recovery option is available.')
         for option in proposal['options']:
             total = Decimal(proposal['sunkCost']) + sum((Decimal(i['remainingCost']) for i in option['items']), Decimal('0'))
+            total += Decimal(option.get('additionalCost', {'amount': '0.00'})['amount'])
             if total != Decimal(option['totalCost']) or not option['terms'].strip():
                 reasons.append('Recovery cost or supplied supplier terms do not reconcile.')
             if 'planningRecord' in option:
                 from tripmate.planning.validation import PlanningValidator
                 record = option['planningRecord']
+                from tripmate.planning.daily import evaluate_daily
+                daily = evaluate_daily(record['request'], record['quotes'], record['dailySchedule']['policy'], record['factorSnapshot'], lambda: proposal['assessedAt']) if 'dailySchedule' in record else None
+                if option.get('additionalCost', {'amount': '0.00', 'currency': 'AUD'}) != (daily['additionalCost'] if daily else {'amount': '0.00', 'currency': 'AUD'}):
+                    reasons.append('Additional recovery cost does not reconcile.')
                 checks = PlanningValidator(record['request'], record['quotes'], record['spec'],
-                                            lambda: proposal['assessedAt']).validate_plan(record['version'])
+                                            lambda: proposal['assessedAt'], daily=daily).validate_plan(record['version'])
                 if any(c['outcome'] != 'PASS' for c in checks):
                     reasons.append('Project Planning validation did not pass on recheck.')
     elif proposal['kind'] == 'COMPLAINT':

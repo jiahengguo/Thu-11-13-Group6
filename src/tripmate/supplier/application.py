@@ -294,6 +294,7 @@ class SupplierRuntime:
                 verify_price(offer, price, self.policy)
                 self._check_review(offer, at, price['calculatedAt'])
                 review = offer['review']
+                approval_evidence = None
                 if offer['requiresApproval']:
                     decisions = self.approvals.find_by_subject(subject(offer))
                     decisions = [item for item in decisions if item.get('approvalId') == offer['approvalId']
@@ -314,9 +315,12 @@ class SupplierRuntime:
                                 <= timestamp(decision['decidedAt']) <= timestamp(at)
                                 and self.access.authorise(decision['operatorId'], 'APPROVE_SUPPLIER_TERMS', subject(offer))):
                             approved = True
+                            approval_evidence = deepcopy(decision)
                     if not approved:
                         continue
                 quote = {'offer': deepcopy(offer), 'price': deepcopy(price)}
+                if approval_evidence is not None:
+                    quote['approval'] = approval_evidence
                 if record.get('product'):
                     quote['product'] = deepcopy(record['product'])
                 selected.append(quote)
