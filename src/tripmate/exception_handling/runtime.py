@@ -5,6 +5,7 @@ from decimal import Decimal, InvalidOperation
 from uuid import uuid4
 import sqlite3
 from tripmate.contracts import validate, ContractError
+from tripmate.planning.common import PlanningError
 from .contracts import validate_context
 
 
@@ -61,10 +62,10 @@ class ExceptionRuntime:
         snapshot['dependencies'].update(supplier=type(self.supplier).__name__, planning=type(self.planning).__name__)
         case_subject = dict(subjectType='Case', subjectId=case['caseId'], materialVersion=1)
 
-        def event(kind, summary, outcome='SUCCESS', subject=None, approval=None):
+        def event(kind, summary, outcome='SUCCESS', subject=None, approval=None, actor='exception'):
             e = envelope(case, result['sourceReferences'])
             e.update(requiresApproval=result['requiresApproval'], eventId=str(uuid4()), runId=result['runId'],
-                     timestamp=now(), actor='exception', eventType=kind, subject=subject or case_subject,
+                     timestamp=now(), actor=actor, eventType=kind, subject=subject or case_subject,
                      parentEventId=snapshot['trace'][-1]['eventId'] if snapshot['trace'] else None,
                      executionMode='FIXTURE', summary=summary, result=outcome, approvalId=approval)
             if kind in {'VALIDATION', 'REVIEW', 'FAILURE', 'HANDOFF'}:
@@ -284,8 +285,14 @@ class ExceptionRuntime:
                   and (q['product']['role'] == role or q['offer']['offerId'] in unchanged)]
         for quote in quotes:
             self._merge_sources(quote['offer']['sourceReferences'] + quote['price']['sourceReferences'], sources, sink, ctx, check)
-        event('TOOL_RESULT', 'Queried the project Supplier lookup; excluded the cancelled offer and retained unaffected arrangements.')
-        records, excluded = self.planning.recover(deepcopy(ctx), deepcopy(quotes))
+        event('TOOL_RESULT', 'Queried the project Supplier lookup; excluded the cancelled offer and retained unaffected arrangements.',
+              actor='supplier')
+        try:
+            records, excluded = self.planning.recover(deepcopy(ctx), deepcopy(quotes))
+        except PlanningError as exc:
+            event('TOOL_RESULT', 'Project Planning could not produce a validated recovery: ' + str(exc),
+                  'FAILURE', actor='planning')
+            raise Referral(exc.code, str(exc)) from exc
         options, rejected = [], [{'offerId': ','.join(e['offerIds']),
                                   'reasons': [c['reason'] for c in e['checks'] if c['outcome'] != 'PASS'],
                                   'sourceIds': []} for e in excluded]
@@ -309,9 +316,10 @@ class ExceptionRuntime:
                                 sourceIds=[s['sourceId'] for s in version['sourceReferences']],
                                 arrivalChangeMinutes=int((instant(replacement['endAt'])-instant(affected[0]['endAt'])).total_seconds()/60),
                                 planningRecord=record))
+        event('TOOL_RESULT', 'Project Planning generated and validated candidates using the existing typed constraints and preference ranking.',
+              actor='planning')
         check('EXC_PROJECT_FEASIBLE', bool(options), 'The project Planning engine must return a complete feasible recovery preserving confirmed requirements.',
               'NO_FEASIBLE_ITINERARY')
-        event('TOOL_RESULT', 'Project Planning generated and validated candidates using the existing typed constraints and preference ranking.')
         return dict(kind='RECOVERY', options=options, rejectedOptions=rejected, sunkCost=ctx['itinerary']['sunkCost'],
                     affectedItemIds=[ctx['issue']['itemId']], findings=['Existing Planning constraints and preference ranking applied.',
                     'Unaffected arrangements and the original baseline are preserved.'],

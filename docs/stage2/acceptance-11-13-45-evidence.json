@@ -1,0 +1,135 @@
+{
+  "scope": "isolated provider doubles; authenticated local HTTP and deterministic project ports",
+  "limitations": "No live Supabase/model, human browser demonstration, or peer sign-off",
+  "recordedAtUTC": "2026-11-01T09:02:53.936312+00:00",
+  "baseCommit": "10d0aed9f500838d217fdbb6b9472945ff4ac6fd",
+  "pythonSourceSha256": "3d8191b8af1d267245fdb5f8404bd45cdcc2ac34d65c748d02b8244eddf03e75",
+  "allPassed": true,
+  "scenarios": [
+    {
+      "scenario": "reviewed_recovery_and_four_agent_trace",
+      "result": "PASS",
+      "cards": [
+        "WN5620-11",
+        "WN5620-13",
+        "WN5620-45"
+      ],
+      "caseId": "6fa5fee3-b158-4372-8152-cc0bad1ac2f4",
+      "runId": "bef14410-4a5c-42a2-b701-01a449224b86",
+      "traceCount": 56,
+      "linkedActors": [
+        "exception",
+        "operations",
+        "planning",
+        "supplier"
+      ],
+      "reviewOutcome": "PASS",
+      "arrivalChangeMinutes": 300,
+      "totalCostAUD": "594.00",
+      "afterDelivery": "AWAITING_REQUESTER"
+    },
+    {
+      "scenario": "no_eligible_alternative",
+      "result": "PASS",
+      "cards": [
+        "WN5620-13",
+        "WN5620-45"
+      ],
+      "caseId": "35c1806e-cd8d-4342-967c-a603bb6db138",
+      "errorCode": "NO_FEASIBLE_ITINERARY",
+      "caseStatus": "HUMAN_ASSISTANCE",
+      "baselinePreserved": true
+    },
+    {
+      "scenario": "planning_dependency_failure",
+      "result": "PASS",
+      "cards": [
+        "WN5620-13"
+      ],
+      "caseId": "cafb5356-de82-40a7-9ef2-91609036f06c",
+      "errorCode": "TOOL_UNAVAILABLE",
+      "caseStatus": "HUMAN_ASSISTANCE"
+    },
+    {
+      "scenario": "restricted_proposal_then_separate_response_approval",
+      "result": "PASS",
+      "cards": [
+        "WN5620-11",
+        "WN5620-13"
+      ],
+      "caseId": "0dabcdd3-6703-4195-9e36-9f15fc0e08fd",
+      "beforeDecision": "AWAITING_HUMAN_APPROVAL",
+      "unauthorisedHTTP": 403,
+      "proposalApprovedThenResponseReviewed": true,
+      "afterDelivery": "AWAITING_REQUESTER"
+    },
+    {
+      "scenario": "request_revision",
+      "result": "PASS",
+      "cards": [
+        "WN5620-11"
+      ],
+      "caseId": "a570be85-4e59-4a42-b440-4f26a37bc3ed",
+      "decision": "REQUEST_REVISION",
+      "caseStatus": "AWAITING_REQUESTER",
+      "noPrematureResponse": true
+    },
+    {
+      "scenario": "reject",
+      "result": "PASS",
+      "cards": [
+        "WN5620-11"
+      ],
+      "caseId": "453276ed-2d25-4856-b92c-76f3bd412711",
+      "decision": "REJECT",
+      "caseStatus": "HUMAN_ASSISTANCE",
+      "noPrematureResponse": true
+    },
+    {
+      "scenario": "approval_save_failure",
+      "result": "PASS",
+      "cards": [
+        "WN5620-11"
+      ],
+      "caseId": "924dc8af-8f00-4e2a-9dac-fcea7bc316e2",
+      "saveFailureHTTP": 503,
+      "caseStatus": "AWAITING_HUMAN_APPROVAL"
+    },
+    {
+      "scenario": "confirmed_baggage_arrival_and_downstream_impact",
+      "result": "PASS",
+      "cards": [
+        "WN5620-45"
+      ],
+      "caseId": "demo-case",
+      "candidateCount": 1,
+      "checkedRules": [
+        "CONSTRAINT:baggage",
+        "CONSTRAINT:arrival"
+      ],
+      "arrivalChangesMinutes": [
+        300
+      ]
+    },
+    {
+      "scenario": "conflicting_confirmed_baggage_constraint",
+      "result": "PASS",
+      "cards": [
+        "WN5620-45"
+      ],
+      "caseId": "demo-case",
+      "errorCode": "NO_FEASIBLE_ITINERARY",
+      "proposalReleased": false
+    },
+    {
+      "scenario": "unsupported_free_text_preference",
+      "result": "PASS",
+      "cards": [
+        "WN5620-45"
+      ],
+      "rejectedCandidateCount": 8,
+      "reasonRule": "PREFERENCE_SCOPE",
+      "feasibleCount": 0
+    }
+  ]
+}

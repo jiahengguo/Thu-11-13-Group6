@@ -89,7 +89,13 @@ class ExceptionPortalTests(unittest.TestCase):
         self.assertEqual(restarted.exception.investigation(self.f.operator, self.cid)['result'], internal['specialistResult'])
         traces = self.f.app.operations.traces(self.f.operator, self.cid)
         self.assertEqual(len(traces), len({e['eventId'] for e in traces}))
-        self.assertTrue(any(e['actor'] == 'exception' for e in traces))
+        self.assertTrue({'operations', 'exception', 'supplier', 'planning'} <=
+                        {e['actor'] for e in traces})
+        supplier_trace = next(e for e in traces if e['actor'] == 'supplier')
+        planning_trace = next(e for e in traces if e['actor'] == 'planning')
+        self.assertEqual(supplier_trace['runId'], planning_trace['runId'])
+        self.assertEqual(supplier_trace['caseId'], planning_trace['caseId'])
+        self.assertLess(traces.index(supplier_trace), traces.index(planning_trace))
 
     def test_requester_report_cannot_be_used_as_a_supplier_cancellation_fact(self):
         view = self.dispatch()
@@ -182,6 +188,10 @@ class ExceptionPortalTests(unittest.TestCase):
         self.assertEqual(view['case']['status'], 'HUMAN_ASSISTANCE')
         self.assertIsNone(view['response'])
         self.assertEqual(self.f.app.planning.get_version(self.baseline['version']['versionId']), self.baseline)
+        investigation = self.f.app.exception.investigation(self.f.operator, self.cid)
+        self.assertEqual(investigation['result']['errors'][0]['code'], 'NO_FEASIBLE_ITINERARY')
+        traces = self.f.app.operations.traces(self.f.operator, self.cid)
+        self.assertTrue({'supplier', 'planning'} <= {e['actor'] for e in traces})
 
     def test_changed_notice_revokes_presented_options_until_confirmed_reinvestigation(self):
         self.record()

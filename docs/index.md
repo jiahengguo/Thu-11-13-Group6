@@ -95,6 +95,9 @@
 
 ## stage2
 
+- [WN5620-11/13/45 当前代码的隔离验收与待签收项](stage2/ACCEPTANCE_11_13_45_2026-11-01.zh-CN.md)
+- [WN5620-11/13/45 逐场景机器记录](stage2/acceptance-11-13-45-evidence.json)
+
 - [Jason：UC-08 营销活动实现与交接](stage2/UC08_CAMPAIGN_HANDOFF.zh-CN.md)
 - [Supplier 与 UC-08 本机验收截图及边界](stage2/SUPPLIER_ACCEPTANCE_2026-10-31.zh-CN.md)
 
