@@ -4,20 +4,20 @@
 
 ## Contribution by assessment criterion
 
-Enter each member’s name and Student ID in the same column. For each assessment criterion, enter each member’s contribution percentage. The percentages in every criterion row must add up to 100%. Leave unused member columns blank.
+Enter each of the four members’ names and Student IDs in the corresponding column. For each assessment criterion, enter each member’s contribution percentage. The four percentages in every criterion row must add up to 100%.
 
-| Assessment criterion | Member 1 | Member 2 | Member 3 | Member 4 | Member 5 | Row total |
-| --- | --- | --- | --- | --- | --- | --- |
-| Student name |Jiaheng Guo| | | | | |
-| Student ID |510423614 | | | | | |
-| 1. Implementation of Stage 1 Requirements and Design (7 marks) |25%| | | | | **100%** |
-| 2. Demonstrating AI Agent Capabilities (4 marks) |30%| | | | | **100%** |
-| 3. Agile Development Experience (4 marks) |40%| | | | | **100%** |
-| 4. Incorporation of Advanced Technologies (5 marks) |60%| | | | | **100%** |
+| Assessment criterion | Member 1 | Member 2 | Member 3 | Member 4 | Row total |
+| --- | --- | --- | --- | --- | --- |
+| Student name | Jiaheng Guo | | | | |
+| Student ID | 510423614 | | | | |
+| 1. Implementation of Stage 1 Requirements and Design (7 marks) | 25% | | | | **100%** |
+| 2. Demonstrating AI Agent Capabilities (4 marks) | 30% | | | | **100%** |
+| 3. Agile Development Experience (4 marks) | 40% | | | | **100%** |
+| 4. Incorporation of Advanced Technologies (5 marks) | 60% | | | | **100%** |
 
 ## Specific work completed by each student
 
-Describe each member’s specific tasks and deliverables. Add text as needed. Leave unused member sections blank.
+Describe each member’s specific tasks and deliverables. Add text as needed.
 
 ### Member 1 Jiaheng Guo
 
@@ -47,6 +47,3 @@ Agile collaboration and delivery evidence: Prepared and maintained Stage 2 Jira 
 
 **Specific work completed:** [type here]
 
-### Member 5
-
-**Specific work completed:** [type here]
