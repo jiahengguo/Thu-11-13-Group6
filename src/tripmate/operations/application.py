@@ -64,7 +64,9 @@ def validate_fragment(name, value):
 
 class OperationsService:
     def __init__(self, repository, fixtures, clock=now, llm=None, specialists=None,
-                 planning_repository=None, adopt=None, reviewer=None, dependency_timeout=30, seed_profiles=True):
+                 planning_repository=None, adopt=None, reviewer=None, dependency_timeout=30, seed_profiles=True, benefits=None):
+        from .benefits import SimulatedBenefits
+        self.benefits = benefits if benefits is not None else SimulatedBenefits()
         self.repository, self.fixtures, self.clock = repository, fixtures, clock
         self.llm, self.specialists = llm, specialists or {}
         self.planning_repository, self.adopt, self.reviewer = planning_repository, adopt, reviewer
@@ -894,14 +896,29 @@ release them. One running dependency per coordinator prevents unbounded threads.
         if not self.access.authorise(actor, "PREMIUM", {"travellerId": actor}):
             raise OperationsError("ACCESS_DENIED", "A verified traveller is required.")
         rule = self.repository.read("member_offer", member_offer_id) if member_offer_id else None
-        decision = self.entitlement.evaluate(actor, action, {"memberOfferRule": rule})
+        if rule is None and member_offer_id:
+            rule = next((r for r in self.benefits.offers() if r["id"] == member_offer_id), None)
+        decision = self.entitlement.evaluate(actor, action, {"memberOfferRule": rule, "memberOfferRuleId": member_offer_id})
         def save(records):
             rec = {"id": identifier(), "revision": 1, "correlationId": identifier(),
                    "sources": [source(decision["sourceIds"][0], self.clock())]}
             self._event(records, rec, "TOOL_RESULT", json.dumps(decision, sort_keys=True), actor=actor)
             return {"decision": decision, "advertising": "AD_FREE" if decision.get("membershipLevel") == "PAID" else "LABELLED_SIMULATED_ADS",
                     "rankingAffected": False, "simulationOnly": True}
-        return self._command(actor, "premium", key, [action, member_offer_id], save)
+        result = self._command(actor, "premium", key, [action, member_offer_id], save)
+        if result["decision"]["decisionId"] != decision["decisionId"]:
+            self._command(actor, "premium-recheck", decision["decisionId"], [action, member_offer_id], save)
+        # Idempotent audit replay never replays stale access authority.
+        result = dict(result, decision=decision)
+        result["advertising"] = "AD_FREE" if decision.get("membershipLevel") == "PAID" else "LABELLED_SIMULATED_ADS"
+        if decision["outcome"] != "VERIFICATION_FAILED":
+            result["ads"] = [] if decision.get("membershipLevel") == "PAID" else self.benefits.advertisements()
+        if action == "ROUTE_MAP" and decision["outcome"] == "ALLOWED":
+            result.update(self.benefits.route())
+        if action == "MEMBERSHIP" and decision["outcome"] == "ALLOWED":
+            result["memberOffers"] = [{"id": r["id"], "title": r["title"],
+                                       "simulationOnly": r.get("simulationOnly", False)} for r in self.benefits.offers()]
+        return result
 
     def case_summaries(self, actor):
         """List authorised cards without fetching each private detail/inbox."""

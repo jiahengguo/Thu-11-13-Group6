@@ -153,10 +153,6 @@ class Workbench:
                                             body['runId'], body['optionId'], body['confirmed'])
         if action == "premium":
             result = service.premium(actor, key, body["action"], body.get("memberOfferRuleId"))
-            if body["action"] == "ROUTE_MAP" and result["decision"]["outcome"] == "ALLOWED":
-                result["routePoints"] = [{"label": "Sydney Central", "x": 90, "y": 60},
-                                         {"label": "Melbourne Centre", "x": 300, "y": 160}]
-                result["mapNotice"] = "B03 Sydney–Melbourne scenario: schematic simulated route points, not live geography."
             return result
         if action == "adopt":
             return service.adopt_plan(actor, key, body["versionId"], body["expectedBaseline"], body["accepted"])
