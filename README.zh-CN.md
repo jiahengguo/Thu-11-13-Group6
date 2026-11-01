@@ -16,9 +16,8 @@ Supabase 提供真实认证和私有持久化，课程 `campus-qwen` 模型用�
 - [Stage 2 Group Contribution Statement（小组贡献声明）](Stage%202%20Group%20Contribution%20Statement.md)
 - [Jira 项目 — WN5620](https://elec5619-5-group-1.atlassian.net/jira/software/projects/WN5620/summary)
 - [GitHub 仓库](https://github.com/jiahengguo/Thu-11-13-Group6)
-- [浏览器验收结果与未完成项](docs/testing/2026-11-01-browser-acceptance.zh-CN.md)
 
-Canvas 验收时，从 GitHub 下载小组确认的最终版本并解压 ZIP，再按下文安装启动。贡献声明和验收报告使用包内相对链接；Jira 与 GitHub 链接需要联网。提交 ZIP 不得包含账户密码、密钥或本机配置。
+Canvas 验收时，从 GitHub 下载小组确认的最终版本并解压 ZIP，再按下文安装启动。贡献声明使用包内相对链接；Jira 与 GitHub 链接需要联网。提交 ZIP 不得包含账户密码、密钥或本机配置。
 
 ## 当前已实现
 
