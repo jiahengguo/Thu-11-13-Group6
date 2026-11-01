@@ -246,6 +246,15 @@ class ApplicationTests(unittest.TestCase):
         result = self.agent.handle_case(self.case)
         self.assertEqual(result["errors"][0]["code"], "REVIEW_FAILED")
         self.assertIsNone(result["proposedResponse"])
+        saved = [json.loads(row[0]) for row in self.runtime.repository.db.execute('SELECT payload FROM planning_versions')]
+        self.assertTrue(saved)
+        self.assertTrue(all(r['version']['assessmentState'] == 'REVISION_REQUIRED' for r in saved))
+        self.assertTrue(all(r['assessmentHistory'][-1]['state'] == 'REVISION_REQUIRED' for r in saved))
+        self.runtime.reviewer.review = Mock(side_effect=AssertionError('Do not review an unreleased failed candidate for adoption'))
+        with self.assertRaises(PlanningError) as caught:
+            self.accept(saved[0])
+        self.assertEqual(caught.exception.code, 'REVIEW_FAILED')
+        self.runtime.reviewer.review.assert_not_called()
 
     def test_supplier_outage_is_visible(self):
         self.runtime.offers.find_selectable = Mock(side_effect=TimeoutError("private provider detail"))

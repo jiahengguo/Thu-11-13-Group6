@@ -168,6 +168,8 @@ class ExceptionBridge:
         return True
 
     def invalidate_confirmation(self, rows, rec):
+        rec.pop('recoveryWait', None)
+        rec.pop('recoveryCompletion', None)
         rec['exceptionRunId'] = None
         rec['exceptionApprovalId'] = None
         rec['exceptionDecisionId'] = None
@@ -201,6 +203,9 @@ class ExceptionBridge:
                 or rec.get('exceptionStage') != 'AWAITING_TRAVELLER_DECISION'
                 or rec['case']['status'] != 'AWAITING_REQUESTER'):
             raise OperationsError('UNCONFIRMED_REQUEST', 'Confirm a current presented recovery option as its traveller.')
+        wait = rec.get('recoveryWait')
+        if wait and wait['runId'] == run_id and instant(self.operations.clock()) >= instant(wait['deadline']):
+            raise OperationsError('UNCONFIRMED_REQUEST', 'The response deadline elapsed; request human follow-up.')
         self.ensure_release(rows, rec)
         snapshot = rows.get('exception_run', run_id)
         if option_id is None:
@@ -232,7 +237,8 @@ class ExceptionBridge:
             pending = snapshot['approvals'][0]
             if (not decision or decision['decision'] != 'APPROVE' or decision['status'] != 'DECIDED'
                     or decision['subject'] != snapshot['proposal']['subject']
-                    or decision['reviewId'] != pending['reviewId'] or decision['scope'] != pending['scope']):
+                    or decision['reviewId'] != pending['reviewId'] or decision['scope'] != pending['scope']
+                    or not self.operations.access.authorise(decision['operatorId'], 'REVIEW_CASE', rec['case'])):
                 raise OperationsError('APPROVAL_REQUIRED', 'This exact Exception proposal still needs human approval.')
 
     def investigation(self, actor, case_id):

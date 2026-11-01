@@ -70,6 +70,29 @@ class ExceptionPortalTests(unittest.TestCase):
         final = self.f.release(self.cid, chosen['revision'])
         self.assertEqual(final['case']['status'], 'AWAITING_REQUESTER')
         self.assertFalse(final['canSelectRecovery'])
+        body = dict(requestKey=str(uuid4()), caseId=self.cid,
+            revision=final['revision'], action='COMPLETE', data=dict(runId=public['runId'],
+                optionId=public['options'][0]['offerId'], evidenceReference='synthetic://completed',
+                reason='Operator verified simulated recovery completion.', confirmed=True))
+        self.assertEqual(self.f.clients[self.f.traveller].call('/api/operations/recovery-lifecycle', body)[0], 403)
+        wrong = deepcopy(body); wrong['data']['optionId'] = 'not-selected'
+        refused = self.f.clients[self.f.operator].call('/api/operations/recovery-lifecycle', wrong)
+        self.assertEqual(refused[0], 422)
+        self.assertEqual(refused[1]['error'], 'STALE_EVIDENCE')
+        before = deepcopy(self.f.cloud.state)
+        self.f.cloud.fail_commit = True
+        try:
+            self.assertNotEqual(self.f.clients[self.f.operator].call('/api/operations/recovery-lifecycle', body)[0], 200)
+        finally:
+            self.f.cloud.fail_commit = False
+        self.assertEqual(self.f.cloud.state, before)
+        status, completed, _ = self.f.clients[self.f.operator].call('/api/operations/recovery-lifecycle', body)
+        self.assertEqual(status, 200, completed)
+        replay = self.f.clients[self.f.operator].call('/api/operations/recovery-lifecycle', body)
+        self.assertEqual(replay[0], 200)
+        self.assertEqual(replay[1]['recoveryCompletion'], completed['recoveryCompletion'])
+        self.assertEqual(completed['case']['status'], 'CLOSED')
+        self.assertEqual(completed['exception']['exceptionStage'], 'RESOLVED_SIMULATED')
         self.assertEqual(self.f.app.planning.get_version(self.baseline['version']['versionId']), self.baseline)
         restarted = Portal(self.f.cloud, supplier_policy=self.f.policy)
         self.assertEqual(restarted.exception.investigation(self.f.operator, self.cid)['result'], internal['specialistResult'])
@@ -195,3 +218,37 @@ class ExceptionPortalTests(unittest.TestCase):
         self.assertEqual(view['case']['status'], 'HUMAN_ASSISTANCE')
         self.assertIsNone(view['response'])
         self.assertEqual(self.f.app.operations.repository.list('exception_run'), [])
+
+    def test_waiting_policy_deadline_is_persisted_and_escalates(self):
+        from datetime import timedelta
+        from tripmate.operations.common import instant
+        self.record()
+        view = self.dispatch()
+        presented = self.f.release(self.cid, view['revision'])
+        now = instant(FIXTURE_TIME)
+        body = dict(caseId=self.cid, revision=presented['revision'], action='CONFIGURE_WAIT',
+            data=dict(deadline=(now+timedelta(minutes=20)).isoformat(), reminderMinutes=5, maxReminders=1))
+        status, _, _ = self.f.clients[self.f.traveller].call('/api/operations/recovery-lifecycle',dict(body,requestKey=str(uuid4())))
+        self.assertEqual(status,403)
+        for deadline in (123, 'no-date', '2026-10-13T09:00:00'):
+            invalid=deepcopy(body); invalid['data']['deadline']=deadline; invalid['requestKey']=str(uuid4())
+            refused=self.f.clients[self.f.operator].call('/api/operations/recovery-lifecycle',invalid)
+            self.assertEqual(refused[0],422)
+            self.assertEqual(refused[1]['error'],'INVALID_CONTRACT')
+        configured = self.f.post(self.f.operator,'recovery-lifecycle',body)
+        self.f.app.operations.clock=lambda:(now+timedelta(minutes=6)).isoformat()
+        reminded=self.f.post(self.f.operator,'recovery-lifecycle',dict(caseId=self.cid,revision=configured['revision'],action='CHECK_WAIT',data={}))
+        self.assertEqual(reminded['recoveryWait']['reminders'],1)
+        again=self.f.post(self.f.operator,'recovery-lifecycle',dict(caseId=self.cid,revision=reminded['revision'],action='CHECK_WAIT',data={}))
+        self.assertEqual(again['revision'], reminded['revision'])
+        self.assertEqual(len(self.f.app.operations.repository.list('recovery_reminder')), 1)
+        traveller = self.f.app.operations.case_view(self.f.traveller, self.cid)
+        self.assertEqual(len(traveller['recoveryReminders']), 1)
+        self.f.app.operations.clock=lambda:(now+timedelta(minutes=21)).isoformat()
+        old=presented['recoveryOptions']
+        self.assertEqual(self.f.clients[self.f.traveller].call('/api/operations/exception-selection',
+            dict(requestKey=str(uuid4()),caseId=self.cid,revision=reminded['revision'],runId=old['runId'],
+                 optionId=old['options'][0]['offerId'],confirmed=True))[0],409)
+        expired=self.f.post(self.f.operator,'recovery-lifecycle',dict(caseId=self.cid,revision=reminded['revision'],action='CHECK_WAIT',data={}))
+        self.assertEqual(expired['case']['status'],'HUMAN_ASSISTANCE')
+        self.assertEqual(expired['exception']['exceptionStage'],'NO_RESPONSE')

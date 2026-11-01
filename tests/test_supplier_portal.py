@@ -116,7 +116,24 @@ class SupplierPortalTests(unittest.TestCase):
         self.login(self.operator)
         _, approved = self.action(case_id, 'decision', 'APPROVE')
         self.assertEqual(approved[1]['status'], 'APPROVED')
-        self.assertEqual(len(self.server.app.supplier.find_selectable({}, AT)), 1)
+        quotes = self.server.app.supplier.find_selectable({}, AT)
+        self.assertEqual(len(quotes), 1)
+        from tripmate.planning.validation import approved_restriction
+        from copy import deepcopy
+        quote = quotes[0]
+        self.assertTrue(approved_restriction(quote, AT))
+        self.assertTrue(quote['offer']['requiresApproval'])
+        for field, value in [('decision', 'REJECT'), ('scope', 'wrong'), ('reviewId', 'wrong')]:
+            changed = deepcopy(quote)
+            changed['approval'][field] = value
+            self.assertFalse(approved_restriction(changed, AT))
+        changed = deepcopy(quote)
+        changed['approval']['subject']['materialVersion'] += 1
+        self.assertFalse(approved_restriction(changed, AT))
+        changed.pop('approval')
+        self.assertFalse(approved_restriction(changed, AT))
+        self.cloud.accounts[self.operator]['role'] = 'TRAVELLER'
+        self.assertEqual(self.server.app.supplier.find_selectable({}, AT), [])
 
     def test_source_revision_withdrawal_and_operator_revocation(self):
         first = self.assess()

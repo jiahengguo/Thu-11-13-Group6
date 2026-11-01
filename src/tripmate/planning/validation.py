@@ -99,8 +99,8 @@ class PlanningValidator:
                        and review.get("subject") == {"subjectType": "SupplierOffer", "subjectId": offer["offerId"],
                                                     "materialVersion": offer["materialVersion"]}
                        and not offer["errors"] and not price["errors"]
-                       and not offer["requiresApproval"] and not price["requiresApproval"],
-                       "Only reviewed unrestricted Approved base offers are supported; restricted offers need shared approval integration", ids)
+                       and approved_restriction(q, at),
+                       "Restricted offers require current exact-version Supplier approval evidence", ids)
                 record("OFFER_VALIDITY", timestamp(offer["validFrom"]) <= timestamp(at) < timestamp(offer["validUntil"])
                        and timestamp(price["calculatedAt"]) <= timestamp(at),
                        "Quote must be current at validation time", ids)
@@ -195,3 +195,29 @@ class PlanningValidator:
         except (ContractError, ValueError, KeyError, TypeError, InvalidOperation, OverflowError) as exc:
             record("INVALID_PLANNING_INPUT", False, "Invalid or incomplete planning input: " + str(exc))
         return results
+
+
+def approved_restriction(quote, at):
+    """Only called with trusted Supplier bundles; fresh lookup checks actor and storage."""
+    offer, price = quote['offer'], quote['price']
+    if not offer['requiresApproval'] and not price['requiresApproval']:
+        return True
+    decision = quote.get('approval')
+    if not decision:
+        return False
+    try:
+        validate('Approval', decision)
+        review = offer['review']
+        return (decision['approvalId'] == offer['approvalId']
+                and decision['subject'] == {'subjectType': 'SupplierOffer',
+                    'subjectId': offer['offerId'], 'materialVersion': offer['materialVersion']}
+                and decision['status'] == 'DECIDED' and decision['decision'] == 'APPROVE'
+                and decision['scope'] == 'restricted_supplier_terms'
+                and decision['reviewId'] == review['reviewId']
+                and decision['caseId'] == offer['caseId']
+                and decision['correlationId'] == offer['correlationId']
+                and decision['sourceReferences'] == offer['sourceReferences']
+                and timestamp(review['reviewedAt']) <= timestamp(decision['requestedAt'])
+                <= timestamp(decision['decidedAt']) <= timestamp(at))
+    except (ValueError, KeyError, TypeError):
+        return False

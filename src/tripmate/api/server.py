@@ -107,6 +107,8 @@ class Workbench:
             return {"session": token, "identity": self.operations.profile(evidence["actor"]), "expiresAt": evidence["expiresAt"], "simulationOnly": True}
         actor = self.ops_actor(session)
         expected = {
+            "planning-lifecycle": ({"requestKey", "caseId", "revision", "action", "reason"}, set()),
+            "recovery-lifecycle": ({"requestKey", "caseId", "revision", "action", "data"}, set()),
             "intake": ({"requestKey", "text"}, {"intents", "campaignId", "channel", "consent"}),
             "confirm": ({"requestKey", "intakeId", "revision", "intents", "confirmed"}, set()),
             "update-intake": ({"requestKey", "intakeId", "revision"}, {"intents", "human"}),
@@ -132,6 +134,12 @@ class Workbench:
             if not isinstance(body[field], str) or not 1 <= len(body[field]) <= 100:
                 raise OperationsError("INVALID_CONTRACT", "Invalid identifier or action.")
         service, key = self.operations, body["requestKey"]
+        if action == "planning-lifecycle":
+            from tripmate.operations.lifecycle import planning_command
+            return planning_command(service, actor, key, body["caseId"], body["revision"], body["action"], body["reason"])
+        if action == "recovery-lifecycle":
+            from tripmate.operations.lifecycle import recovery_command
+            return recovery_command(service, actor, key, body["caseId"], body["revision"], body["action"], body["data"])
         if action == "intake":
             return service.intake(actor, key, body["text"], body.get("intents"), body.get("campaignId"), body.get("channel", "LOCAL"), body.get("consent", False))
         if action == "confirm":
