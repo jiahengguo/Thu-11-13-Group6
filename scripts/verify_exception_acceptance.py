@@ -2,17 +2,19 @@
 
 This records machine-run acceptance evidence. It is not a human browser demonstration,
 live Supabase/model check, or another member's review.
+Git provenance is optional for extracted source ZIPs; the source hash is retained.
 """
 import argparse
 import hashlib
 import json
-import subprocess
 import sys
 from copy import deepcopy
 from datetime import datetime, timezone
 from pathlib import Path
 from unittest.mock import patch
 from uuid import uuid4
+
+from verification_metadata import git_metadata
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'tests'))
@@ -231,10 +233,9 @@ def main():
         conflicting_constraint(),
         unsupported_preference(),
     ]
-    commit = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip()
     output = {'scope': 'isolated provider doubles; authenticated local HTTP and deterministic project ports',
               'limitations': 'No live Supabase/model, human browser demonstration, or peer sign-off',
-              'recordedAtUTC': datetime.now(timezone.utc).isoformat(), 'baseCommit': commit,
+              'recordedAtUTC': datetime.now(timezone.utc).isoformat(), **git_metadata(ROOT),
               'pythonSourceSha256': source_digest(), 'allPassed': True, 'scenarios': scenarios}
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(output, indent=2, ensure_ascii=False) + '\n')
