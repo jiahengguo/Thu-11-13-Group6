@@ -3,6 +3,7 @@ from typing import Protocol
 
 class BenefitsProvider(Protocol):
     def route(self): ...
+    def route_for_version(self, version): ...
     def advertisements(self): ...
     def offers(self): ...
 
@@ -24,3 +25,17 @@ class SimulatedBenefits:
                  "validUntil": "2030-01-01T00:00:00Z", "simulationOnly": True,
                  "source": "Simulated UC-08 approved-rule input", "version": 1}]
 
+
+    def route_for_version(self, version):
+        # Deterministic schematic positions, not invented geographic coordinates.
+        points = []
+        legs = sorted(version['items'], key=lambda item: item['startAt'])
+        for item in legs:
+            for name, at in ((item['origin'], item['startAt']), (item['destination'], item['endAt'])):
+                points.append({'label': name, 'at': at, 'itemId': item['itemId'],
+                               'kind': item['productType'], 'x': 40 + (len(points) % 5) * 80,
+                               'y': 40 + (len(points) // 5) * 70})
+        return {'routePoints': points, 'mapHeight': max(220, 100 + ((len(points)-1)//5)*70),
+                'planId': version['planId'], 'versionId': version['versionId'],
+                'mapNotice': 'Your adopted itinerary: simulated schematic positions; not geographic navigation.',
+                'source': 'adopted-itinerary-schematic-v1', 'simulationOnly': True}

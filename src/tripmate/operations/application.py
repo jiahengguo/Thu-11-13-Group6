@@ -892,29 +892,37 @@ release them. One running dependency per coordinator prevents unbounded threads.
         self._command(actor, "clarify", key, [case_id, revision, intents, confirmed], revise)
         return self.case_view(actor, case_id)
 
-    def premium(self, actor, key, action, member_offer_id=None):
+    def premium(self, actor, key, action, member_offer_id=None, version_id=None):
         if not self.access.authorise(actor, "PREMIUM", {"travellerId": actor}):
             raise OperationsError("ACCESS_DENIED", "A verified traveller is required.")
         rule = self.repository.read("member_offer", member_offer_id) if member_offer_id else None
         if rule is None and member_offer_id:
             rule = next((r for r in self.benefits.offers() if r["id"] == member_offer_id), None)
         decision = self.entitlement.evaluate(actor, action, {"memberOfferRule": rule, "memberOfferRuleId": member_offer_id})
+        version = None
+        if version_id is not None:
+            if action != "ROUTE_MAP" or not isinstance(version_id, str) or not 1 <= len(version_id) <= 100:
+                raise OperationsError("INVALID_CONTRACT", "Choose a valid itinerary version for the route map.")
+            version = self._released_plan(actor, version_id)["version"]
+            if self.planning_repository.selected(version["planId"]) != version_id:
+                raise OperationsError("STALE_EVIDENCE", "Select the current adopted itinerary before opening its map.")
+            decision.update(planId=version["planId"], versionId=version_id)
         def save(records):
             rec = {"id": identifier(), "revision": 1, "correlationId": identifier(),
                    "sources": [source(decision["sourceIds"][0], self.clock())]}
             self._event(records, rec, "TOOL_RESULT", json.dumps(decision, sort_keys=True), actor=actor)
             return {"decision": decision, "advertising": "AD_FREE" if decision.get("membershipLevel") == "PAID" else "LABELLED_SIMULATED_ADS",
                     "rankingAffected": False, "simulationOnly": True}
-        result = self._command(actor, "premium", key, [action, member_offer_id], save)
+        result = self._command(actor, "premium", key, [action, member_offer_id, version_id], save)
         if result["decision"]["decisionId"] != decision["decisionId"]:
-            self._command(actor, "premium-recheck", decision["decisionId"], [action, member_offer_id], save)
+            self._command(actor, "premium-recheck", decision["decisionId"], [action, member_offer_id, version_id], save)
         # Idempotent audit replay never replays stale access authority.
         result = dict(result, decision=decision)
         result["advertising"] = "AD_FREE" if decision.get("membershipLevel") == "PAID" else "LABELLED_SIMULATED_ADS"
         if decision["outcome"] != "VERIFICATION_FAILED":
             result["ads"] = [] if decision.get("membershipLevel") == "PAID" else self.benefits.advertisements()
         if action == "ROUTE_MAP" and decision["outcome"] == "ALLOWED":
-            result.update(self.benefits.route())
+            result.update(self.benefits.route_for_version(deepcopy(version)) if version is not None else self.benefits.route())
         if action == "MEMBERSHIP" and decision["outcome"] == "ALLOWED":
             result["memberOffers"] = [{"id": r["id"], "title": r["title"],
                                        "simulationOnly": r.get("simulationOnly", False)} for r in self.benefits.offers()]
