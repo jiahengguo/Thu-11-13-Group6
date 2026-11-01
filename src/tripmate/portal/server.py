@@ -22,9 +22,9 @@ COOKIE = 'tripmate_session'
 
 
 class Portal:
-    def __init__(self, cloud, supplier_pricing=None, supplier_policy=None, model_planning=False):
+    def __init__(self, cloud, supplier_pricing=None, supplier_policy=None, model_planning=False, benefits=None):
         self.cloud, self.sessions, self.rate = cloud, Sessions(cloud), RateLimit()
-        self.operations = OperationsService(SupabaseOperationsRepository(cloud), NoUserFixtures(), seed_profiles=False)
+        self.operations = OperationsService(SupabaseOperationsRepository(cloud), NoUserFixtures(), seed_profiles=False, benefits=benefits)
         if os.environ.get('ELEC5620_API_KEY') not in (None, '', 'REPLACE_LOCALLY'):
             try:
                 from tripmate.adapters.campus import CampusLLMService
@@ -72,8 +72,8 @@ class Portal:
     _save_analysis = staticmethod(Workbench._save_analysis)
 
 
-def make_server(cloud, port=8780, origin=None, bind='127.0.0.1', supplier_pricing=None, supplier_policy=None, model_planning=False):
-    app, static = Portal(cloud, supplier_pricing, supplier_policy, model_planning), Path(__file__).with_name('static')
+def make_server(cloud, port=8780, origin=None, bind='127.0.0.1', supplier_pricing=None, supplier_policy=None, model_planning=False, benefits=None):
+    app, static = Portal(cloud, supplier_pricing, supplier_policy, model_planning, benefits), Path(__file__).with_name('static')
     configured_origin = origin
     if origin:
         p = urlsplit(origin)

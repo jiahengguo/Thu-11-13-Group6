@@ -31,22 +31,23 @@ class Entitlements:
 
     def evaluate(self, traveller_id, action, dates):
         timestamp = self.clock()
-        profile = self.profiles(traveller_id)
         result = {"decisionId": identifier(), "travellerId": traveller_id, "action": action,
                   "outcome": "VERIFICATION_FAILED", "reason": "Membership evidence is unavailable.",
                   "decidedAt": timestamp, "ruleVersion": "ops-membership-1.0",
                   "sourceIds": ["membership:" + traveller_id]}
         result["sourceIds"] = ["membership:" + traveller_id + ":" + result["decisionId"]]
-        if not profile or profile.get("verified") is not True or profile.get("role") != "TRAVELLER":
-            return result
         try:
+            profile = self.profiles(traveller_id)
+            if not profile or profile.get("verified") is not True or profile.get("role") != "TRAVELLER":
+                return result
             tier = profile["membership"]
             if tier not in {"FREE", "PAID"}:
                 return result
             paid = tier == "PAID" and instant(profile["paidUntil"]) > instant(timestamp)
             current = {p["planId"]: p for p in self.trips(traveller_id)
                        if p["planStatus"] in {"PLANNED", "ACTIVE"}}
-            result.update(membershipLevel="PAID" if paid else "FREE", tripCount=len(current))
+            result.update(membershipLevel="PAID" if paid else "FREE", tripCount=len(current),
+                          membershipSnapshot={"membership": tier, "paidUntil": profile.get("paidUntil"), "verified": True})
             if action in TRIP_ACTIONS:
                 start, end = date.fromisoformat(dates["startDate"]), date.fromisoformat(dates["endDate"])
                 duration = (end - start).days + 1
@@ -66,19 +67,25 @@ class Entitlements:
                     result.update(outcome="ALLOWED", appliedRule="ACTIVE_PAID" if paid else "FREE_TRIP_LIMITS",
                                   reason="Current membership and trip rules permit this action.")
             elif action in PREMIUM_FEATURES:
+                result["appliedRule"] = "ACTIVE_PAID_PREMIUM"
                 result.update(outcome="ALLOWED" if paid else "DENIED", reason="Verified active Paid membership permits this premium feature." if paid else "Active Paid membership is required for this premium feature.")
             elif action == "MEMBER_OFFER":
+                result["appliedRule"] = "APPROVED_MEMBER_OFFER"
                 rule = dates.get("memberOfferRule")
+                if rule is not None and (not isinstance(rule, dict) or not isinstance(rule.get("eligibleTiers"), list)
+                                         or not rule["eligibleTiers"] or any(t not in {"FREE", "PAID"} for t in rule["eligibleTiers"])):
+                    raise ValueError("Invalid member offer eligibility evidence")
                 allowed = (rule and rule.get("approved") is True and result["membershipLevel"] in rule["eligibleTiers"]
                            and instant(rule["validFrom"]) <= instant(timestamp) < instant(rule["validUntil"]))
                 if allowed and getattr(self, 'member_offer_check', None):
                     allowed = self.member_offer_check(rule)
-                result.update(outcome="ALLOWED" if allowed else "DENIED", reason="Approved offer eligibility checked; Supplier owns discount and price calculation.")
+                result.update(outcome="ALLOWED" if allowed else "DENIED", reason="Approved offer eligibility checked; Supplier owns discount and price calculation.", memberOfferRuleId=dates.get("memberOfferRuleId"))
             elif action == "MEMBERSHIP":
+                result["appliedRule"] = "VERIFIED_MEMBERSHIP"
                 result.update(outcome="ALLOWED", reason="Current verified membership snapshot returned.")
             else:
                 result.update(outcome="DENIED", reason="This capability is not in the entitlement catalogue.")
-        except (KeyError, TypeError, ValueError):
+        except Exception:
             result.update(outcome="VERIFICATION_FAILED", reason="Required membership, trip or policy facts could not be verified.")
         return result
 
