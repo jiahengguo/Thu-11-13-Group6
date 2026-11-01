@@ -34,6 +34,8 @@ class Portal:
         from tripmate.supplier.gateway import SupplierGateway
         from tripmate.fixtures.shared import SharedFixtureCatalog
         self.supplier = SupplierGateway(self.operations, supplier_pricing, supplier_policy)
+        from tripmate.supplier.campaigns import CampaignService
+        self.campaigns = CampaignService(self.operations, self.supplier)
         self.fixtures = SharedFixtureCatalog(self.operations.repository)
         from tripmate.operations.integration import connect_planning
         from tripmate.planning.shared_repository import SharedPlanningRepository
@@ -142,6 +144,12 @@ def make_server(cloud, port=8780, origin=None, bind='127.0.0.1', supplier_pricin
             try:
                 self.boundary()
                 path, query = urlsplit(self.path).path, parse_qs(urlsplit(self.path).query)
+                if path == '/campaigns.js':
+                    return self.send(200, (static/'campaigns.js').read_bytes(), 'text/javascript; charset=utf-8')
+                if path == '/campaigns' and not query:
+                    user = self.identity()
+                    app.campaigns.operator(user['id'])
+                    return self.send(200, (static/'campaigns.html').read_bytes(), 'text/html; charset=utf-8')
                 assets = {'/': ('home.html','text/html; charset=utf-8'), '/login': ('login.html','text/html; charset=utf-8'), '/auth/callback': ('login.html','text/html; charset=utf-8'), '/portal.css': ('portal.css','text/css; charset=utf-8'), '/auth.js': ('auth.js','text/javascript; charset=utf-8'), '/portal.js': ('portal.js','text/javascript; charset=utf-8')}
                 if path in assets:
                     name,mime=assets[path]
@@ -151,7 +159,7 @@ def make_server(cloud, port=8780, origin=None, bind='127.0.0.1', supplier_pricin
                         user = self.identity()
                     except OperationsError as exc:
                         if exc.code in ('LOGIN_REQUIRED','AUTH_FAILED'):
-                            return self.send(303,b'',location='/login')
+                            return self.send(303,b'',location='/login' + ('?campaign=' + quote(query['campaign'][0], safe='') if path == '/app' and set(query) == {'campaign'} and len(query['campaign']) == 1 and len(query['campaign'][0]) <= 100 else ''))
                         raise
                     if PORTALS[user['role']] != path:
                         raise OperationsError('ACCESS_DENIED', 'This account cannot access this portal.')
@@ -167,6 +175,14 @@ def make_server(cloud, port=8780, origin=None, bind='127.0.0.1', supplier_pricin
                     return self.send(200,{'user':user,'csrf':session.csrf,'portal':PORTALS[user['role']] if user else None},sid=sid)
                 user=self.identity()
                 actor=user['id']
+                if path == '/api/campaigns' and not query:
+                    return self.send(200, app.campaigns.listing(actor))
+                if path == '/api/campaigns/catalog' and not query:
+                    return self.send(200, app.campaigns.catalog(actor))
+                if path == '/api/campaigns/benefits' and not query:
+                    return self.send(200, app.campaigns.benefits(actor))
+                if path == '/api/campaigns/view' and set(query) == {'campaignId'} and len(query['campaignId']) == 1:
+                    return self.send(200, app.campaigns.view(actor, query['campaignId'][0]))
                 if path == '/api/supplier/assessment' and set(query) == {'caseId'} and len(query['caseId']) == 1:
                     return self.send(200, app.supplier.view(actor, query['caseId'][0]))
                 if path == '/api/exception/investigation' and set(query) == {'caseId'} and len(query['caseId']) == 1:
@@ -280,6 +296,10 @@ def make_server(cloud, port=8780, origin=None, bind='127.0.0.1', supplier_pricin
                     return self.send(200,{'message':'Signed out.'},sid='')
                 user=app.sessions.identity(session)
                 app.rate.check(('write',user['id']),limit=60)
+                if path in ('/api/campaigns/save', '/api/campaigns/evaluate', '/api/campaigns/decide'):
+                    return self.send(200, app.campaigns.mutate(user['id'], path.rsplit('/', 1)[1], body))
+                if path == '/api/campaigns/quote':
+                    return self.send(200, app.campaigns.quote(user['id'], body))
                 if path in ('/api/supplier/review', '/api/supplier/decision'):
                     return self.send(200, app.supplier.mutate(user['id'], path.rsplit('/', 1)[1], body))
                 if path == '/api/exception/evidence':

@@ -169,7 +169,7 @@ release them. One running dependency per coordinator prevents unbounded threads.
         event["requiresApproval"] = case["requiresApproval"] if case else False
         event["validationResults"] = deepcopy(case["validationResults"]) if case else []
         event["errors"] = deepcopy(case["errors"]) if case else []
-        snapshot = {k: deepcopy(rec[k]) for k in ("id", "revision", "case", "fields", "intents", "questions", "state", "campaignId", "sourceChannel", "membershipSnapshots", "responseVersion") if k in rec}
+        snapshot = {k: deepcopy(rec[k]) for k in ("id", "revision", "case", "fields", "intents", "questions", "state", "campaignId", "campaignMaterialVersion", "sourceChannel", "membershipSnapshots", "responseVersion") if k in rec}
         records.put("history", event["eventId"], snapshot)
         event["sourceReferences"] = deepcopy(sources) + [source("history:" + event["eventId"], self.clock())]
         records.trace(event)
@@ -291,6 +291,8 @@ release them. One running dependency per coordinator prevents unbounded threads.
             return value
         if channel not in {"LOCAL", "SIMULATED_CAMPAIGN"} or type(consent) is not bool:
             raise OperationsError("INVALID_CONTRACT", "Unsupported source channel or consent value.")
+        if channel == 'SIMULATED_CAMPAIGN' and not campaign_id:
+            raise OperationsError('INVALID_CONTRACT', 'A simulated campaign response must retain its campaign reference.')
         if campaign_id is not None:
             campaign = self.repository.read("campaign", campaign_id)
             if not campaign or campaign.get("approved") is not True or channel != "SIMULATED_CAMPAIGN":
@@ -316,6 +318,14 @@ release them. One running dependency per coordinator prevents unbounded threads.
             normalised, confidence, extraction = [], 0.0, "MODEL_FAILED"
         timestamp, intake_id = self.clock(), identifier()
         def create(records):
+            if campaign_id and getattr(self, 'campaigns', None):
+                campaign = records.get('campaign', campaign_id)
+                self.campaigns.require_live(records, campaign)
+                if (not instant(campaign['brief']['startAt']) <= instant(timestamp)
+                        or profile['role'] != 'TRAVELLER' or not consent
+                        or profile.get('membership') == 'PAID' and profile.get('paidUntil')
+                        and instant(profile['paidUntil']) > instant(timestamp)):
+                    raise OperationsError('ACCESS_DENIED', 'Campaign responses require a consenting eligible Free traveller during the approved campaign.')
             rec = {"id": intake_id, "requesterId": actor, "requesterType": profile["role"],
                    "correlationId": identifier(), "revision": 1, "createdAt": timestamp,
                    "sources": [source("intake:" + intake_id, timestamp)], "text": text,
@@ -324,12 +334,16 @@ release them. One running dependency per coordinator prevents unbounded threads.
                    "state": "AWAITING_CONFIRMATION" if profile.get("verified") else "AWAITING_VERIFICATION",
                    "humanRequestCount": 0, "campaignId": campaign_id, "sourceChannel": channel,
                    "consent": consent, "caseIds": []}
+            if campaign_id and getattr(self, 'campaigns', None):
+                rec['campaignMaterialVersion'] = campaign['materialVersion']
+                rec['sources'].append(source('campaign:' + campaign_id + ':' + str(campaign['materialVersion']), timestamp))
             if confidence < 0.7:
                 rec["questions"].append("Please clarify the request intent before confirmation.")
             self._event(records, rec, "INTAKE", "External intake recorded; extracted information is unconfirmed.", "PENDING", actor)
             self._save(records, rec, "intake")
             if campaign_id:
                 records.put("lead", intake_id, {"leadId": intake_id, "campaignId": campaign_id,
+                            "campaignMaterialVersion": rec.get('campaignMaterialVersion'),
                             "sourceChannel": channel, "createdAt": timestamp, "consent": consent,
                             "qualificationStatus": "UNASSESSED", "conversionStatus": "UNASSESSED", "simulated": True})
             return rec
@@ -362,7 +376,8 @@ release them. One running dependency per coordinator prevents unbounded threads.
                 rec = {"id": case_id, "revision": 1, "case": case, "correlationId": case["correlationId"],
                        "sources": case["sourceReferences"], "fields": intent["fields"], "response": None,
                        "responseVersion": 0, "review": None, "approvalId": None, "dispatchStarted": False,
-                       "deliveryAttempts": 0, "campaignId": intake["campaignId"], "sourceChannel": intake["sourceChannel"]}
+                       "deliveryAttempts": 0, "campaignId": intake["campaignId"],
+                       "campaignMaterialVersion": intake.get('campaignMaterialVersion'), "sourceChannel": intake["sourceChannel"]}
                 if intent["caseType"] in {"TRAVEL_PLANNING", "PLAN_REVISION"}:
                     rec["context"] = self._planning_context(rec)
                 if case["humanRequestCount"] >= 2:

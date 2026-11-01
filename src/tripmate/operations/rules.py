@@ -71,6 +71,8 @@ class Entitlements:
                 rule = dates.get("memberOfferRule")
                 allowed = (rule and rule.get("approved") is True and result["membershipLevel"] in rule["eligibleTiers"]
                            and instant(rule["validFrom"]) <= instant(timestamp) < instant(rule["validUntil"]))
+                if allowed and getattr(self, 'member_offer_check', None):
+                    allowed = self.member_offer_check(rule)
                 result.update(outcome="ALLOWED" if allowed else "DENIED", reason="Approved offer eligibility checked; Supplier owns discount and price calculation.")
             elif action == "MEMBERSHIP":
                 result.update(outcome="ALLOWED", reason="Current verified membership snapshot returned.")
