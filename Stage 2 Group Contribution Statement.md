@@ -37,7 +37,15 @@ Agile collaboration and delivery evidence: Prepared and maintained Stage 2 Jira 
 
 ### Member 2
 
-**Specific work completed:** [type here]
+**Specific work completed:**
+
+Customer Exception Agent: I developed the simulated disruption and complaint workflows for TripMate AI. For a cancelled service affecting an active itinerary, I worked on checking the cancellation evidence, finding eligible alternatives and preparing recovery recommendations that explain changes in cost and arrival time. I also worked on delay complaint investigation using recorded service information and supplied policies. When evidence was missing, conflicting or insufficient, the workflow referred the case for human handling instead of presenting an unsupported conclusion.
+
+Agent integration and human oversight: I helped connect the Exception workflow with Operations, Supplier and Planning so that recovery options could be checked against the traveller’s confirmed requirements and the existing itinerary. I contributed to shared review and approval controls, including version specific decisions, rejection, revision requests and separate checks before a response is delivered. The original itinerary remains available throughout the process, and a recommendation does not represent a completed booking or payment.
+
+Traceability and reliability: I worked on saving investigation evidence, validation results, recommendations and linked case events so the team could inspect how a result was reached. I helped test cases involving changed or expired evidence, unavailable alternatives, dependency failures, unauthorised actions and failed saves. These checks helped keep incomplete cases open and prevent an unapproved result from being shown as approved.
+
+Testing and team delivery: I contributed automated tests, repeatable simulated scenarios, acceptance records and demonstration instructions. I used Jira tasks and pull requests to coordinate the work with the group, resolve integration issues and check that the Exception workflow worked with the shared application. I also helped prepare the group demonstration and document the supported scope and remaining limitations.
 
 ### Member 3
 
