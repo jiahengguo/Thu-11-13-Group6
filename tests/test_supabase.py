@@ -31,6 +31,20 @@ class SupabaseResponseTests(unittest.TestCase):
         self.assertEqual(caught.exception.code, 'CLOUD_UNAVAILABLE')
         self.assertNotIn('private-provider-detail', str(caught.exception))
 
+    def test_cancelled_private_transaction_state_can_be_read_once_more(self):
+        state = dict(version=9, records=[], commands=[])
+        with patch('tripmate.portal.supabase.urlopen', side_effect=[self.cancelled(), BytesIO(json.dumps(state).encode())]) as request:
+            self.assertEqual(self.cloud.rpc('tripmate_state'), state)
+        self.assertEqual(request.call_count, 2)
+
+    def test_repeated_transaction_state_cancellation_stops_after_two_attempts(self):
+        with patch('tripmate.portal.supabase.urlopen', side_effect=[self.cancelled(), self.cancelled()]) as request:
+            with self.assertRaises(OperationsError) as caught:
+                self.cloud.rpc('tripmate_state')
+        self.assertEqual(request.call_count, 2)
+        self.assertEqual(caught.exception.code, 'CLOUD_UNAVAILABLE')
+        self.assertNotIn('private-provider-detail', str(caught.exception))
+
     def test_cancelled_writes_other_rpcs_and_public_requests_are_never_retried(self):
         for path, admin in [('/rest/v1/rpc/tripmate_commit', True), ('/auth/v1/token', False),
                             ('/rest/v1/rpc/other', True), ('/rest/v1/rpc/tripmate_snapshot', False)]:
@@ -40,10 +54,11 @@ class SupabaseResponseTests(unittest.TestCase):
             self.assertEqual(request.call_count, 1)
 
     def test_other_snapshot_provider_errors_are_not_retried(self):
-        with patch('tripmate.portal.supabase.urlopen', side_effect=self.cancelled('XX000')) as request:
-            with self.assertRaises(OperationsError):
-                self.cloud.rpc('tripmate_snapshot')
-        self.assertEqual(request.call_count, 1)
+        for name in ('tripmate_snapshot', 'tripmate_state'):
+            with self.subTest(name=name), patch('tripmate.portal.supabase.urlopen', side_effect=self.cancelled('XX000')) as request:
+                with self.assertRaises(OperationsError):
+                    self.cloud.rpc(name)
+            self.assertEqual(request.call_count, 1)
 
     def test_business_conflicts_require_refresh_without_replaying_writes(self):
         for code in ('PT409', '40001'):

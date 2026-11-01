@@ -9,6 +9,7 @@
 - [集成流程、演示顺序与当前限制](stage2/LIVE_WORKFLOW.zh-CN.md)
 - [演示账户与供应数据](stage2/DEMO_ACCOUNTS.zh-CN.md)
 - [启动和配置检查](stage2/STARTUP_READINESS.zh-CN.md)
+- [云端读取超时修复与性能实测](stage2/CLOUD_READ_PERFORMANCE_2026-11-01.zh-CN.md)
 - [Stage 1 最终报告](TripMate_AI_stage1_report.pdf)
 
 ## 根目录
