@@ -2,8 +2,6 @@
 
 [English](README.md) · [文档索引](docs/index.md)
 
-[2026-11-01 真实云端浏览器验收](docs/testing/2026-11-01-browser-acceptance.zh-CN.md)：营销批准与会员报价通过；投诉仅部分分支通过，退款人工审批尚未验收，不代表整组发布签收。
-
 
 TripMate 是旅游服务原型，提供真实认证的旅客、供应商和 Operator 门户。Operations 统一协调 Supplier（报价评估）、Planning（行程生成与校验）和 Exception（异常调查与恢复建议）。
 
