@@ -1,8 +1,10 @@
 """Release acceptance must not report empty or skipped modules as verified."""
 import importlib.util
 from pathlib import Path
+import sys
 import unittest
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'scripts'))
 spec = importlib.util.spec_from_file_location('release_scenario_verifier',
     Path(__file__).resolve().parents[1] / 'scripts/verify_release_scenarios.py')
 verifier = importlib.util.module_from_spec(spec)
