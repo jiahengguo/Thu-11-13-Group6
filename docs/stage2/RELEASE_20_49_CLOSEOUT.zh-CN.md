@@ -1,7 +1,7 @@
 # WN5620-20 / 49：实现范围、验证入口与签收
 
 日期：2026-11-01，Australia/Sydney。检查基线：main `c14b83e`。
-两张卡均由 Runda 负责、Jiaheng 复核；Supplier/Campaign 证据由 Jason 提供，Planning 由 Moore 提供。
+两张卡均由 Runda 负责；20 指定 Jiaheng 复核，49 的另一位复核成员由负责人确认。Supplier/Campaign 证据由 Jason 提供，Planning 由 Moore 提供。
 本记录补充默认认证门户的 HTTP 验收，不替代组员实际复核或真实服务验收，也不自动改变 Jira 状态。
 
 ## WN5620-20：最终发布验证
@@ -32,6 +32,12 @@ python scripts/verify_release_scenarios.py --output output/release-20-49-evidenc
 5. Runda 汇总，Jiaheng 核对，相关模块成员确认各自证据。若存在未完成的 Must 或阻断缺陷，20 继续保持未完成；Should/未来项单独列出。
 
 这项验收可由队友已配置的电脑执行，不要求 Jason 再单独部署。WN5620-12 已完成的 Demo 不被本记录撤销。
+
+### 本次自动执行结果
+
+代码提交 `94e2825`、干净工作区下，完整回归 **356/356 通过**（212.943秒）；三组场景各重放两轮，合计 **200 次测试执行全部通过、0 跳过**。Planning/会员每轮46次，异常/投诉每轮22次，Supplier/Campaign每轮32次。机器记录见 [两轮原始结果](release-20-49-evidence.json)。新增4条认证门户边界与5条证据判定检查的专项测试也已通过。
+
+此处的“通过”仅指实际执行的自动化断言；不是组员手工演示或签收。
 
 ## WN5620-49：已约定的 SM-03 子集
 
