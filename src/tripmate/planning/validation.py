@@ -65,6 +65,12 @@ class PlanningValidator:
                    "Version must retain the exact confirmed request identity and constraint snapshot")
             record("CONFIRMED_REQUEST", timestamp(request["confirmedAt"]) <= timestamp(at)
                    and not request["errors"], "Request is confirmed, not future-dated, and has no unresolved errors")
+            # Ranking mode has a defined evaluator. Free-text preferences have no
+            # typed binding or checker in this prototype, so a recovered itinerary
+            # cannot claim to satisfy them merely because they were carried over.
+            record("PREFERENCE_SCOPE", not request["preferences"],
+                   "Free-text preferences need an agreed structured evaluator or human clarification",
+                   unsupported=bool(request["preferences"]))
             quote_map = {q["offer"]["offerId"]: q for q in self.quotes}
             if len(quote_map) != len(self.quotes):
                 raise ValueError("Duplicate offer IDs in current supplier snapshot")

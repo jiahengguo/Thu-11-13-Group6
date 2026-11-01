@@ -47,6 +47,20 @@ class ExceptionPortalTests(unittest.TestCase):
         return self.f.post(self.f.traveller, 'dispatch', dict(caseId=self.cid, revision=version))
 
     def test_recovery_uses_current_project_ports_review_delivery_selection_and_restart(self):
+        self.assertIs(self.f.app.exception.runtime.reviewer, self.f.app.reviewer)
+        self.assertIs(self.f.app.campaigns.reviewer, self.f.app.reviewer)
+        self.assertIs(self.f.app.supplier.reviewer, self.f.app.reviewer)
+        self.assertEqual(set(self.f.app.reviewer.validators),
+                         {'SupplierOffer', 'ItineraryVersion', 'RecoveryProposal',
+                          'ResolutionRecommendation', 'CampaignProposal'})
+        supplier_record = self.f.app.supplier.repository.records()[0]
+        offer = supplier_record['offer']
+        proposal = dict(deepcopy(offer), price=deepcopy(supplier_record['price']))
+        evidence = deepcopy(offer['sourceReferences'])
+        policy = [{'policyVersion': self.f.app.supplier.policy.version}]
+        self.assertEqual(self.f.app.reviewer.review(proposal, evidence, policy)['outcome'], 'PASS')
+        proposal['price']['sellingPrice']['amount'] = '1.00'
+        self.assertEqual(self.f.app.reviewer.review(proposal, evidence, policy)['outcome'], 'REVISION_REQUIRED')
         self.record()
         view = self.dispatch()
         self.assertEqual(view['case']['status'], 'UNDER_REVIEW', view)
