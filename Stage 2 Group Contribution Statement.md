@@ -8,12 +8,12 @@ Enter each of the four members’ names and Student IDs in the corresponding col
 
 | Assessment criterion | Member 1 | Member 2 | Member 3 | Member 4 | Row total |
 | --- | --- | --- | --- | --- | --- |
-| Student name | Jiaheng Guo | | | | |
-| Student ID | 510423614 | | | | |
-| 1. Implementation of Stage 1 Requirements and Design (7 marks) | 25% | | | | **100%** |
-| 2. Demonstrating AI Agent Capabilities (4 marks) | 30% | | | | **100%** |
-| 3. Agile Development Experience (4 marks) | 40% | | | | **100%** |
-| 4. Incorporation of Advanced Technologies (5 marks) | 60% | | | | **100%** |
+| Student name | Jiaheng Guo | Runda Weng | | | |
+| Student ID | 510423614 | 540917343 | | | |
+| 1. Implementation of Stage 1 Requirements and Design (7 marks) | 25% | 25% | | | **Pending** |
+| 2. Demonstrating AI Agent Capabilities (4 marks) | 30% | 25% | | | **Pending** |
+| 3. Agile Development Experience (4 marks) | 40% | 25% | | | **Pending** |
+| 4. Incorporation of Advanced Technologies (5 marks) | 60% | 25% | | | **Pending** |
 
 ## Specific work completed by each student
 
@@ -35,9 +35,9 @@ React and CI/CD: Migrated authenticated request queues to reusable React compone
 
 Agile collaboration and delivery evidence: Prepared and maintained Stage 2 Jira backlog descriptions, dependencies and implementation handoffs. Used branches and pull requests to deliver incremental changes, tracked and resolved integration defects, and documented setup instructions, supported demonstration scenarios, verification results and remaining limitations.
 
-### Member 2
+### Member 2 Runda Weng
 
-**Specific work completed:** [type here]
+**Specific work completed:** Collaborated with the group on Stage 2 requirements, design, AI agent workflows, implementation, integration, testing, and delivery. Contributed to the Customer Exception workflows and worked with teammates to connect them to the shared portal and other agents, review results, resolve issues, and prepare demonstrations and documentation.
 
 ### Member 3
 
