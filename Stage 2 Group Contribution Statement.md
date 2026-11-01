@@ -13,7 +13,7 @@ Enter each of the four members’ names and Student IDs in the corresponding col
 | 1. Implementation of Stage 1 Requirements and Design (7 marks) | 25% | | 25% | 25% | **100%** |
 | 2. Demonstrating AI Agent Capabilities (4 marks) | 30% | | 30% | 20% | **100%** |
 | 3. Agile Development Experience (4 marks) | 40% | | 20% | 20% | **100%** |
-| 4. Incorporation of Advanced Technologies (5 marks) | 60% | | 15% | | **100%** |
+| 4. Incorporation of Advanced Technologies (5 marks) | 60% | | 15% | 15% | **100%** |
 
 ## Specific work completed by each student
 
