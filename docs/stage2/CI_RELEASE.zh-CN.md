@@ -64,3 +64,11 @@ python scripts/verify_release.py /path/to/fresh-output/TripMate-<12位commit>.zi
 
 验证安装依赖需要网络，但不会调用共享云数据或真实模型。完整真实业务演练与
 同伴确认仍属于 WN5620-65；自动测试、ZIP 冒烟检查不等同于这些人工验收。
+
+## 已发现的跨平台问题与阻断证据
+
+[首次真实运行](https://github.com/jiahengguo/Thu-11-13-Group6/actions/runs/41259620949)
+中，Linux 与前端检查通过，Windows 检查捕获归档文档的 LF/CRLF 差异，ZIP
+交付任务自动跳过，未上传失败版本。修复在归档命令上显式关闭 `core.autocrlf`
+并设置 `core.eol=lf`；新增测试故意启用 CRLF 配置，核对归档与提交字节一致。
+这是实际的失败检测、修复和交付阻断记录；最终结果以修复提交的工作流检查为准。

@@ -74,6 +74,15 @@ class ReleasePackageTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'Required committed release files missing'):
             self.build()
 
+    def test_archive_bytes_do_not_depend_on_windows_autocrlf(self):
+        self.git('config', 'core.autocrlf', 'true')
+        self.git('config', 'core.eol', 'crlf')
+        expected = self.git('show', 'HEAD:docs/stage2/DEMO_SCENARIOS.zh-CN.md')
+        archive = self.build()
+        folder, _ = validate_archive(archive)
+        with zipfile.ZipFile(archive) as zipped:
+            self.assertEqual(zipped.read(folder + '/docs/stage2/DEMO_SCENARIOS.zh-CN.md'), expected)
+
     def test_checkout_must_match_the_commit_that_triggered_delivery(self):
         with self.assertRaisesRegex(ValueError, 'Checkout differs'):
             package(self.root, Path(self.temp.name) / 'releases', expected_commit='0' * 40)

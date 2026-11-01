@@ -61,7 +61,10 @@ def package(root, output, expected_commit=None):
     # git archive uses committed blobs. Worktree changes, including the user's
     # newer DEMO_SCENARIOS document, cannot enter the archive.
     sources = {}
-    raw = git(root, 'archive', '--format=tar', commit)
+    # Windows runners may globally enable autocrlf. An archive must not depend
+    # on the maintainer's checkout newline preferences.
+    raw = git(root, '-c', 'core.autocrlf=false', '-c', 'core.eol=lf',
+              'archive', '--format=tar', commit)
     with tarfile.open(fileobj=io.BytesIO(raw)) as archive:
         for member in archive:
             if member.isdir() or not allowed(member.name):
