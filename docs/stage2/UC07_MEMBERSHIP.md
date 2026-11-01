@@ -2,7 +2,7 @@
 
 The membership page now displays a fresh server decision, labelled simulated advertising for Free users, no advertisements for active Paid users, a Paid-only interactive sample route, and member-offer eligibility. Stop buttons support keyboard navigation. The sample route is explicitly not a traveller itinerary or live navigation.
 
-Existing trip checks continue to enforce two simultaneous Planned/Active trips and five inclusive calendar days for Free members, with fresh checks before presentation, adoption and starting. Expired Paid membership falls back to Free rules. Evidence failures return VERIFICATION_FAILED. Replaying a premium request key re-evaluates current authority and records the fresh decision instead of disclosing protected content using cached authority.
+Existing trip checks continue to enforce two simultaneous Planned/Active trips and five inclusive calendar days for Free members, with fresh checks before presentation, adoption and starting. Expired Paid membership falls back to Free rules. Evidence failures return VERIFICATION_FAILED. Replaying a protected-feature request key re-evaluates current authority and records the fresh decision instead of disclosing protected content using cached authority. Membership overview reads evaluate fresh evidence without writing an audit command or changing the shared business revision; map, ad-free and member-offer actions retain their decision audit.
 
 ## Provider boundary
 

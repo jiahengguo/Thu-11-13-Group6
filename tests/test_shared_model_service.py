@@ -11,6 +11,9 @@ class SharedModelServiceTests(unittest.TestCase):
         self.assertIs(app.model_service, service)
         self.assertIs(app.operations.llm, service)
         self.assertIs(app.campaigns.ops.llm, service)
+        self.assertIs(app.supplier.reviewer, app.reviewer)
+        self.assertIs(app.campaigns.reviewer, app.reviewer)
+        self.assertEqual(set(app.reviewer.validators), {'SupplierOffer', 'ItineraryVersion', 'CampaignProposal', 'RecoveryProposal', 'ResolutionRecommendation'})
         service.chat.assert_not_called()
 
     def test_model_mode_requires_configured_credentials(self):

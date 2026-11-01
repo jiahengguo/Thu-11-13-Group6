@@ -42,10 +42,9 @@ class SharedSupplierRepository:
             records.put('supplier_version', self.key(offer_id, version), saved)
 
     def current(self, offer_id):
-        with self.repository.transaction() as records:
-            pointer = records.get('supplier_current', offer_id)
-            value = records.get('supplier_version', self.key(offer_id, pointer['version'])) if pointer else None
-            return dict(value, offer=None, price=None, result=None, invalidated=True) if value and pointer.get('invalidated') else value
+        pointer = self.repository.read('supplier_current', offer_id)
+        value = self.repository.read('supplier_version', self.key(offer_id, pointer['version'])) if pointer else None
+        return dict(value, offer=None, price=None, result=None, invalidated=True) if value and pointer.get('invalidated') else value
 
     def records(self):
         with self.repository.transaction() as records:

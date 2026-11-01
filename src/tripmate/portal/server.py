@@ -24,7 +24,8 @@ COOKIE = 'tripmate_session'
 class Portal:
     def __init__(self, cloud, supplier_pricing=None, supplier_policy=None, model_planning=False, benefits=None, travel_factors=None, llm_service=None):
         self.cloud, self.sessions, self.rate = cloud, Sessions(cloud), RateLimit()
-        self.operations = OperationsService(SupabaseOperationsRepository(cloud), NoUserFixtures(), seed_profiles=False, benefits=benefits)
+        self.operations = OperationsService(SupabaseOperationsRepository(cloud), NoUserFixtures(), seed_profiles=False, benefits=benefits,
+                                            dependency_timeout=60 if model_planning else 30)
         self.model_service = llm_service
         if self.model_service is None and (model_planning or os.environ.get('ELEC5620_API_KEY') not in (None, '', 'REPLACE_LOCALLY')):
             from tripmate.adapters.campus import CampusLLMService
@@ -40,28 +41,36 @@ class Portal:
         from tripmate.operations.integration import connect_planning
         from tripmate.planning.shared_repository import SharedPlanningRepository
         from tripmate.planning.review import planning_reviewer
+        from tripmate.exception_handling.review import exception_reviewer
+        from tripmate.supplier.review import supplier_offer_validator
+        from tripmate.services.review import DeterministicReviewService
         self.planning = SharedPlanningRepository(self.operations.repository)
         from .factors import StoredTravelFactors
         self.factor_inputs = StoredTravelFactors(self.operations)
         travel_factors = travel_factors if travel_factors is not None else self.factor_inputs
         self.travel_factors = travel_factors
+        from tripmate.planning.member_offers import MemberPlanningOffers
+        self.planning_offers = MemberPlanningOffers(self.operations, self.supplier, self.campaigns)
+        validators = dict(planning_reviewer(self.operations, self.planning_offers, travel_factors).validators)
+        validators.update(exception_reviewer(lambda: self.operations.clock()).validators)
+        validators.update(self.campaigns.reviewer.validators)
+        validators['SupplierOffer'] = supplier_offer_validator(self.supplier.policy, lambda: self.operations.clock())
+        self.reviewer = DeterministicReviewService(lambda: self.operations.clock(), validators)
+        self.supplier.reviewer = self.campaigns.reviewer = self.reviewer
         planner_factory = None
         if model_planning:
             from tripmate.planning.campus import ModelPlanningEngine
             planner_factory = lambda: ModelPlanningEngine(self.model_service, lambda: self.operations.clock())
-        from tripmate.planning.member_offers import MemberPlanningOffers
-        self.planning_offers = MemberPlanningOffers(self.operations, self.supplier, self.campaigns)
-        connect_planning(self.operations, self.planning_offers, planning_reviewer(self.operations, self.planning_offers, travel_factors), self.planning,
+        connect_planning(self.operations, self.planning_offers, self.reviewer, self.planning,
                          planner_factory=planner_factory, factors=travel_factors)
         from tripmate.exception_handling.integration import connect_exception
         from tripmate.exception_handling.portal import PortalExceptionContexts
         from tripmate.exception_handling.shared_repository import SharedExceptionRepository
         from tripmate.exception_handling.project_ports import ProjectSupplier, ProjectPlanning, ProjectComplaintFindings
-        from tripmate.exception_handling.review import exception_reviewer
         self.exception_contexts = PortalExceptionContexts(self.operations)
         self.exception = connect_exception(self.operations, self.exception_contexts,
             SharedExceptionRepository(self.operations.repository), ProjectSupplier(self.planning_offers), ProjectPlanning(travel_factors),
-            reviewer=exception_reviewer(lambda: self.operations.clock()),
+            reviewer=self.reviewer,
             complaint_findings=ProjectComplaintFindings(self.planning, self.supplier))
 
     def ops_actor(self, actor):

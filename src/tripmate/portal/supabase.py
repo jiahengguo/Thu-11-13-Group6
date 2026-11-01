@@ -33,7 +33,9 @@ class Supabase:
         elif admin and key.startswith('eyJ'):
             headers['Authorization'] = 'Bearer ' + key
         data = json.dumps(body).encode() if body is not None else None
-        attempts = 2 if admin and path == '/rest/v1/rpc/tripmate_snapshot' else 1
+        # Both private snapshot RPCs are read-only. A database-cancelled read
+        # may be repeated once; auth, commits and other RPCs are never replayed.
+        attempts = 2 if admin and path in ('/rest/v1/rpc/tripmate_snapshot', '/rest/v1/rpc/tripmate_state') else 1
         for attempt in range(attempts):
             try:
                 with urlopen(Request(self.url + path, data=data, headers=headers, method=method), timeout=15) as response:

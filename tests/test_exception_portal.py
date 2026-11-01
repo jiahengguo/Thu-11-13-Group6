@@ -47,6 +47,20 @@ class ExceptionPortalTests(unittest.TestCase):
         return self.f.post(self.f.traveller, 'dispatch', dict(caseId=self.cid, revision=version))
 
     def test_recovery_uses_current_project_ports_review_delivery_selection_and_restart(self):
+        self.assertIs(self.f.app.exception.runtime.reviewer, self.f.app.reviewer)
+        self.assertIs(self.f.app.campaigns.reviewer, self.f.app.reviewer)
+        self.assertIs(self.f.app.supplier.reviewer, self.f.app.reviewer)
+        self.assertEqual(set(self.f.app.reviewer.validators),
+                         {'SupplierOffer', 'ItineraryVersion', 'RecoveryProposal',
+                          'ResolutionRecommendation', 'CampaignProposal'})
+        supplier_record = self.f.app.supplier.repository.records()[0]
+        offer = supplier_record['offer']
+        proposal = dict(deepcopy(offer), price=deepcopy(supplier_record['price']))
+        evidence = deepcopy(offer['sourceReferences'])
+        policy = [{'policyVersion': self.f.app.supplier.policy.version}]
+        self.assertEqual(self.f.app.reviewer.review(proposal, evidence, policy)['outcome'], 'PASS')
+        proposal['price']['sellingPrice']['amount'] = '1.00'
+        self.assertEqual(self.f.app.reviewer.review(proposal, evidence, policy)['outcome'], 'REVISION_REQUIRED')
         self.record()
         view = self.dispatch()
         self.assertEqual(view['case']['status'], 'UNDER_REVIEW', view)
@@ -98,7 +112,13 @@ class ExceptionPortalTests(unittest.TestCase):
         self.assertEqual(restarted.exception.investigation(self.f.operator, self.cid)['result'], internal['specialistResult'])
         traces = self.f.app.operations.traces(self.f.operator, self.cid)
         self.assertEqual(len(traces), len({e['eventId'] for e in traces}))
-        self.assertTrue(any(e['actor'] == 'exception' for e in traces))
+        self.assertTrue({'operations', 'exception', 'supplier', 'planning'} <=
+                        {e['actor'] for e in traces})
+        supplier_trace = next(e for e in traces if e['actor'] == 'supplier')
+        planning_trace = next(e for e in traces if e['actor'] == 'planning')
+        self.assertEqual(supplier_trace['runId'], planning_trace['runId'])
+        self.assertEqual(supplier_trace['caseId'], planning_trace['caseId'])
+        self.assertLess(traces.index(supplier_trace), traces.index(planning_trace))
 
     def test_requester_report_cannot_be_used_as_a_supplier_cancellation_fact(self):
         view = self.dispatch()
@@ -191,6 +211,10 @@ class ExceptionPortalTests(unittest.TestCase):
         self.assertEqual(view['case']['status'], 'HUMAN_ASSISTANCE')
         self.assertIsNone(view['response'])
         self.assertEqual(self.f.app.planning.get_version(self.baseline['version']['versionId']), self.baseline)
+        investigation = self.f.app.exception.investigation(self.f.operator, self.cid)
+        self.assertEqual(investigation['result']['errors'][0]['code'], 'NO_FEASIBLE_ITINERARY')
+        traces = self.f.app.operations.traces(self.f.operator, self.cid)
+        self.assertTrue({'supplier', 'planning'} <= {e['actor'] for e in traces})
 
     def test_changed_notice_revokes_presented_options_until_confirmed_reinvestigation(self):
         self.record()
@@ -252,3 +276,99 @@ class ExceptionPortalTests(unittest.TestCase):
         expired=self.f.post(self.f.operator,'recovery-lifecycle',dict(caseId=self.cid,revision=reminded['revision'],action='CHECK_WAIT',data={}))
         self.assertEqual(expired['case']['status'],'HUMAN_ASSISTANCE')
         self.assertEqual(expired['exception']['exceptionStage'],'NO_RESPONSE')
+
+    def lifecycle_call(self, actor, operation, current, **fields):
+        return self.f.clients[actor].call('/api/operations/' + operation, dict(
+            requestKey=str(uuid4()), caseId=self.cid, revision=current['revision'], **fields))
+
+    def operator_view(self):
+        status, view, _ = self.f.clients[self.f.operator].call('/api/operations/case?caseId=' + self.cid)
+        self.assertEqual(status, 200, view)
+        return view
+
+    def assert_unresolved_closure(self, current, reason):
+        response = self.lifecycle_call(self.f.operator, 'case-action', current,
+            action='CLOSE_CASE', reason=reason)
+        self.assertEqual(response[0], 200, response[1])
+        closed = self.operator_view()
+        self.assertEqual(closed['case']['status'], 'CLOSED')
+        self.assertEqual(closed['exception']['exceptionStage'], 'CLOSED_UNRESOLVED')
+        self.assertEqual(self.f.app.planning.get_version(self.baseline['version']['versionId']), self.baseline)
+        events = self.f.app.operations.traces(self.f.operator, self.cid)
+        self.assertTrue(any(e['eventType'] == 'CASE_CLOSED' and reason in e['summary'] for e in events))
+        return closed
+
+    def test_decline_through_authenticated_portal_keeps_case_unresolved(self):
+        self.record()
+        presented = self.f.release(self.cid, self.dispatch()['revision'])
+        denied = self.lifecycle_call(self.f.operator, 'case-action', presented,
+            action='CLOSE_CASE', reason='A waiting traveller decision is not a resolved outcome.')
+        self.assertEqual(denied[0], 409)
+        declined = self.lifecycle_call(self.f.traveller, 'exception-selection', presented,
+            runId=presented['recoveryOptions']['runId'], optionId=None, confirmed=True)
+        self.assertEqual(declined[0], 200, declined[1])
+        current = self.operator_view()
+        self.assertEqual(current['case']['status'], 'HUMAN_ASSISTANCE')
+        self.assertEqual(current['exception']['exceptionStage'], 'HUMAN_TAKEOVER')
+        self.assertFalse(declined[1]['canSelectRecovery'])
+        forbidden = self.lifecycle_call(self.f.traveller, 'case-action', current,
+            action='CLOSE_CASE', reason='Traveller cannot close this recovery case.')
+        self.assertEqual(forbidden[0], 403)
+        empty = self.lifecycle_call(self.f.operator, 'case-action', current, action='CLOSE_CASE', reason='')
+        self.assertEqual(empty[0], 422)
+        self.assert_unresolved_closure(current, 'Traveller declined all options; closed unresolved for manual handling. No travel change was executed.')
+
+    def test_no_response_uses_explicit_operator_takeover_without_invented_deadline(self):
+        self.record()
+        presented = self.f.release(self.cid, self.dispatch()['revision'])
+        before = self.operator_view()
+        self.assertEqual(before['exception']['exceptionStage'], 'AWAITING_TRAVELLER_DECISION')
+        # Reopening/restarting is not a timeout, reminder or inferred traveller decision.
+        restarted = Portal(self.f.cloud, supplier_policy=self.f.policy)
+        self.assertEqual(restarted.operations.case_view(self.f.operator, self.cid)['revision'], before['revision'])
+        denied = self.lifecycle_call(self.f.operator, 'case-action', presented,
+            action='CLOSE_CASE', reason='No automatic closure merely because a response is missing.')
+        self.assertEqual(denied[0], 409)
+        taken = self.lifecycle_call(self.f.operator, 'review', before,
+            decision='TAKE_OVER', reason='No traveller response has been recorded; operator explicitly takes over.')
+        self.assertEqual(taken[0], 200, taken[1])
+        current = self.operator_view()
+        self.assertEqual(current['case']['status'], 'HUMAN_ASSISTANCE')
+        self.assertEqual(current['exception']['exceptionStage'], 'HUMAN_TAKEOVER')
+        self.assert_unresolved_closure(current, 'Operator recorded the manual handoff; closed unresolved, with no confirmed booking or trip recovery.')
+
+    def test_pending_recovery_cannot_be_selected_or_closed_before_human_decision(self):
+        self.record(restricted=True)
+        pending = self.dispatch()
+        self.assertEqual(pending['case']['status'], 'AWAITING_HUMAN_APPROVAL')
+        self.assertIsNone(pending['response'])
+        current = self.operator_view()
+        attempted = self.lifecycle_call(self.f.traveller, 'exception-selection', pending,
+            runId=current['exception']['exceptionRunId'], optionId=None, confirmed=True)
+        self.assertEqual(attempted[0], 409)
+        denied = self.lifecycle_call(self.f.operator, 'case-action', current,
+            action='CLOSE_CASE', reason='An undecided restricted proposal is not a closure outcome.')
+        self.assertEqual(denied[0], 409)
+        self.assertEqual(self.operator_view()['case']['status'], 'AWAITING_HUMAN_APPROVAL')
+        rejected = self.lifecycle_call(self.f.operator, 'review', current,
+            decision='REJECT', reason='Operator rejects the exact restricted recovery proposal.')
+        self.assertEqual(rejected[0], 200, rejected[1])
+        current = self.operator_view()
+        self.assertEqual(current['exception']['exceptionStage'], 'HUMAN_TAKEOVER')
+        self.assert_unresolved_closure(current, 'Rejected proposal referred for manual handling; no external action completed.')
+
+    def test_selection_requires_followup_delivery_before_reasoned_unresolved_closure(self):
+        self.record()
+        presented = self.f.release(self.cid, self.dispatch()['revision'])
+        selected = self.lifecycle_call(self.f.traveller, 'exception-selection', presented,
+            runId=presented['recoveryOptions']['runId'],
+            optionId=presented['recoveryOptions']['options'][0]['offerId'], confirmed=True)
+        self.assertEqual(selected[0], 200, selected[1])
+        self.assertEqual(selected[1]['case']['status'], 'UNDER_REVIEW')
+        denied = self.lifecycle_call(self.f.operator, 'case-action', selected[1],
+            action='CLOSE_CASE', reason='The selected recommendation has not completed response review and delivery.')
+        self.assertEqual(denied[0], 409)
+        delivered = self.f.release(self.cid, selected[1]['revision'])
+        self.assertEqual(delivered['case']['status'], 'AWAITING_REQUESTER')
+        self.assertEqual(self.operator_view()['exception']['exceptionStage'], 'RECOMMENDATION_DELIVERED')
+        self.assert_unresolved_closure(delivered, 'Checked recommendation delivered; case closed unresolved with manual follow-up, not a completed rebooking.')

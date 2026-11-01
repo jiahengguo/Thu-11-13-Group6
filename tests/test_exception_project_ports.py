@@ -86,6 +86,45 @@ class ExceptionProjectPortTests(unittest.TestCase):
         result, _ = self.run_case(case, context, quotes)
         self.assertEqual(result['status'], 'HUMAN_ASSISTANCE')
 
+    def test_recovery_checks_additional_confirmed_baggage_and_arrival_constraints(self):
+        case, context, quotes = self.inputs()
+        request = context['planningContext']['request']
+        spec = context['planningContext']['spec']
+        request['hardConstraints'].append(dict(constraintId='baggage', kind='BAGGAGE',
+                                               description='Carry 20 kg', confirmed=True))
+        spec['constraintBindings']['baggage'] = dict(description='Carry 20 kg', value=20)
+        request['hardConstraints'].append(dict(constraintId='arrival', kind='ARRIVAL_TIME',
+                                               description='Arrive by 18:00', confirmed=True))
+        spec['constraintBindings']['arrival'] = dict(description='Arrive by 18:00',
+                                                   value='2026-10-20T18:00:00+11:00')
+        baseline = context['planningContext']['baseline']
+        baseline['request'] = deepcopy(request)
+        baseline['spec'] = deepcopy(spec)
+        result, saved = self.run_case(case, context, quotes)
+        self.assertEqual(result['status'], 'SUCCESS', result)
+        self.assertTrue(saved['proposal']['options'])
+        for option in saved['proposal']['options']:
+            checks = {check['ruleId']: check['outcome']
+                      for check in option['planningRecord']['version']['validationResults']}
+            self.assertEqual(checks['CONSTRAINT:baggage'], 'PASS')
+            self.assertEqual(checks['CONSTRAINT:arrival'], 'PASS')
+            self.assertIsInstance(option['arrivalChangeMinutes'], int)
+            self.assertEqual(option['planningRecord']['comparison']['baselineVersionId'],
+                             baseline['version']['versionId'])
+
+        case, context, quotes = self.inputs()
+        request = context['planningContext']['request']
+        spec = context['planningContext']['spec']
+        request['hardConstraints'].append(dict(constraintId='baggage', kind='BAGGAGE',
+                                               description='Carry 21 kg', confirmed=True))
+        spec['constraintBindings']['baggage'] = dict(description='Carry 21 kg', value=21)
+        context['planningContext']['baseline']['request'] = deepcopy(request)
+        context['planningContext']['baseline']['spec'] = deepcopy(spec)
+        result, saved = self.run_case(case, context, quotes)
+        self.assertEqual(result['status'], 'HUMAN_ASSISTANCE')
+        self.assertEqual(result['errors'][0]['code'], 'NO_FEASIBLE_ITINERARY')
+        self.assertIsNone(saved['proposal'])
+
     def test_project_supplier_port_reads_the_actual_b03_catalog(self):
         case, context, _ = self.inputs()
         fixtures = FixtureRepository(self.path)

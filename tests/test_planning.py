@@ -139,6 +139,13 @@ class ValidationTests(unittest.TestCase):
         checks = self.checks()
         self.assertTrue(any(c["outcome"] == "UNSUPPORTED" for c in checks))
 
+    def test_unbound_free_text_preference_cannot_claim_a_feasible_plan(self):
+        self.request["preferences"] = ["Quiet private room"]
+        records, excluded = self.engine.generate(self.request, self.quotes, self.spec)
+        self.assertEqual(records, [])
+        self.assertTrue(any(c["ruleId"] == "PREFERENCE_SCOPE" and c["outcome"] == "UNSUPPORTED"
+                            for candidate in excluded for c in candidate["checks"]))
+
     def test_accessibility_and_baggage(self):
         for kind, value in [("ACCESSIBILITY", True), ("BAGGAGE", 21)]:
             with self.subTest(kind=kind):

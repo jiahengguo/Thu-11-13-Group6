@@ -101,6 +101,9 @@ class ExceptionIntegrationTests(unittest.TestCase):
     def test_present_select_review_deliver_and_authorised_unresolved_closure(self):
         view = self.dispatch(self.case())
         self.assertNotIn('recoveryOptions', view)
+        with self.assertRaises(OperationsError):
+            self.service.case_action(OPERATOR, self.key(), view['case']['caseId'], view['revision'],
+                                     'CLOSE_CASE', 'The proposal is still awaiting review.')
         view = self.present(view)
         options = view['recoveryOptions']
         self.assertEqual(view['case']['status'], 'AWAITING_REQUESTER')
@@ -111,6 +114,9 @@ class ExceptionIntegrationTests(unittest.TestCase):
             self.service.select_exception(OTHER, self.key(), *args, True)
         view = self.service.select_exception(PAID, self.key(), *args, True)
         self.assertEqual(view['case']['status'], 'UNDER_REVIEW')
+        with self.assertRaises(OperationsError):
+            self.service.case_action(OPERATOR, self.key(), view['case']['caseId'], view['revision'],
+                                     'CLOSE_CASE', 'The traveller chose a proposal but no response was delivered.')
         view = self.present(view)
         op = self.service.case_view(OPERATOR, view['case']['caseId'])
         self.assertEqual(op['exception']['exceptionStage'], 'RECOMMENDATION_DELIVERED')
@@ -126,6 +132,21 @@ class ExceptionIntegrationTests(unittest.TestCase):
         view = self.service.select_exception(PAID, self.key(), view['case']['caseId'], view['revision'],
                                               view['recoveryOptions']['runId'], None, True)
         self.assertEqual(view['case']['status'], 'HUMAN_ASSISTANCE')
+
+    def test_no_response_stays_open_until_reasoned_operator_takeover(self):
+        view = self.present(self.dispatch(self.case()))
+        case_id = view['case']['caseId']
+        self.assertEqual(view['case']['status'], 'AWAITING_REQUESTER')
+        with self.assertRaises(OperationsError):
+            self.service.case_action(OPERATOR, self.key(), case_id, view['revision'],
+                                     'CLOSE_CASE', '')
+        view = self.service.review_case(OPERATOR, self.key(), case_id, view['revision'],
+                                        'TAKE_OVER', 'No traveller response; operator will handle manually.')
+        self.assertEqual(view['case']['status'], 'HUMAN_ASSISTANCE')
+        self.assertEqual(view['exception']['exceptionStage'], 'HUMAN_TAKEOVER')
+        view = self.service.case_action(OPERATOR, self.key(), case_id, view['revision'],
+                                        'CLOSE_CASE', 'Closed unresolved after manual handoff; no travel change confirmed.')
+        self.assertEqual(view['exception']['exceptionStage'], 'CLOSED_UNRESOLVED')
 
     def test_reject_takeover_and_request_revision_preserve_case_and_evidence(self):
         for decision, state in [('REJECT', 'HUMAN_ASSISTANCE'), ('TAKE_OVER', 'HUMAN_ASSISTANCE'),

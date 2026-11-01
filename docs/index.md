@@ -9,6 +9,7 @@
 - [集成流程、演示顺序与当前限制](stage2/LIVE_WORKFLOW.zh-CN.md)
 - [演示账户与供应数据](stage2/DEMO_ACCOUNTS.zh-CN.md)
 - [启动和配置检查](stage2/STARTUP_READINESS.zh-CN.md)
+- [云端读取超时修复与性能实测](stage2/CLOUD_READ_PERFORMANCE_2026-11-01.zh-CN.md)
 - [Stage 1 最终报告](TripMate_AI_stage1_report.pdf)
 
 ## 根目录
@@ -94,6 +95,11 @@
 - [Portal acceptance evidence — 13 October 2026](portal/TEST_RESULTS.md)
 
 ## stage2
+
+- [WN5620-20/49：实现范围、验证与签收](stage2/RELEASE_20_49_CLOSEOUT.zh-CN.md)
+
+- [WN5620-11/13/45 当前代码的隔离验收与待签收项](stage2/ACCEPTANCE_11_13_45_2026-11-01.zh-CN.md)
+- [WN5620-11/13/45 逐场景机器记录](stage2/acceptance-11-13-45-evidence.json)
 
 - [Jason：UC-08 营销活动实现与交接](stage2/UC08_CAMPAIGN_HANDOFF.zh-CN.md)
 - [Supplier 与 UC-08 本机验收截图及边界](stage2/SUPPLIER_ACCEPTANCE_2026-10-31.zh-CN.md)

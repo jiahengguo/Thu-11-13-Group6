@@ -37,18 +37,24 @@ class SharedPlanningRepository:
         return record
 
     def get_version(self, version_id):
-        with self.records() as rows:
-            return self.version(rows, version_id)
+        record = self._read('planning_version', version_id)
+        if record is None:
+            raise PlanningError('MISSING_REQUIRED_FIELDS', 'Baseline/proposal not found', 'repository')
+        return record
+
+    def _read(self, kind, key):
+        # Adoption must see its pending writes inside the coordinator command.
+        # Ordinary views need just one record, not the full transaction snapshot.
+        bound = self.bound_records.get()
+        return bound.get(kind, key) if bound is not None else self.repository.read(kind, key)
 
     def selected(self, plan_id):
-        with self.records() as rows:
-            pointer = rows.get('planning_selected', plan_id)
-            return pointer['versionId'] if pointer else None
+        pointer = self._read('planning_selected', plan_id)
+        return pointer['versionId'] if pointer else None
 
     def accepted(self, proposal_id):
-        with self.records() as rows:
-            pointer = rows.get('planning_acceptance', proposal_id)
-            return self.version(rows, pointer['versionId']) if pointer else None
+        pointer = self._read('planning_acceptance', proposal_id)
+        return self.get_version(pointer['versionId']) if pointer else None
 
     def lifecycle(self, plan_id):
         selected = self.selected(plan_id)

@@ -40,6 +40,7 @@ class SupplierAccess:
 class SupplierGateway:
     def __init__(self, operations, pricing=None, policy=None):
         self.operations = operations
+        self.reviewer = None  # The authenticated portal injects the shared domain registry.
         self.repository = SharedSupplierRepository(operations.repository)
         self.approvals = SharedApprovals(operations.repository)
         self.access = SupplierAccess(operations, self.repository)
@@ -107,8 +108,12 @@ class SupplierGateway:
 
     def find_selectable(self, criteria, at):
         quotes = self.runtime.find_selectable(criteria, at)
+        if not quotes:
+            return []
+        # One scoped read avoids an extra cloud round trip for every offer.
+        cases = {rec['id']: rec for rec in self.operations.repository.list('case')}
         return [quote for quote in quotes
-                if (self.operations.repository.read('case', quote['offer']['caseId']) or {}).get('case', {}).get('status') != 'WITHDRAWN']
+                if cases.get(quote['offer']['caseId'], {}).get('case', {}).get('status') != 'WITHDRAWN']
 
     def _case(self, actor, case_id):
         profile = self.operations.profile(actor)
@@ -194,6 +199,12 @@ class SupplierGateway:
             if action == 'review':
                 if body['decision'] not in {'PASS', 'REVISION_REQUIRED'}:
                     raise SupplierError('REVIEW_FAILED', 'Choose Pass or Request revision')
+                if body['decision'] == 'PASS' and self.reviewer is not None:
+                    assessed = self.reviewer.review(dict(deepcopy(offer), price=deepcopy(record['price'])),
+                                                     deepcopy(offer['sourceReferences']),
+                                                     [{'policyVersion': self.policy.version}])
+                    if assessed['outcome'] != 'PASS':
+                        raise SupplierError('REVIEW_FAILED', '; '.join(assessed['reasons']))
                 if not offer['review'] or offer['review']['reviewId'] != journal['reviewId']:
                     review = dict(reviewId=journal['reviewId'], subject=subject(offer), outcome=body['decision'],
                                   reasons=[reason], reviewedAt=journal['reviewedAt'], policyVersion='portal-operator-review-1',
