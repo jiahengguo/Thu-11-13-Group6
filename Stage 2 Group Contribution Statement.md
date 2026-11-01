@@ -43,7 +43,18 @@ Agile collaboration and delivery evidence: Prepared and maintained Stage 2 Jira 
 
 **Specific work completed:** [type here]
 
-### Member 4
+### Member 4 Jingao Yang
 
-**Specific work completed:** [type here]
+**Specific work completed:** 
+Supplier Partnership implementation: Implemented the UC-06 supplier offer assessment workflow, covering offer intake, structured data extraction, availability and commercial-term validation, selling-price and minimum-margin checks, review, and version-linked human decisions. Reused the shared PricingService and independently validated its results. Preserved offer history and prevented expired, invalid, superseded or unapproved offers from being selected by other agents.
+
+Agent integration and shared persistence: Implemented the SupplierGateway and shared-storage adapter to connect supplier assessment with authenticated Operations requests and Planning offer lookup. Provided current approved offer, price and source information for downstream use. Added checks for supplier ownership, current versions and approval authority, with traceable results and failure handling.
+
+UC-08 campaign planning and AI capabilities: Implemented the campaign preparation, evaluation and approval workflow in the authenticated Operator portal. Integrated the shared model interface for constrained campaign drafting, while retaining deterministic checks for supplier evidence, simulated channel costs, budgets, dates and content restrictions. Bound approval, revision and rejection decisions to exact proposal versions and invalidated previous authority when campaign materials changed.
+
+Member-benefit integration: Implemented versioned campaign member-offer rules, eligibility handoff to UC-07 and separate customer quotations through UC-06. Rechecked discounted margins, prevented discount stacking and preserved original supplier prices. Connected explicitly consented simulated campaign responses to Operations with campaign and source references.
+
+Development tools and database reliability: Built the B02 local diagnostic workbench and B03 deterministic synthetic dataset, including repeatable scenarios, persistence checks and safe fixture reset. Investigated the Supabase shared-snapshot timeout and implemented a PostgreSQL function migration that removed observed temporary-storage spill while preserving snapshot contents and backend-only permissions. Documented comparative measurements and deployment verification.
+
+Testing, release evidence and agile delivery: Added Supplier and campaign regression tests, boundary cases, labelled local browser evidence and implementation handoffs. Contributed four authenticated recovery-lifecycle scenarios and five release-evidence checks for WN5620-20/49, preventing empty or skipped test runs from being reported as successful acceptance. Recorded two consecutive isolated release runs totalling 200 passing test executions. Delivered changes through branches and pull requests, with requirement mappings, verification records and clear distinctions between simulated testing and real-provider acceptance.
 
