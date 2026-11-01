@@ -16,9 +16,8 @@ Automated checks and source ZIP delivery are defined in `.github/workflows/ci.ym
 - [Stage 2 Group Contribution Statement](Stage%202%20Group%20Contribution%20Statement.md)
 - [Jira project — WN5620](https://elec5619-5-group-1.atlassian.net/jira/software/projects/WN5620/summary)
 - [GitHub repository](https://github.com/jiahengguo/Thu-11-13-Group6)
-- [Browser acceptance results and remaining checks](docs/testing/2026-11-01-browser-acceptance.zh-CN.md)
 
-For Canvas assessment, download the agreed final version from GitHub and extract the ZIP before following the setup instructions below. The contribution statement and acceptance report are included through relative file links; Jira and GitHub require Internet access. Keep credentials and local configuration out of the submitted ZIP.
+For Canvas assessment, download the agreed final version from GitHub and extract the ZIP before following the setup instructions below. The contribution statement uses a relative file link within the ZIP; Jira and GitHub require Internet access. Keep credentials and local configuration out of the submitted ZIP.
 
 ## Current scope
 
