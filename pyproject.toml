@@ -20,4 +20,4 @@ where = ["src"]
 
 "tripmate.api" = ["static/*.html", "static/*.css", "static/*.js"]
 "tripmate.fixtures" = ["*.json"]
-"tripmate.portal" = ["static/*.html", "static/*.css", "static/*.js"]
+"tripmate.portal" = ["static/*.html", "static/*.css", "static/*.js", "static/*.LICENSE.txt"]
