@@ -693,6 +693,9 @@ release them. One running dependency per coordinator prevents unbounded threads.
                 rec["case"]["requiresApproval"] = True
             if decision == "TAKE_OVER":
                 rec["case"]["status"] = "HUMAN_ASSISTANCE"
+                rec["case"]["unresolvedQuestions"] = [reason]
+                if rec.get('exceptionRunId'):
+                    rec['exceptionStage'] = 'HUMAN_TAKEOVER'
             elif decision in {"REQUEST_REVISION", "REJECT"}:
                 if rec["approvalId"]:
                     self._decide(records, rec, actor, decision, reason)
@@ -781,6 +784,14 @@ release them. One running dependency per coordinator prevents unbounded threads.
             rec = self._owned(records, actor, case_id, action, revision)
             if rec["case"]["status"] in {"CLOSED", "WITHDRAWN"}:
                 raise OperationsError("UNCONFIRMED_REQUEST", "The case is already closed.")
+            if action == "CLOSE_CASE" and rec.get('exceptionRunId'):
+                # A recommendation or pending approval is not completed travel.
+                # The operator may only close the simulated case as unresolved
+                # after delivery or an explicit human handoff.
+                if (rec.get('exceptionStage') not in {'RECOMMENDATION_DELIVERED', 'HUMAN_TAKEOVER'}
+                        or rec['case']['status'] not in {'AWAITING_REQUESTER', 'HUMAN_ASSISTANCE'}):
+                    raise OperationsError("UNCONFIRMED_REQUEST",
+                                          "Record a delivered recommendation or human handoff before unresolved closure.")
             if action == "HUMAN":
                 rec["case"]["humanRequestCount"] += 1
                 if rec["case"]["humanRequestCount"] >= 2:

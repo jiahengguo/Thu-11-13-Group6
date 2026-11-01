@@ -40,7 +40,19 @@ class Portal:
         from tripmate.operations.integration import connect_planning
         from tripmate.planning.shared_repository import SharedPlanningRepository
         from tripmate.planning.review import planning_reviewer
+        from tripmate.exception_handling.review import exception_reviewer
+        from tripmate.supplier.review import supplier_offer_validator
+        from tripmate.services.review import DeterministicReviewService
         self.planning = SharedPlanningRepository(self.operations.repository)
+        # The authenticated portal uses one explicit registry for the Planning,
+        # Exception and Campaign proposal domains. Unknown domains still fail.
+        validators = dict(planning_reviewer(self.operations, self.supplier).validators)
+        validators.update(exception_reviewer(lambda: self.operations.clock()).validators)
+        validators.update(self.campaigns.reviewer.validators)
+        validators['SupplierOffer'] = supplier_offer_validator(self.supplier.policy, lambda: self.operations.clock())
+        self.reviewer = DeterministicReviewService(lambda: self.operations.clock(), validators)
+        self.supplier.reviewer = self.reviewer
+        self.campaigns.reviewer = self.reviewer
         planner_factory = None
         if model_planning:
             from tripmate.adapters.campus import CampusClient
@@ -48,17 +60,16 @@ class Portal:
             CampusClient(timeout=25, max_completion_tokens=2048)  # Validate configuration before startup; no network call.
             planner_factory = lambda: ModelPlanningEngine(CampusClient(timeout=25, max_completion_tokens=2048),
                                                           lambda: self.operations.clock())
-        connect_planning(self.operations, self.supplier, planning_reviewer(self.operations, self.supplier), self.planning,
+        connect_planning(self.operations, self.supplier, self.reviewer, self.planning,
                          planner_factory=planner_factory)
         from tripmate.exception_handling.integration import connect_exception
         from tripmate.exception_handling.portal import PortalExceptionContexts
         from tripmate.exception_handling.shared_repository import SharedExceptionRepository
         from tripmate.exception_handling.project_ports import ProjectSupplier, ProjectPlanning, ProjectComplaintFindings
-        from tripmate.exception_handling.review import exception_reviewer
         self.exception_contexts = PortalExceptionContexts(self.operations)
         self.exception = connect_exception(self.operations, self.exception_contexts,
             SharedExceptionRepository(self.operations.repository), ProjectSupplier(self.supplier), ProjectPlanning(),
-            reviewer=exception_reviewer(lambda: self.operations.clock()),
+            reviewer=self.reviewer,
             complaint_findings=ProjectComplaintFindings(self.planning, self.supplier))
 
     def ops_actor(self, actor):

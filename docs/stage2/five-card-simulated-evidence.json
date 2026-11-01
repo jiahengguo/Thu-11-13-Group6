@@ -1,0 +1,107 @@
+{
+  "recordedAt": "2026-11-01T08:29:32.153084+00:00",
+  "mode": "ISOLATED_SIMULATION",
+  "python": "3.14.2",
+  "baseCommit": "1f1f0fb1f80804784eefadf065fa36a16f72e3a4",
+  "pythonSourceSha256": "2d923380614fc1bc81faa1fcd37f68f316d80b39d228b3eee2f8c1defc2d6963",
+  "workingTreeDirty": true,
+  "sets": [
+    {
+      "iteration": 1,
+      "scenarioSet": "planning_membership",
+      "testModule": "test_planning_portal.py",
+      "testCount": 6,
+      "passed": true,
+      "resultTail": "/Library/Frameworks/Python.framework/Versions/3.14/lib/python3.14/tempfile.py:484: ResourceWarning: Implicitly cleaning up <HTTPError 503: 'Service Unavailable'>\n  _warnings.warn(self.warn_message, ResourceWarning)\n./Library/Frameworks/Python.framework/Versions/3.14/lib/python3.14/tempfile.py:484: ResourceWarning: Implicitly cleaning up <HTTPError 422: 'Unprocessable Content'>\n  _warnings.warn(self.warn_message, ResourceWarning)\n/Library/Frameworks/Python.framework/Versions/3.14/lib/python3.14/tempfile.py:484: ResourceWarning: Implicitly cleaning up <HTTPError 403: 'Forbidden'>\n  _warnings.warn(self.warn_message, ResourceWarning)\n.....\n----------------------------------------------------------------------\nRan 6 tests in 5.266s\n\nOK\n"
+    },
+    {
+      "iteration": 1,
+      "scenarioSet": "planning_membership",
+      "testModule": "test_operations.py",
+      "testCount": 40,
+      "passed": true,
+      "resultTail": "../Library/Frameworks/Python.framework/Versions/3.14/lib/python3.14/tempfile.py:484: ResourceWarning: Implicitly cleaning up <HTTPError 403: 'Forbidden'>\n  _warnings.warn(self.warn_message, ResourceWarning)\n/Library/Frameworks/Python.framework/Versions/3.14/lib/python3.14/tempfile.py:484: ResourceWarning: Implicitly cleaning up <HTTPError 422: 'Unprocessable Content'>\n  _warnings.warn(self.warn_message, ResourceWarning)\n......................................\n----------------------------------------------------------------------\nRan 40 tests in 1.660s\n\nOK\n"
+    },
+    {
+      "iteration": 1,
+      "scenarioSet": "disruption_complaint",
+      "testModule": "test_exception_portal.py",
+      "testCount": 12,
+      "passed": true,
+      "resultTail": "/Library/Frameworks/Python.framework/Versions/3.14/lib/python3.14/tempfile.py:484: ResourceWarning: Implicitly cleaning up <HTTPError 409: 'Conflict'>\n  _warnings.warn(self.warn_message, ResourceWarning)\n../Library/Frameworks/Python.framework/Versions/3.14/lib/python3.14/tempfile.py:484: ResourceWarning: Implicitly cleaning up <HTTPError 422: 'Unprocessable Content'>\n  _warnings.warn(self.warn_message, ResourceWarning)\n..../Library/Frameworks/Python.framework/Versions/3.14/lib/python3.14/tempfile.py:484: ResourceWarning: Implicitly cleaning up <HTTPError 403: 'Forbidden'>\n  _warnings.warn(self.warn_message, ResourceWarning)\n......\n----------------------------------------------------------------------\nRan 12 tests in 11.771s\n\nOK\n"
+    },
+    {
+      "iteration": 1,
+      "scenarioSet": "disruption_complaint",
+      "testModule": "test_complaint_portal.py",
+      "testCount": 6,
+      "passed": true,
+      "resultTail": "......\n----------------------------------------------------------------------\nRan 6 tests in 5.502s\n\nOK\n"
+    },
+    {
+      "iteration": 1,
+      "scenarioSet": "supplier_campaign",
+      "testModule": "test_supplier_portal.py",
+      "testCount": 12,
+      "passed": true,
+      "resultTail": "./Library/Frameworks/Python.framework/Versions/3.14/lib/python3.14/tempfile.py:484: ResourceWarning: Implicitly cleaning up <HTTPError 403: 'Forbidden'>\n  _warnings.warn(self.warn_message, ResourceWarning)\n./Library/Frameworks/Python.framework/Versions/3.14/lib/python3.14/tempfile.py:484: ResourceWarning: Implicitly cleaning up <HTTPError 503: 'Service Unavailable'>\n  _warnings.warn(self.warn_message, ResourceWarning)\n......./Library/Frameworks/Python.framework/Versions/3.14/lib/python3.14/tempfile.py:484: ResourceWarning: Implicitly cleaning up <HTTPError 422: 'Unprocessable Content'>\n  _warnings.warn(self.warn_message, ResourceWarning)\n...\n----------------------------------------------------------------------\nRan 12 tests in 6.849s\n\nOK\n"
+    },
+    {
+      "iteration": 1,
+      "scenarioSet": "supplier_campaign",
+      "testModule": "test_campaigns.py",
+      "testCount": 20,
+      "passed": true,
+      "resultTail": "......../Library/Frameworks/Python.framework/Versions/3.14/lib/python3.14/tempfile.py:484: ResourceWarning: Implicitly cleaning up <HTTPError 422: 'Unprocessable Content'>\n  _warnings.warn(self.warn_message, ResourceWarning)\n/Library/Frameworks/Python.framework/Versions/3.14/lib/python3.14/tempfile.py:484: ResourceWarning: Implicitly cleaning up <HTTPError 403: 'Forbidden'>\n  _warnings.warn(self.warn_message, ResourceWarning)\n/Library/Frameworks/Python.framework/Versions/3.14/lib/python3.14/tempfile.py:484: ResourceWarning: Implicitly cleaning up <HTTPError 503: 'Service Unavailable'>\n  _warnings.warn(self.warn_message, ResourceWarning)\n/Library/Frameworks/Python.framework/Versions/3.14/lib/python3.14/tempfile.py:484: ResourceWarning: Implicitly cleaning up <HTTPError 409: 'Conflict'>\n  _warnings.warn(self.warn_message, ResourceWarning)\n............\n----------------------------------------------------------------------\nRan 20 tests in 11.290s\n\nOK\n"
+    },
+    {
+      "iteration": 2,
+      "scenarioSet": "planning_membership",
+      "testModule": "test_planning_portal.py",
+      "testCount": 6,
+      "passed": true,
+      "resultTail": "/Library/Frameworks/Python.framework/Versions/3.14/lib/python3.14/tempfile.py:484: ResourceWarning: Implicitly cleaning up <HTTPError 503: 'Service Unavailable'>\n  _warnings.warn(self.warn_message, ResourceWarning)\n./Library/Frameworks/Python.framework/Versions/3.14/lib/python3.14/tempfile.py:484: ResourceWarning: Implicitly cleaning up <HTTPError 422: 'Unprocessable Content'>\n  _warnings.warn(self.warn_message, ResourceWarning)\n/Library/Frameworks/Python.framework/Versions/3.14/lib/python3.14/tempfile.py:484: ResourceWarning: Implicitly cleaning up <HTTPError 403: 'Forbidden'>\n  _warnings.warn(self.warn_message, ResourceWarning)\n.....\n----------------------------------------------------------------------\nRan 6 tests in 5.267s\n\nOK\n"
+    },
+    {
+      "iteration": 2,
+      "scenarioSet": "planning_membership",
+      "testModule": "test_operations.py",
+      "testCount": 40,
+      "passed": true,
+      "resultTail": "../Library/Frameworks/Python.framework/Versions/3.14/lib/python3.14/tempfile.py:484: ResourceWarning: Implicitly cleaning up <HTTPError 403: 'Forbidden'>\n  _warnings.warn(self.warn_message, ResourceWarning)\n/Library/Frameworks/Python.framework/Versions/3.14/lib/python3.14/tempfile.py:484: ResourceWarning: Implicitly cleaning up <HTTPError 422: 'Unprocessable Content'>\n  _warnings.warn(self.warn_message, ResourceWarning)\n......................................\n----------------------------------------------------------------------\nRan 40 tests in 1.649s\n\nOK\n"
+    },
+    {
+      "iteration": 2,
+      "scenarioSet": "disruption_complaint",
+      "testModule": "test_exception_portal.py",
+      "testCount": 12,
+      "passed": true,
+      "resultTail": "/Library/Frameworks/Python.framework/Versions/3.14/lib/python3.14/tempfile.py:484: ResourceWarning: Implicitly cleaning up <HTTPError 409: 'Conflict'>\n  _warnings.warn(self.warn_message, ResourceWarning)\n../Library/Frameworks/Python.framework/Versions/3.14/lib/python3.14/tempfile.py:484: ResourceWarning: Implicitly cleaning up <HTTPError 422: 'Unprocessable Content'>\n  _warnings.warn(self.warn_message, ResourceWarning)\n..../Library/Frameworks/Python.framework/Versions/3.14/lib/python3.14/tempfile.py:484: ResourceWarning: Implicitly cleaning up <HTTPError 403: 'Forbidden'>\n  _warnings.warn(self.warn_message, ResourceWarning)\n......\n----------------------------------------------------------------------\nRan 12 tests in 11.795s\n\nOK\n"
+    },
+    {
+      "iteration": 2,
+      "scenarioSet": "disruption_complaint",
+      "testModule": "test_complaint_portal.py",
+      "testCount": 6,
+      "passed": true,
+      "resultTail": "......\n----------------------------------------------------------------------\nRan 6 tests in 5.483s\n\nOK\n"
+    },
+    {
+      "iteration": 2,
+      "scenarioSet": "supplier_campaign",
+      "testModule": "test_supplier_portal.py",
+      "testCount": 12,
+      "passed": true,
+      "resultTail": "./Library/Frameworks/Python.framework/Versions/3.14/lib/python3.14/tempfile.py:484: ResourceWarning: Implicitly cleaning up <HTTPError 403: 'Forbidden'>\n  _warnings.warn(self.warn_message, ResourceWarning)\n./Library/Frameworks/Python.framework/Versions/3.14/lib/python3.14/tempfile.py:484: ResourceWarning: Implicitly cleaning up <HTTPError 503: 'Service Unavailable'>\n  _warnings.warn(self.warn_message, ResourceWarning)\n......./Library/Frameworks/Python.framework/Versions/3.14/lib/python3.14/tempfile.py:484: ResourceWarning: Implicitly cleaning up <HTTPError 422: 'Unprocessable Content'>\n  _warnings.warn(self.warn_message, ResourceWarning)\n...\n----------------------------------------------------------------------\nRan 12 tests in 6.327s\n\nOK\n"
+    },
+    {
+      "iteration": 2,
+      "scenarioSet": "supplier_campaign",
+      "testModule": "test_campaigns.py",
+      "testCount": 20,
+      "passed": true,
+      "resultTail": "......../Library/Frameworks/Python.framework/Versions/3.14/lib/python3.14/tempfile.py:484: ResourceWarning: Implicitly cleaning up <HTTPError 422: 'Unprocessable Content'>\n  _warnings.warn(self.warn_message, ResourceWarning)\n/Library/Frameworks/Python.framework/Versions/3.14/lib/python3.14/tempfile.py:484: ResourceWarning: Implicitly cleaning up <HTTPError 403: 'Forbidden'>\n  _warnings.warn(self.warn_message, ResourceWarning)\n/Library/Frameworks/Python.framework/Versions/3.14/lib/python3.14/tempfile.py:484: ResourceWarning: Implicitly cleaning up <HTTPError 503: 'Service Unavailable'>\n  _warnings.warn(self.warn_message, ResourceWarning)\n/Library/Frameworks/Python.framework/Versions/3.14/lib/python3.14/tempfile.py:484: ResourceWarning: Implicitly cleaning up <HTTPError 409: 'Conflict'>\n  _warnings.warn(self.warn_message, ResourceWarning)\n............\n----------------------------------------------------------------------\nRan 20 tests in 11.295s\n\nOK\n"
+    }
+  ],
+  "allPassed": true
+}

@@ -40,6 +40,7 @@ class SupplierAccess:
 class SupplierGateway:
     def __init__(self, operations, pricing=None, policy=None):
         self.operations = operations
+        self.reviewer = None  # The authenticated portal injects the shared domain registry.
         self.repository = SharedSupplierRepository(operations.repository)
         self.approvals = SharedApprovals(operations.repository)
         self.access = SupplierAccess(operations, self.repository)
@@ -194,6 +195,12 @@ class SupplierGateway:
             if action == 'review':
                 if body['decision'] not in {'PASS', 'REVISION_REQUIRED'}:
                     raise SupplierError('REVIEW_FAILED', 'Choose Pass or Request revision')
+                if body['decision'] == 'PASS' and self.reviewer is not None:
+                    assessed = self.reviewer.review(dict(deepcopy(offer), price=deepcopy(record['price'])),
+                                                     deepcopy(offer['sourceReferences']),
+                                                     [{'policyVersion': self.policy.version}])
+                    if assessed['outcome'] != 'PASS':
+                        raise SupplierError('REVIEW_FAILED', '; '.join(assessed['reasons']))
                 if not offer['review'] or offer['review']['reviewId'] != journal['reviewId']:
                     review = dict(reviewId=journal['reviewId'], subject=subject(offer), outcome=body['decision'],
                                   reasons=[reason], reviewedAt=journal['reviewedAt'], policyVersion='portal-operator-review-1',

@@ -99,6 +99,21 @@ class SupplierPortalTests(unittest.TestCase):
         self.assertIsNone(public['price'])
         self.assertNotIn('marginAmount', json.dumps(public))
 
+    def test_shared_review_rechecks_current_supplier_price_before_human_pass(self):
+        case_id = self.assess()
+        self.login(self.operator)
+        offer = self.view(case_id)['offer']
+        repository = self.server.app.operations.repository
+        key = self.server.app.supplier.repository.key(offer['offerId'], offer['materialVersion'])
+        with repository.transaction() as rows:
+            saved = rows.get('supplier_version', key)
+            saved['price']['sellingPrice']['amount'] = '1.00'
+            rows.put('supplier_version', key, saved)
+        _, result = self.action(case_id)
+        self.assertEqual(result[0], 422, result)
+        self.assertEqual(self.view(case_id)['status'], 'UNDER_REVIEW')
+        self.assertEqual(self.server.app.supplier.find_selectable({}, AT), [])
+
     def test_restricted_terms_require_separate_version_scoped_decision(self):
         payload = self.submission()
         payload['commercialTerms'] = ['Restricted exclusive commitment']
