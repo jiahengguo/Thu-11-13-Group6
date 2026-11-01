@@ -2,8 +2,6 @@
 
 [简体中文](README.zh-CN.md) · [Documentation index](docs/index.md)
 
-[2026-11-01 live browser acceptance](docs/testing/2026-11-01-browser-acceptance.zh-CN.md): campaign approval and member quotation passed; complaint checks are partial and refund approval remains untested. This is not full release sign-off.
-
 
 TripMate is a travel-service prototype with authenticated Traveller, Supplier and Operator portals. Operations coordinates three specialist agents: Supplier validates quotations, Planning proposes and checks itineraries, and Exception investigates disruptions and prepares recovery recommendations.
 
