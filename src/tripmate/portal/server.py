@@ -150,7 +150,7 @@ def make_server(cloud, port=8780, origin=None, bind='127.0.0.1', supplier_pricin
                     user = self.identity()
                     app.campaigns.operator(user['id'])
                     return self.send(200, (static/'campaigns.html').read_bytes(), 'text/html; charset=utf-8')
-                assets = {'/': ('home.html','text/html; charset=utf-8'), '/login': ('login.html','text/html; charset=utf-8'), '/auth/callback': ('login.html','text/html; charset=utf-8'), '/portal.css': ('portal.css','text/css; charset=utf-8'), '/auth.js': ('auth.js','text/javascript; charset=utf-8'), '/portal.js': ('portal.js','text/javascript; charset=utf-8')}
+                assets = {'/': ('home.html','text/html; charset=utf-8'), '/login': ('login.html','text/html; charset=utf-8'), '/auth/callback': ('login.html','text/html; charset=utf-8'), '/portal.css': ('portal.css','text/css; charset=utf-8'), '/auth.js': ('auth.js','text/javascript; charset=utf-8'), '/portal.js': ('portal.js','text/javascript; charset=utf-8'), '/portal-queue.js': ('portal-queue.js','text/javascript; charset=utf-8')}
                 if path in assets:
                     name,mime=assets[path]
                     return self.send(200,(static/name).read_bytes(),mime)

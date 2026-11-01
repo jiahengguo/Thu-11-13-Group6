@@ -1,0 +1,102 @@
+name: CI and source ZIP delivery
+
+on:
+  pull_request:
+  push:
+    branches: [main, ci-release-delivery]
+    tags: ['v*']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  backend:
+    name: Python ${{ matrix.python }} / ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - {os: ubuntu-22.04, python: '3.9'}
+          - {os: ubuntu-22.04, python: '3.12'}
+          - {os: windows-latest, python: '3.12'}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: ${{ matrix.python }}
+          cache: pip
+          cache-dependency-path: pyproject.toml
+      - name: Install Python package
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e .
+      - name: Complete regression (isolated provider doubles)
+        run: python -m unittest discover -s tests -v
+
+  frontend:
+    name: React tests and reproducible production build
+    runs-on: ubuntu-22.04
+    timeout-minutes: 10
+    outputs:
+      node: ${{ steps.runtime.outputs.node }}
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - name: Record build runtime
+        id: runtime
+        run: node -p '"node=" + process.version' >> "$GITHUB_OUTPUT"
+      - run: npm ci
+      - run: npm test
+      - run: npm run build
+      - name: Reject missing or stale shipped bundles
+        run: git diff --exit-code -- ../src/tripmate/portal/static/portal-queue.js ../src/tripmate/portal/static/portal-queue.LICENSE.txt
+
+  delivery:
+    name: Verify and deliver source ZIP
+    needs: [backend, frontend]
+    # The named implementation branch is an explicit bootstrap/preview target.
+    # PR events never upload release artifacts, including same-repository PRs.
+    if: >-
+      github.event_name != 'pull_request' &&
+      (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/ci-release-delivery' ||
+       startsWith(github.ref, 'refs/tags/v'))
+    runs-on: ubuntu-22.04
+    timeout-minutes: 15
+    env:
+      BUILD_NODE_VERSION: ${{ needs.frontend.outputs.node }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: '3.12'
+      - name: Package only allowlisted committed sources
+        run: python scripts/package_release.py
+      - name: Inspect, extract, initialize twice and smoke test without Node
+        run: python scripts/verify_release.py dist/releases/TripMate-${GITHUB_SHA:0:12}.zip
+      - name: Upload verified ZIP, checksum and provenance
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: TripMate-${{ github.sha }}
+          path: dist/releases/*
+          if-no-files-found: error
+          retention-days: 14
