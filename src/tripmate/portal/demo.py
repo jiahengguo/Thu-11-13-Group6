@@ -135,7 +135,7 @@ def supplier_inputs(namespace, scenario, start, at):
     return result
 
 
-def seed_data(cloud, accounts, namespace, scenario='demo', start_date=None, clock=None):
+def seed_data(cloud, accounts, namespace, scenario='demo', start_date=None, clock=None, multi_city=False):
     namespace_value(namespace)
     namespace_value(scenario)
     repository = SupabaseOperationsRepository(cloud)
@@ -154,6 +154,8 @@ def seed_data(cloud, accounts, namespace, scenario='demo', start_date=None, cloc
     owners = {kind: accounts[kind]['id'] for kind in KINDS}
     if previous and previous['owners'] != owners:
         raise ValueError('This scenario belongs to another set of accounts.')
+    if previous and previous.get('multiCity', False) != multi_city:
+        raise ValueError('Scenario inventory mode changed; use a new scenario name.')
     today = instant(operations.clock()).astimezone(ZoneInfo('Australia/Sydney')).date()
     start = date.fromisoformat(start_date) if start_date else date.fromisoformat(previous['startDate']) if previous else today + timedelta(days=2)
     if start < today or (previous and previous['startDate'] != start.isoformat()):
@@ -162,11 +164,15 @@ def seed_data(cloud, accounts, namespace, scenario='demo', start_date=None, cloc
     if existing:
         return existing
     if previous is None:
-        previous = dict(owners=owners, startDate=start.isoformat(), createdAt=operations.clock(), simulationOnly=True)
+        previous = dict(owners=owners, startDate=start.isoformat(), createdAt=operations.clock(),
+                        simulationOnly=True, multiCity=multi_city)
         with repository.transaction() as rows:
             rows.put('demo_setup', key, previous)
-    cases = {}
-    for name, quotation in supplier_inputs(namespace, scenario, start, previous['createdAt']):
+    cases, offer_ids = {}, {}
+    inputs = supplier_inputs
+    if multi_city:
+        from .multi_city_demo import supplier_inputs as inputs
+    for name, quotation in inputs(namespace, scenario, start, previous['createdAt']):
         intents = [dict(caseType='OFFER', fields=dict(details='Seeded synthetic quotation; not a live supplier submission.', supplierOffer=quotation))]
         prefix = 'seed-' + hashlib.sha256((key + '/' + name).encode()).hexdigest()[:32]
         intake = operations.intake(owners['supplier'], prefix + '/intake', 'Explicit simulated supplier seed data.', intents)
@@ -174,19 +180,33 @@ def seed_data(cloud, accounts, namespace, scenario='demo', start_date=None, cloc
         case_id = confirmed['caseIds'][0]
         operations.dispatch(owners['supplier'], prefix + '/dispatch', case_id, 1)
         expected = 'EXPIRED' if name == 'expired' else 'REVISION_REQUIRED' if name == 'zero-stock' else 'UNDER_REVIEW'
-        if gateway.view(owners['supplier'], case_id)['status'] != expected:
+        assessment = gateway.view(owners['supplier'], case_id)
+        if assessment['status'] != expected:
             raise OperationsError('TOOL_UNAVAILABLE', 'A seed assessment is incomplete; inspect the saved case before retrying.')
         cases[name] = case_id
+        offer_ids[name] = assessment['offer']['offerId'] if assessment.get('offer') else None
+    policy = None
+    if multi_city:
+        from .multi_city_demo import daily_policy, ASSUMPTIONS
+        from .customer_daily import MARKER
+        policy = daily_policy(start, offer_ids)
     drafts = {}
     for kind in ('free', 'paid'):
         fields = dict(origin='Sydney Central', destination='Melbourne Centre', partySize=1,
             budgetCeiling=dict(amount='900.00', currency='AUD'), travelDates=dict(startDate=start.isoformat(),
             endDate=(start + timedelta(days=2)).isoformat()), rankingMode='VALUE', preferences=[], constraints=[])
-        intake = operations.intake(owners[kind], key + '/draft/' + kind, 'Seeded simulated itinerary request; traveller confirmation still required.',
+        if multi_city:
+            fields['budgetCeiling']['amount'] = '2500.00'
+            fields['constraints'] = [dict(kind='OTHER', description=MARKER, value=policy)]
+        text = ('Seeded simulated multi-city itinerary. ' + ASSUMPTIONS + ' Traveller confirmation still required.'
+                if multi_city else 'Seeded simulated itinerary request; traveller confirmation still required.')
+        intake = operations.intake(owners[kind], key + '/draft/' + kind, text,
                                   [dict(caseType='TRAVEL_PLANNING', fields=fields)])
         drafts[kind] = intake['id']
     result = dict(namespace=namespace, scenario=scenario, startDate=start.isoformat(), supplierCases=cases,
                   travellerDrafts=drafts, simulationOnly=True, operatorReviewRequired=True)
+    if multi_city:
+        result.update(multiCity=True, dailyPolicy=policy, simulationAssumptions=ASSUMPTIONS)
     with repository.transaction() as rows:
         rows.put('demo_seed_result', key, result)
     return result
@@ -198,6 +218,8 @@ def main():
     parser.add_argument('--namespace', default='stage2-demo')
     parser.add_argument('--scenario', default='demo')
     parser.add_argument('--start-date')
+    parser.add_argument('--multi-city', action='store_true',
+                        help='Seed a three-day Sydney/Goulburn/Canberra/Melbourne simulation instead of ordinary inventory')
     parser.add_argument('--manifest', type=Path, default=Path('.demo-accounts.local.json'))
     parser.add_argument('--apply', action='store_true')
     parser.add_argument('--confirm-project', help='Must exactly match the configured Supabase URL for a real cloud write')
@@ -207,14 +229,15 @@ def main():
         namespace_value(args.scenario)
         if not args.apply:
             print(json.dumps(dict(dryRun=True, accounts=[args.namespace + '.' + k + '@example.invalid' for k in KINDS],
-                cloudWrites=False, operatorReviewRequired=True), indent=2))
+                cloudWrites=False, operatorReviewRequired=True, multiCity=args.multi_city), indent=2))
             return 0
         Settings.load(args.env_file)
         cloud = Supabase.from_env()
         if args.confirm_project != cloud.url:
             raise ValueError('Explicitly confirm the exact project URL before creating dedicated test identities.')
         manifest = prepare_accounts(cloud, args.namespace, args.manifest)
-        result = seed_data(cloud, manifest['accounts'], args.namespace, args.scenario, args.start_date)
+        result = seed_data(cloud, manifest['accounts'], args.namespace, args.scenario, args.start_date,
+                           multi_city=args.multi_city)
         print(json.dumps(result, indent=2))
         print('Credentials are in the owner-only local manifest; no passwords were printed. No offers were approved.')
         return 0

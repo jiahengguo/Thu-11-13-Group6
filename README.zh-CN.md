@@ -121,6 +121,8 @@ Supabase 三项必须来自同一个项目；本地演示的其他模板设置�
 
 Windows 将 Python 路径换为 `.venv\Scripts\python.exe`。旅行日期应选择演示之后的有效日期。四类账户为 Free/Paid Traveller、Supplier、Operator；随机密码仅保存在忽略的 `.demo-accounts.local.json`。其他电脑没有原密码文件时，应使用约定的资料交接方式，或用新的 `--namespace` 和独立 manifest 创建账户，不覆盖已有身份。新的 `--scenario` 用于另建演练场景，保留历史。
 
+旅客端多城市／逐日编辑器可使用独立的 `--multi-city` 数据模式和新 scenario，准备匹配的三天供应资源与未确认草稿。操作见[多城市模拟数据说明](docs/stage2/MULTI_CITY_DEMO.zh-CN.md)。
+
 初始化不会代替 Operator 审核、客户确认、方案采用或开始行程。过期、零库存和受限报价是失败／待批准示例；正常规划使用四项普通报价，并先由 Operator 审核。
 
 ### 4. 检查并启动

@@ -121,6 +121,8 @@ Explicitly prepare a named simulated scenario in the configured project:
 
 Use `.venv\Scripts\python.exe` instead on Windows. Choose future travel dates for your rehearsal. The four account types are Free/Paid Traveller, Supplier and Operator. Random passwords are saved only in the ignored `.demo-accounts.local.json`. New machines without the original manifest must use an agreed credential handoff or a new `--namespace` and separate manifest; never overwrite existing identities. A new `--scenario` creates a separate rehearsal while retaining history.
 
+For the customer multi-city/daily planner, use the separate `--multi-city` inventory mode and a new scenario. See the [multi-city demo data guide](docs/stage2/MULTI_CITY_DEMO.zh-CN.md) for the matching services and daily stops.
+
 Provisioning does not approve quotations, confirm traveller requests or activate trips. Expired, zero-stock and restricted examples intentionally remain blocked/pending. Normal planning uses the four ordinary quotations after Operator review.
 
 ### 4. Check and start

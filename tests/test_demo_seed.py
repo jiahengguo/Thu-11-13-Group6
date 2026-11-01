@@ -162,3 +162,72 @@ if (!$acl.AreAccessRulesProtected -or $rules.Count -ne 1 -or
         self.assertTrue(versions)
         for version in versions:
             self.assertEqual(version['totalPrice']['amount'], '594.00')
+
+    def test_multi_city_seed_requires_review_then_generates_daily_options(self):
+        seed = seed_data(self.cloud, self.manifest['accounts'], 'stage2-test', scenario='multi-city',
+                         start_date='2026-10-20', clock=lambda: FIXTURE_TIME, multi_city=True)
+        before = json.loads(json.dumps(self.cloud.state))
+        self.assertEqual(seed_data(self.cloud, self.manifest['accounts'], 'stage2-test', scenario='multi-city',
+                                  clock=lambda: FIXTURE_TIME, multi_city=True), seed)
+        self.assertEqual(self.cloud.state, before)
+        self.assertEqual(len(seed['supplierCases']), 10)
+        app = Portal(self.cloud, supplier_policy=PricingPolicy('0.10', '15.00', 'demo-2026-10-24'))
+        app.operations.clock = app.operations.entitlement.clock = lambda: FIXTURE_TIME
+        app.supplier.runtime.clock = app.supplier.pricing.clock = lambda: FIXTURE_TIME
+        self.assertEqual(app.supplier.find_selectable({}, FIXTURE_TIME), [])
+        operator = self.manifest['accounts']['operator']['id']
+        for name, cid in seed['supplierCases'].items():
+            rec = app.operations.repository.read('case', cid)
+            assessment = app.supplier.view(operator, cid)
+            self.assertEqual(assessment['status'], 'UNDER_REVIEW')
+            self.assertTrue(all(s['simulated'] for s in assessment['offer']['sourceReferences']))
+            result = app.supplier.mutate(operator, 'review', dict(caseId=cid, revision=rec['revision'],
+                materialVersion=assessment['offer']['materialVersion'], decision='PASS',
+                reason='Checked the explicitly simulated multi-city inventory and configured margin.',
+                requestKey='multi-review-' + name))
+            self.assertEqual(result['status'], 'APPROVED', result)
+        quotes = app.supplier.find_selectable({}, FIXTURE_TIME)
+        ids = {q['offer']['offerId'] for q in quotes}
+        self.assertTrue(all(set(s['offerIds']).issubset(ids) for s in seed['dailyPolicy']['slots']))
+        paid = self.manifest['accounts']['paid']['id']
+        draft = app.operations.repository.read('intake', seed['travellerDrafts']['paid'])
+        self.assertEqual(draft['caseIds'], [])
+        confirmed = app.operations.confirm(paid, 'confirm-multi', draft['id'], draft['revision'], draft['intents'], True)
+        result = app.operations.dispatch(paid, 'generate-multi', confirmed['caseIds'][0], 1)
+        self.assertEqual(result['case']['status'], 'UNDER_REVIEW', result)
+        rec = app.operations.repository.read('case', confirmed['caseIds'][0])
+        records = [app.planning.get_version(s['subjectId']) for s in rec['specialistResult']['subjects']]
+        self.assertTrue(records)
+        for record in records:
+            self.assertEqual(record['version']['totalPrice']['amount'], '1902.00')
+            self.assertEqual(record['dailySchedule']['additionalCost']['amount'], '120.00')
+            self.assertEqual(sum(i['productType'] == 'TRANSPORT' for i in record['version']['items']), 3)
+            self.assertTrue(any(i['destination'] == 'Canberra Central' for i in record['version']['items']))
+        self.assertIsNone(result['response'])  # Operator response review/delivery is still required.
+        cid = confirmed['caseIds'][0]
+        reviewed = app.operations.review_case(operator, 'review-multi-response', cid, result['revision'],
+            'APPROVE', 'Checked the three transport legs, daily limits, synthetic factors and AUD 1902 total.')
+        delivered = app.operations.deliver(operator, 'deliver-multi', cid, reviewed['revision'])
+        self.assertTrue(delivered['delivered'])
+        visible = app.operations.case_view(paid, cid)
+        self.assertTrue(visible['response'])
+        adopted = app.operations.adopt_plan(paid, 'adopt-multi', visible['planVersionIds'][0], None, True)
+        self.assertEqual(adopted['versionId'], visible['planVersionIds'][0])
+
+    def test_multi_city_cannot_silently_replace_an_existing_scenario(self):
+        seed_data(self.cloud, self.manifest['accounts'], 'stage2-test',
+                  start_date='2026-10-20', clock=lambda: FIXTURE_TIME)
+        before = json.loads(json.dumps(self.cloud.state))
+        with self.assertRaises(ValueError):
+            seed_data(self.cloud, self.manifest['accounts'], 'stage2-test',
+                      clock=lambda: FIXTURE_TIME, multi_city=True)
+        self.assertEqual(self.cloud.state, before)
+
+    def test_multi_city_dates_follow_sydney_daylight_saving(self):
+        from datetime import date
+        from tripmate.portal.multi_city_demo import supplier_inputs as multi_inputs, daily_policy
+        inputs = multi_inputs('stage2-test', 'dst', date(2027, 4, 3), '2027-04-01T12:00:00+11:00')
+        policy = daily_policy(date(2027, 4, 3), {n: n for n, _ in inputs})
+        self.assertTrue(policy['days'][0]['startAt'].endswith('+11:00'))
+        self.assertTrue(policy['days'][1]['startAt'].endswith('+10:00'))
+        self.assertEqual(inputs[0][1]['product']['endAt'], '2027-04-03T09:30:00+11:00')
