@@ -47,7 +47,8 @@ class Portal:
         self.planning = SharedPlanningRepository(self.operations.repository)
         from .factors import StoredTravelFactors
         self.factor_inputs = StoredTravelFactors(self.operations)
-        travel_factors = travel_factors if travel_factors is not None else self.factor_inputs
+        from .customer_daily import CustomerDailyFactors
+        travel_factors = travel_factors if travel_factors is not None else CustomerDailyFactors(self.operations, self.factor_inputs)
         self.travel_factors = travel_factors
         from tripmate.planning.member_offers import MemberPlanningOffers
         self.planning_offers = MemberPlanningOffers(self.operations, self.supplier, self.campaigns)
@@ -208,6 +209,9 @@ def make_server(cloud, port=8780, origin=None, bind='127.0.0.1', supplier_pricin
                     return self.send(200, app.fixtures.summary())
                 if path == '/api/operations/cases' and not query:
                     return self.send(200,{'cases':app.operations.case_summaries(actor)})
+                if path == '/api/planning/catalog' and not query and user['role']=='TRAVELLER':
+                    quotes = app.supplier.find_selectable({}, app.operations.clock())
+                    return self.send(200, {'resources': [dict(offerId=q['offer']['offerId'], product=q['product'], price=q['price']['sellingPrice']) for q in quotes]})
                 if path == '/api/trips' and not query and user['role']=='TRAVELLER':
                     return self.send(200,{'trips':app.operations.trips(actor)})
                 if path == '/api/intakes' and not query and user['role']!='OPERATOR':
