@@ -46,8 +46,8 @@ class SupabaseOperationsRepository:
         self.context = ContextVar('tripmate_cloud_request', default=None)
 
     @contextmanager
-    def scope(self):
-        token = self.context.set({'profiles': {}})
+    def scope(self, cancelled=None):
+        token = self.context.set({'profiles': {}, 'cancelled': cancelled})
         try:
             yield
         finally:
@@ -96,6 +96,10 @@ class SupabaseOperationsRepository:
 
     def _commit(self, snapshot, records, entry=None):
         if records.writes or records.events or entry:
+            context = self.context.get()
+            cancelled = context.get('cancelled') if context is not None else None
+            if cancelled is not None and cancelled.is_set():
+                raise OperationsError('TOOL_UNAVAILABLE', 'Dependency deadline expired; late cloud changes were not saved.')
             self.cloud.rpc('tripmate_commit', {'expected_version': snapshot['version'], 'writes': list(records.writes.values()), 'events': records.events, 'command_entry': entry})
             context = self.context.get()
             if context is not None:

@@ -108,8 +108,12 @@ class SupplierGateway:
 
     def find_selectable(self, criteria, at):
         quotes = self.runtime.find_selectable(criteria, at)
+        if not quotes:
+            return []
+        # One scoped read avoids an extra cloud round trip for every offer.
+        cases = {rec['id']: rec for rec in self.operations.repository.list('case')}
         return [quote for quote in quotes
-                if (self.operations.repository.read('case', quote['offer']['caseId']) or {}).get('case', {}).get('status') != 'WITHDRAWN']
+                if cases.get(quote['offer']['caseId'], {}).get('case', {}).get('status') != 'WITHDRAWN']
 
     def _case(self, actor, case_id):
         profile = self.operations.profile(actor)

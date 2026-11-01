@@ -24,7 +24,11 @@ COOKIE = 'tripmate_session'
 class Portal:
     def __init__(self, cloud, supplier_pricing=None, supplier_policy=None, model_planning=False, benefits=None):
         self.cloud, self.sessions, self.rate = cloud, Sessions(cloud), RateLimit()
-        self.operations = OperationsService(SupabaseOperationsRepository(cloud), NoUserFixtures(), seed_profiles=False, benefits=benefits)
+        # The bounded portal budget includes cloud lookup/save time in addition
+        # to the model client's own timeout; isolated/default services keep 30s.
+        self.operations = OperationsService(SupabaseOperationsRepository(cloud), NoUserFixtures(),
+                                            seed_profiles=False, benefits=benefits,
+                                            dependency_timeout=60 if model_planning else 30)
         if os.environ.get('ELEC5620_API_KEY') not in (None, '', 'REPLACE_LOCALLY'):
             try:
                 from tripmate.adapters.campus import CampusLLMService

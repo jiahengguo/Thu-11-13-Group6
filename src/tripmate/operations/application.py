@@ -8,7 +8,7 @@ import json
 from contextlib import nullcontext
 from copy import deepcopy
 from decimal import Decimal
-from threading import BoundedSemaphore, RLock, Thread
+from threading import BoundedSemaphore, Event, RLock, Thread
 
 from jsonschema import Draft202012Validator, FormatChecker
 
@@ -83,17 +83,19 @@ class OperationsService:
     def _dependency(self, operation):
         """Bound waiting without retrying a timed-out, possibly still-running task.
 
-Late specialist writes may create internal proposals, but the caller case cannot
-release them. One running dependency per coordinator prevents unbounded threads.
-"""
+        Cloud workers cannot begin another commit after cancellation. In-flight
+        writes still use database version checks. One running dependency per
+        coordinator prevents unbounded threads.
+        """
         if not self.dependency_slot.acquire(blocking=False):
             raise OperationsError("TOOL_UNAVAILABLE", "A previous dependency is still running; request human assistance.")
-        box = {}
+        box, cancelled = {}, Event()
         def run():
             try:
                 # ContextVars do not propagate into a new thread. Give cloud
                 # specialists their own request cache, never the caller's cache.
-                with getattr(self.repository, 'scope', nullcontext)():
+                scope = getattr(self.repository, 'scope', None)
+                with scope(cancelled=cancelled) if scope else nullcontext():
                     box["value"] = operation()
             except Exception as exc:
                 box["error"] = exc
@@ -103,6 +105,7 @@ release them. One running dependency per coordinator prevents unbounded threads.
         worker.start()
         worker.join(self.dependency_timeout)
         if worker.is_alive():
+            cancelled.set()
             raise TimeoutError("Dependency deadline reached")
         if "error" in box:
             raise box["error"]
@@ -918,13 +921,16 @@ release them. One running dependency per coordinator prevents unbounded threads.
             if self.planning_repository.selected(version["planId"]) != version_id:
                 raise OperationsError("STALE_EVIDENCE", "Select the current adopted itinerary before opening its map.")
             decision.update(planId=version["planId"], versionId=version_id)
+        payload = {"decision": decision, "advertising": "AD_FREE" if decision.get("membershipLevel") == "PAID" else "LABELLED_SIMULATED_ADS",
+                   "rankingAffected": False, "simulationOnly": True}
         def save(records):
             rec = {"id": identifier(), "revision": 1, "correlationId": identifier(),
                    "sources": [source(decision["sourceIds"][0], self.clock())]}
             self._event(records, rec, "TOOL_RESULT", json.dumps(decision, sort_keys=True), actor=actor)
-            return {"decision": decision, "advertising": "AD_FREE" if decision.get("membershipLevel") == "PAID" else "LABELLED_SIMULATED_ADS",
-                    "rankingAffected": False, "simulationOnly": True}
-        result = self._command(actor, "premium", key, [action, member_offer_id, version_id], save)
+            return payload
+        # Displaying current membership is a read, so concurrent page views must
+        # not compete for the shared business revision. Protected actions retain audit.
+        result = payload if action == "MEMBERSHIP" else self._command(actor, "premium", key, [action, member_offer_id, version_id], save)
         if result["decision"]["decisionId"] != decision["decisionId"]:
             self._command(actor, "premium-recheck", decision["decisionId"], [action, member_offer_id, version_id], save)
         # Idempotent audit replay never replays stale access authority.
