@@ -115,7 +115,7 @@ class Workbench:
             "case-action": ({"requestKey", "caseId", "revision", "action"}, {"reason"}),
             "clarify": ({"requestKey", "caseId", "revision", "intents", "confirmed"}, set()),
             "review": ({"requestKey", "caseId", "revision", "decision", "reason"}, {"editedText"}),
-            "premium": ({"requestKey", "action"}, {"memberOfferRuleId"}),
+            "premium": ({"requestKey", "action"}, {"memberOfferRuleId", "versionId"}),
             "adopt": ({"requestKey", "versionId", "expectedBaseline", "accepted"}, set()),
             "start-trip": ({"requestKey", "versionId", "confirmed"}, set()),
             "analysis": ({"requestKey", "data"}, set()),
@@ -152,7 +152,7 @@ class Workbench:
             return service.select_exception(actor, key, body['caseId'], body['revision'],
                                             body['runId'], body['optionId'], body['confirmed'])
         if action == "premium":
-            result = service.premium(actor, key, body["action"], body.get("memberOfferRuleId"))
+            result = service.premium(actor, key, body["action"], body.get("memberOfferRuleId"), body.get("versionId"))
             return result
         if action == "adopt":
             return service.adopt_plan(actor, key, body["versionId"], body["expectedBaseline"], body["accepted"])
