@@ -24,6 +24,16 @@ SCENARIOS = {
 }
 
 
+def test_evidence(returncode, output):
+    """A successful process with no executed acceptance tests is not a pass."""
+    count = re.search(r"Ran (\d+) tests?\b", output)
+    completion = re.search(r"(?m)^OK(?: \(skipped=(\d+)\))?\s*$", output)
+    total = int(count.group(1)) if count else None
+    skipped = int(completion.group(1) or 0) if completion else None
+    return {"testCount": total, "skippedCount": skipped,
+            "passed": returncode == 0 and bool(total) and completion is not None and skipped == 0}
+
+
 def replay():
     digest = hashlib.sha256()
     for directory in ("src", "tests", "scripts"):
@@ -41,10 +51,8 @@ def replay():
                 command = [sys.executable, "-m", "unittest", "discover", "-s", "tests", "-p", pattern]
                 run = subprocess.run(command, cwd=ROOT, capture_output=True, text=True)
                 output = run.stdout + run.stderr
-                count = re.search(r"Ran (\d+) tests?", output)
                 row = {"iteration": iteration, "scenarioSet": name, "testModule": pattern,
-                       "testCount": int(count.group(1)) if count else None,
-                       "passed": run.returncode == 0,
+                       **test_evidence(run.returncode, output),
                        "resultTail": output[-1200:]}
                 result["sets"].append(row)
                 print(f"{iteration}/2 {name} {pattern}: "
