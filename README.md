@@ -13,6 +13,7 @@ Automated checks and source ZIP delivery are defined in `.github/workflows/ci.ym
 ## Current scope
 
 - Supplier quotations, explicit Operator review and deterministic AUD pricing.
+- [UC-08 campaign proposals](docs/stage2/UC08_CAMPAIGN_HANDOFF.zh-CN.md): sourced offers, simulated budgets, version-scoped decisions and separate member-benefit quotations; no publishing or spending.
 - Confirmed travel requests, model-assisted plan comparison, explicit adoption and immutable revisions.
 - Traveller-confirmed trip activation; adopting a revision preserves Active status and the original start time.
 - Cancellation evidence recorded by an Operator, Supplier/Planning recovery recommendations, separate proposal/response approvals and controlled delivery.
@@ -160,7 +161,7 @@ Use accounts with the appropriate backend role; ordinary registration creates a 
 | `tests/` | Automated regression tests, including explicitly isolated transport doubles |
 | `docs/` | [Indexed implementation guides and historical handoffs](docs/index.md) |
 
-Trusted complaint-policy integration, restricted supplier offers in Planning, remaining state-machine/reminder behavior, Campaign and full membership benefits remain incomplete. Production pagination/scaling is also outside the current single-process demo. The private snapshot has a bounded 32 MB limit.
+Trusted complaint-policy integration, restricted supplier offers in Planning, remaining state-machine/reminder behavior and full membership benefits remain incomplete. UC-08 has isolated automated and local browser evidence; real cloud/model and final team acceptance remain pending. Production pagination/scaling is also outside the current single-process demo. The private snapshot has a bounded 32 MB limit.
 
 New-machine acceptance, team release rehearsals, final documentation/contribution statements and final ZIP extraction/deployment checks remain pending. Never include `.env`, `.demo-accounts*.json`, virtual environments or local databases in the submitted source package. The retained [Stage 1 report](docs/TripMate_AI_stage1_report.pdf) is the design reference; separate modelling drafts and UML files have been removed.
 

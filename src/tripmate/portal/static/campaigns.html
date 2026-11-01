@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Campaign proposals — TripMate</title><link rel="stylesheet" href="/portal.css"><script defer src="/campaigns.js"></script></head>
+<body><header class="topbar"><a class="brand" href="/admin">TripMate ↗</a><a href="/admin">Back to Operations desk</a></header>
+<main class="workspace"><div id="message" role="status" aria-live="polite" hidden></div>
+<div class="page-head"><div><p class="eyebrow">Supplier Partnership · UC-08</p><h1>Campaign proposals</h1><p class="muted">Prepare a sourced proposal, check its budget and record an exact-version human decision.</p></div><button id="refresh" class="secondary">Refresh</button></div>
+<p class="notice">Simulated channel costs and travel offers. Preview and approval never publish an advertisement or spend money. Paid Members must not receive commercial advertising.</p>
+<div class="two-col"><section class="panel"><h2>Saved campaigns</h2><div id="campaign-list" class="case-list"></div><button id="new" class="secondary">New campaign</button></section>
+<section class="panel"><h2 id="form-title">Confirm a campaign brief</h2><p id="model-status" class="muted"></p>
+<form id="campaign-form"><div class="form-grid">
+<label class="full">Objective<input name="objective" required maxlength="300" placeholder="Show approved domestic travel offers"></label>
+<label class="full">Audience description<input name="audience" required maxlength="300" placeholder="Domestic travellers using Free membership"></label>
+<label>Advertising audience<select name="audienceTier"><option value="FREE">Free Members</option><option value="PAID">Paid Members — advertising blocked</option></select></label>
+<label>Simulated channel<select name="channel"></select></label>
+<label>Campaign starts<input type="datetime-local" name="startAt" required></label><label>Campaign ends<input type="datetime-local" name="endAt" required></label>
+<label>Budget ceiling · AUD<input type="number" name="budget" min="0" max="999999999" step="0.01" required></label>
+<label>Planned channel units<input type="number" name="units" min="1" max="100000" step="1" required></label>
+<label class="full">Content restrictions · one per line<textarea name="restrictions" required maxlength="1000">No personal targeting
+No guaranteed outcomes
+No real booking or payment claims</textarea></label>
+</div><fieldset><legend>Approved supplier offers</legend><div id="offer-list"></div></fieldset>
+<details><summary>Optional member benefit</summary><p class="muted">Fixed AUD reduction per selected quoted offer. UC-07 checks eligibility; UC-06 checks final margin separately. This does not change reusable base prices.</p>
+<label class="check-label"><input type="checkbox" name="memberEnabled">Include a member benefit</label>
+<label>Eligible membership<select name="eligibleTier"><option value="FREE">Free</option><option value="PAID">Paid (benefit only, no advertising)</option><option value="BOTH">Free and Paid</option></select></label>
+<label>Fixed discount · AUD<input type="number" min="0.01" step="0.01" name="discount"></label>
+<label>Benefit starts<input type="datetime-local" name="benefitFrom"></label><label>Benefit ends<input type="datetime-local" name="benefitUntil"></label></details>
+<label class="check-label"><input type="checkbox" name="confirmed" required>I confirm these exact campaign facts, budget and restrictions.</label>
+<button type="submit">Save confirmed brief</button></form></section></div>
+<section id="campaign-detail" class="panel" hidden></section></main>
+<footer class="footer">Human decisions · Sourced previews · No publication or spending</footer></body></html>

@@ -19,6 +19,8 @@
 
 ## contracts/v1
 
+- [Campaign prototype contract](contracts/v1/Campaign_Prototype.md)
+
 - [B01 acceptance and review record](contracts/v1/B01_ACCEPTANCE.md)
 - [TripMate AI shared contracts v1.0.0](contracts/v1/CONTRACTS.md)
 - [Requirement and ownership mapping — B01 v1.0.0](contracts/v1/REQUIREMENT_MAPPING.md)
@@ -92,6 +94,9 @@
 - [Portal acceptance evidence — 13 October 2026](portal/TEST_RESULTS.md)
 
 ## stage2
+
+- [Jason：UC-08 营销活动实现与交接](stage2/UC08_CAMPAIGN_HANDOFF.zh-CN.md)
+- [Supplier 与 UC-08 本机验收截图及边界](stage2/SUPPLIER_ACCEPTANCE_2026-10-31.zh-CN.md)
 
 - [B02 + B03: Local workbench and deterministic fixture handoff](stage2/B02_B03_HANDOFF.md)
 - [B02/B03 branch and integration notes](stage2/B02_B03_MERGE_NOTES.md)
