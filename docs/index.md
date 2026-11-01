@@ -95,6 +95,8 @@
 
 ## stage2
 
+- [WN5620-20/49：实现范围、验证与签收](stage2/RELEASE_20_49_CLOSEOUT.zh-CN.md)
+
 - [WN5620-11/13/45 当前代码的隔离验收与待签收项](stage2/ACCEPTANCE_11_13_45_2026-11-01.zh-CN.md)
 - [WN5620-11/13/45 逐场景机器记录](stage2/acceptance-11-13-45-evidence.json)
 
