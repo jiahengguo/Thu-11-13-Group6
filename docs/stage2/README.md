@@ -9,6 +9,8 @@
 - [启动检查](STARTUP_READINESS.zh-CN.md)、[演示账户](DEMO_ACCOUNTS.zh-CN.md)、[Demo 操作路径](DEMO_SCENARIOS.zh-CN.md)
 - [投诉](UC04_COMPLAINTS.md)、[会员](UC07_MEMBERSHIP.md)、[营销](UC08_CAMPAIGN_HANDOFF.zh-CN.md)、[CI 与发布](CI_RELEASE.zh-CN.md)
 
+- [旅客逐日编辑器](CUSTOMER_DAILY.md)、[多城市模拟数据与操作](MULTI_CITY_DEMO.zh-CN.md)
+
 ## 日期验收与排错记录
 
 | 日期 / 记录 | 阅读边界 |

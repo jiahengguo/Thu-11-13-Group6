@@ -18,6 +18,8 @@
 - [本轮结构化记录与截图校验值](testing/2026-11-01-browser-evidence.json)
 - [Stage 2 历史验收和修复记录](stage2/README.md)：按日期、代码基线和测试方式阅读，不能汇总为当前版本全部通过。
 
+- [多城市模拟数据与逐日规划操作](stage2/MULTI_CITY_DEMO.zh-CN.md)：十项供应资源、实际 offerId 草稿及现有审核流程。
+
 ## 当前接口与领域说明
 
 | 领域 | 文档 |

@@ -7,3 +7,7 @@ No JSON upload is required for the explicitly selected simulation mode. This mod
 The approved supplier catalogue must already cover the selected travel dates, cities and party size. This version does not create supplier offers or approve them, infer arbitrary city schedules, or invent missing transport. The customer selects existing services and exact daily locations. Unsupported dates, missing inventory, incompatible schedules and budget violations are blocked by the existing validators. Daily schedules use Australia/Sydney local dates.
 
 This is a guided daily itinerary builder, not unrestricted natural-language multi-city generation. Live browser/cloud acceptance is pending.
+
+## Preparing matching demo inventory
+
+Use the optional `tripmate.portal.demo --multi-city` mode for a dated three-day Sydney/Goulburn/Canberra/Melbourne scenario. It creates ten synthetic supplier submissions and Free/Paid unconfirmed daily drafts with the actual generated offer IDs. Ordinary seeding remains unchanged; Operator quotation review is still required before catalogue selection. See the [multi-city data and walkthrough](MULTI_CITY_DEMO.zh-CN.md) for commands, the nine-service selection, daily stops, simulated factor assumptions and pricing boundaries.

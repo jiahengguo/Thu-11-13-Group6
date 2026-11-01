@@ -11,7 +11,9 @@ class CustomerDailyFactors:
         self.ops, self.stored = operations, stored
 
     def snapshot(self, request, quotes, at):
-        if not any(c['description'] == MARKER and c['confirmed'] for c in request['hardConstraints']):
+        # Operations appends the confirmed structured value after the description.
+        if not any(c['kind'] == 'OTHER' and c['description'].split(': ', 1)[0] == MARKER
+                   and c['confirmed'] for c in request['hardConstraints']):
             return self.stored.snapshot(request, quotes, at)
         # The confirmed request fixes the snapshot lifetime; repeated reads cannot renew it.
         context = self.ops.load_context(request['caseId'])
