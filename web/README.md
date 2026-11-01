@@ -70,4 +70,5 @@ role queues, repeated-click behavior and existing planning/recovery flows. Unit
 tests with provider doubles are not live-cloud business acceptance. The previously
 accepted ZIP remains the baseline; React changes require their own acceptance.
 
-CI and automatic release-ZIP delivery are separate follow-up tasks WN5620-63/64.
+The CI and source-ZIP workflow is tracked by WN5620-63/64; see
+[the release guide](../docs/stage2/CI_RELEASE.zh-CN.md).

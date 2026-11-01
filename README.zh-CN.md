@@ -8,6 +8,8 @@ Supabase 提供真实认证和私有持久化，课程 `campus-qwen` 模型用�
 
 认证门户的请求队列现使用随源码打包的 React 组件，负责搜索、状态筛选、选择和 Operator 统计。完整演示包仍只需 Python 即可初始化和启动；只有开发、重新构建前端时需要 Node。详见[前端开发说明](web/README.md)。
 
+自动测试与源码 ZIP 持续交付配置位于 `.github/workflows/ci.yml`。触发方式、下载和验收边界见 [CI 与发布说明](docs/stage2/CI_RELEASE.zh-CN.md)。
+
 ## 当前已实现
 
 - 供应商报价、Operator 明确审核和 AUD 确定性定价。
