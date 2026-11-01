@@ -42,6 +42,7 @@ Agile collaboration and delivery evidence: Prepared and maintained Stage 2 Jira 
 ### Member 3
 
 **Specific work completed:** 
+
 I was primarily responsible for designing and developing the Planning Agent, which converts confirmed travel requirements into complete, validated itineraries. My work included combining approved transport, accommodation and activity resources; checking budgets, dates, schedule connections and user constraints; and comparing feasible plans in Comfort, Value and Budget modes. I integrated the course-provided model to generate candidate itineraries, with deterministic tools validating its outputs. I also implemented controlled revisions, immutable version history and itinerary comparisons, alongside multi-city and daily planning that considers routes, weather, venue availability, rest periods and meal costs. The agent was connected to the other agents to support both initial planning and itinerary reassessment during disruption recovery.
 
 I undertook additional integration and development work includes completing planning and recovery state transitions, connecting member discounts and the shared model service, resolving conflicts with the latest main branch, running regression tests and updating pull requests. I also compared the implementation against the report and Jira backlog, helped configure the local testing environment, and added a customer-facing multi-city and daily itinerary builder with schedule displays to reduce reliance on manual JSON uploads. These were additional contributions to improve the overall project and support the group demonstration; the new portal functionality still requires manual acceptance testing.
@@ -49,6 +50,7 @@ I undertook additional integration and development work includes completing plan
 ### Member 4 Jingao Yang
 
 **Specific work completed:** 
+
 Supplier Partnership implementation: Implemented the UC-06 supplier offer assessment workflow, covering offer intake, structured data extraction, availability and commercial-term validation, selling-price and minimum-margin checks, review, and version-linked human decisions. Reused the shared PricingService and independently validated its results. Preserved offer history and prevented expired, invalid, superseded or unapproved offers from being selected by other agents.
 
 Agent integration and shared persistence: Implemented the SupplierGateway and shared-storage adapter to connect supplier assessment with authenticated Operations requests and Planning offer lookup. Provided current approved offer, price and source information for downstream use. Added checks for supplier ownership, current versions and approval authority, with traceable results and failure handling.
