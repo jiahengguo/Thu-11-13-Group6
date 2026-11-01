@@ -9,7 +9,7 @@ Enter each of the four members’ names and Student IDs in the corresponding col
 | Assessment criterion | Member 1 | Member 2 | Member 3 | Member 4 | Row total |
 | --- | --- | --- | --- | --- | --- |
 | Student name | Jiaheng Guo | Runda Weng | Mo Shen | Jingao Yang | |
-| Student ID | 510423614 | | 550394172 | 540157776 | |
+| Student ID | 510423614 | 540917343 | 550394172 | 540157776 | |
 | 1. Implementation of Stage 1 Requirements and Design (7 marks) | 25% | | 25% | 25% | **100%** |
 | 2. Demonstrating AI Agent Capabilities (4 marks) | 30% | | 30% | 20% | **100%** |
 | 3. Agile Development Experience (4 marks) | 40% | | 20% | 20% | **100%** |
