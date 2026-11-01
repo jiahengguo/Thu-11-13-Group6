@@ -39,8 +39,19 @@ class PortalExceptionContexts:
                     items=items, lifecycle=lifecycle, simulationOnly=True)
 
     def record(self, actor, body):
+        complaint = 'complaintCategory' in body
         required = {'requestKey', 'caseId', 'revision', 'itemId', 'sourceReference', 'validUntil',
                     'sunkCost', 'confidence', 'restricted', 'legalConcern', 'safetyConcern', 'confirmed'}
+        if complaint:
+            required |= {'complaintCategory', 'actualArrival', 'policyAction', 'policyReference'}
+            if body['complaintCategory'] not in {'DELAY', 'ITINERARY', 'SUPPLIER_TERMS'} or body['policyAction'] not in {'EXPLAIN_AND_APOLOGISE', 'HUMAN_REVIEW_REFUND'}:
+                raise OperationsError('INVALID_CONTRACT', 'Select a supported complaint category and simulated policy.')
+            safe_text(body['policyReference'], 1000)
+            try:
+                if instant(body['actualArrival']) > instant(self.operations.clock()):
+                    raise ValueError()
+            except (ValueError, TypeError, AttributeError):
+                raise OperationsError('INVALID_CONTRACT', 'Observed arrival must be a valid past timestamp.')
         if (set(body) != required or body['confirmed'] is not True or type(body['restricted']) is not bool
                 or any(type(body[k]) is not bool for k in ('legalConcern', 'safetyConcern'))
                 or any(not isinstance(body[k], str) or not 1 <= len(body[k]) <= 100 for k in ('caseId', 'itemId', 'requestKey'))
@@ -56,10 +67,10 @@ class PortalExceptionContexts:
             raise OperationsError('INVALID_CONTRACT', 'Supply a future evidence validity and nonnegative AUD sunk cost.')
         def save(rows):
             rec = self.operations._owned(rows, actor, body['caseId'], 'REVIEW_CASE', body['revision'])
-            if rec['case']['caseType'] != 'DISRUPTION' or rec['case']['status'] not in {'CONFIRMED', 'AWAITING_REQUESTER', 'HUMAN_ASSISTANCE'}:
+            if rec['case']['caseType'] != ('COMPLAINT' if complaint else 'DISRUPTION') or rec['case']['status'] not in {'CONFIRMED', 'AWAITING_REQUESTER', 'HUMAN_ASSISTANCE'}:
                 raise OperationsError('UNCONFIRMED_REQUEST', 'Record evidence before dispatching a confirmed disruption case.')
             baseline, lifecycle = self.baseline(rec)
-            if lifecycle['planStatus'] != 'ACTIVE' or not any(i['itemId'] == body['itemId'] and i['productType'] == 'TRANSPORT'
+            if (not complaint and lifecycle['planStatus'] != 'ACTIVE') or not any(i['itemId'] == body['itemId'] and (complaint or i['productType'] == 'TRANSPORT')
                                                            for i in baseline['version']['items']):
                 raise OperationsError('INVALID_CONTRACT', 'Choose a transport item in the current Active itinerary.')
             source = dict(sourceId='operator-notice-' + str(uuid4()), sourceType='FIXTURE',
@@ -68,6 +79,8 @@ class PortalExceptionContexts:
                          confidence=body['confidence'], restricted=body['restricted'], legalConcern=body['legalConcern'],
                          safetyConcern=body['safetyConcern'], recordedBy=actor,
                          baselineVersionId=baseline['version']['versionId'], confirmedRequest=rec['case']['confirmedRequest'])
+            if complaint:
+                saved.update({k: body[k] for k in ('complaintCategory', 'actualArrival', 'policyAction', 'policyReference')})
             rows.put('exception_evidence', rec['id'], saved)
             if rec.get('exceptionRunId'):
                 self.operations.specialists['exception'].invalidate_confirmation(rows, rec)
@@ -76,7 +89,7 @@ class PortalExceptionContexts:
                 rec['case']['status'] = 'AWAITING_REQUESTER'
                 rec['case']['unresolvedQuestions'] = ['Investigation evidence changed. Re-confirm the request before a new investigation.']
             rec['revision'] += 1
-            self.operations._event(rows, rec, 'TOOL_RESULT', 'Operator recorded a simulated cancellation notice: ' + source['sourceId'], actor=actor)
+            self.operations._event(rows, rec, 'TOOL_RESULT', 'Operator recorded simulated investigation evidence: ' + source['sourceId'], actor=actor)
             self.operations._save(rows, rec)
             return dict(caseId=rec['id'], evidenceRecorded=True, simulationOnly=True)
         return self.operations._command(actor, 'exception-evidence', body['requestKey'], body, save)
@@ -85,7 +98,7 @@ class PortalExceptionContexts:
         rec = self.operations.repository.read('case', snapshot['result']['caseId'])
         baseline, lifecycle = self.baseline(rec)
         notice = self.operations.repository.read('exception_evidence', rec['id'])
-        if (lifecycle['planStatus'] != 'ACTIVE' or baseline['version']['versionId'] != snapshot['context']['itinerary']['versionId']
+        if ((rec['case']['caseType'] == 'DISRUPTION' and lifecycle['planStatus'] != 'ACTIVE') or baseline['version']['versionId'] != snapshot['context']['itinerary']['versionId']
                 or not notice or notice['source'] not in [e['source'] for e in snapshot['context']['evidence']]
                 or not self.operations.access.authorise(notice['recordedBy'], 'REVIEW_CASE', rec['case'])):
             raise OperationsError('STALE_EVIDENCE', 'The active itinerary or trusted evidence changed; investigate a new proposal.')
@@ -97,8 +110,9 @@ class PortalExceptionContexts:
         baseline, lifecycle = self.baseline(rec)
         version = baseline['version']
         notice = self.operations.repository.read('exception_evidence', case_id)
-        if rec['case']['caseType'] != 'DISRUPTION':
-            raise Referral('MISSING_REQUIRED_FIELDS', 'Complaint evidence and an applicable policy need Operator confirmation; no liability is inferred.')
+        complaint = rec['case']['caseType'] == 'COMPLAINT'
+        if complaint and (not notice or 'complaintCategory' not in notice):
+            raise Referral('MISSING_REQUIRED_FIELDS', 'An Operator must confirm complaint evidence and an applicable simulated policy.')
         if (not notice or notice['baselineVersionId'] != version['versionId']
                 or notice['confirmedRequest'] != rec['case']['confirmedRequest']):
             raise Referral('MISSING_REQUIRED_FIELDS', 'An Operator must record cancellation evidence for this exact confirmed case and selected itinerary.')
@@ -116,7 +130,7 @@ class PortalExceptionContexts:
         items = [dict(itemId=i['itemId'], kind={'TRANSPORT': 'TRANSPORT', 'ACCOMMODATION': 'HOTEL', 'ACTIVITY': 'ACTIVITY'}[i['productType']],
                       origin=i['origin'], destination=i['destination'], startAt=i['startAt'], endAt=i['endAt'],
                       remainingCost=i['quotedPrice']['amount'], sourceIds=deepcopy(i['sourceIds'])) for i in version['items']]
-        return dict(contextVersion='exception-fixture-1', caseId=case_id, travellerId=rec['case']['requesterId'],
+        context = dict(contextVersion='exception-fixture-1', caseId=case_id, travellerId=rec['case']['requesterId'],
                     simulationOnly=True, assessedAt=self.operations.clock(),
                     issue=dict(kind='DISRUPTION', itemId=notice['itemId'], summary=rec['fields']['details'],
                                confidence=notice['confidence'], legalConcern=notice['legalConcern'], safetyConcern=notice['safetyConcern'],
@@ -125,3 +139,22 @@ class PortalExceptionContexts:
                                    travellerId=version['travellerId'], planStatus=lifecycle['planStatus'], sunkCost=notice['sunkCost'], items=items),
                     constraints=[], evidence=evidence, supplierOffers=[], policies=[],
                     planningContext=dict(request=request, spec=deepcopy(baseline['spec']), baseline=baseline))
+
+        if complaint:
+            context['issue']['kind'] = 'COMPLAINT'
+            context['issue']['requestedActions'] = ['REFUND'] if notice['policyAction'] == 'HUMAN_REVIEW_REFUND' else (['COMPENSATION'] if notice['restricted'] else [])
+            context['complaintCategory'] = notice['complaintCategory']
+            item = next(i for i in version['items'] if i['itemId'] == notice['itemId'])
+            evidence[-1]['assertions'] = [dict(key=notice['itemId'] + ':scheduledArrival', value=item['endAt']),
+                                         dict(key=notice['itemId'] + ':actualArrival', value=notice['actualArrival'])]
+            evidence[-1]['note'] = 'Operator-confirmed simulated service observations.'
+            policy_source = deepcopy(notice['source'])
+            policy_source.update(sourceId=notice['source']['sourceId'] + '-policy', sourceReference=notice['policyReference'])
+            policy = dict(policyId='operator-simulated-delay', version='1', sourceIds=[policy_source['sourceId']],
+                          action=notice['policyAction'], description='Explicit simulated policy input; no financial entitlement inferred.')
+            evidence.append(dict(source=policy_source, validUntil=notice['validUntil'],
+                                 assertions=[dict(key='policy:' + policy['policyId'] + ':version', value=policy['version']),
+                                             dict(key='policy:' + policy['policyId'] + ':action', value=policy['action'])],
+                                 note='Operator-confirmed simulated policy, replace with a verified policy source when available.'))
+            context['policies'] = [policy]
+        return context
