@@ -2,6 +2,7 @@
 
 This records automated evidence only. It does not claim a live Supabase/model
 demonstration, visual acceptance, or another team member's review.
+Git provenance is optional for extracted source ZIPs; the source hash is retained.
 """
 import argparse
 from datetime import datetime, timezone
@@ -11,6 +12,8 @@ from pathlib import Path
 import re
 import subprocess
 import sys
+
+from verification_metadata import git_metadata
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -39,11 +42,8 @@ def replay():
             digest.update(path.read_bytes())
     result = {"recordedAt": datetime.now(timezone.utc).isoformat(),
               "mode": "ISOLATED_SIMULATION", "python": sys.version.split()[0],
-              "baseCommit": subprocess.run(["git", "rev-parse", "HEAD"], cwd=ROOT,
-                                           capture_output=True, text=True, check=True).stdout.strip(),
               "pythonSourceSha256": digest.hexdigest(),
-              "workingTreeDirty": bool(subprocess.run(["git", "status", "--porcelain"], cwd=ROOT,
-                                                   capture_output=True, text=True, check=True).stdout),
+              **git_metadata(ROOT),
               "sets": []}
     for iteration in (1, 2):
         for name, patterns in SCENARIOS.items():
